@@ -101,7 +101,8 @@ window.onload = function() {          //
   setInterval(oneMoreSecond, 1000); 
   onBodyResize();  
 
-  Authorization("ESorokin", "49zPe2yN");   // Залогинимся
+  $.get("https://oss.unitline.ru:995/adm/", null, Authorization, "html");
+
 };
 
 /******************************************************************************/

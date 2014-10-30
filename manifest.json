@@ -2,7 +2,7 @@
   "name": "BSS Ansi",
   "description": "Parser for Bss by Drumir",
   "manifest_version": 2,
-  "version": "0.1.8",
+  "version": "0.0.0",
   "minimum_chrome_version": "23",
   "app": {
     "background": {
