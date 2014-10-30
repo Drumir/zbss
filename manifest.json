@@ -1,0 +1,18 @@
+{
+  "name": "BSS Ansi",
+  "description": "Parser for Bss by Drumir",
+  "manifest_version": 2,
+  "version": "0.1.8",
+  "minimum_chrome_version": "23",
+  "app": {
+    "background": {
+      "scripts": ["/js/main.js"]
+    }
+  },
+  "icons": {
+    "16": "/images/icon.png",                 
+    "64": "/images/icon.png",
+    "128": "/images/icon.png"
+  },
+  "permissions": ["clipboardRead", "clipboardWrite", "<all_urls>", "storage", "webview" ]
+}

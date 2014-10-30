@@ -1,0 +1,541 @@
+//
+//    BSS Parser by drumir@mail.ru
+//    
+//
+var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете"}}. Актуализируется раз в n секунд
+var transQueue = [];        // Очередь запросов на перевод тикета.
+var hiddenText;             // Переменная - TEXTAREA
+var a, b;
+var transAnsiAjaxSys = [];
+
+
+var userName;              // Имя залогиненого пользователя Иванов И.И.
+var userId = -1;           // Идентификатор залогиненого пользователя
+var branchId = 100113;     // Код подразделения пользователя 100113 == "Технический департамент (МегаМакс) (13)" !!!!!!
+var resp_id = [];          // Список всех ответственных лиц
+var organization_id = [];  // Список всех клиентов
+var tt_region = [];        // Список всех регион
+var tt_status_id = [];     // Список статусов тикета
+var branch_id = [];        // Список подразделений авторов
+
+var mtb;                   // Main Table Body
+var refreshTime = -1;      // Сколько секунд осталось до обновления.
+var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - идет отсчёт. ==0 - операция провалилась. <0 - отключено
+var strTimeout = "";
+var filterUser = "";
+var filterName = "";
+
+var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
+var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
+
+window.onload = function() {          // 
+                             
+  document.getElementById('buttonNew').onclick = onBtnNewTTClick;
+  document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
+  document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
+  document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
+  document.getElementById('buttonTransfer').disabled = false;
+  document.body.onresize = onBodyResize;
+  document.getElementById('headChBox').onchange = onHeadChBoxClick; 
+  document.getElementById('buttonTwo').onclick = onButtonTwoClick;
+  document.getElementById('buttonTwo').disabled = false;
+  document.getElementById('buttonThree').onclick = onButtonThreeClick;
+  document.getElementById('buttonThree').disabled = false; 
+  document.getElementById('mainTBody').onclick = onMainTBodyClick;
+  document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
+  document.getElementById('statusName').onclick = onStatusNameClick;
+  document.getElementById('statusName').ondblclick = onStatusNameDblClick;
+  document.getElementById('comment').onkeypress = commentOnKey;
+  document.getElementById('leftPopupTicket').onclick = onLeftTPopupClick; 
+  document.getElementById('searchStr').oninput = onSearchInput; 
+  document.getElementById('searchTT').onkeydown = onTTKeyPress; 
+  document.getElementById('psClass').onchange = getSubClass; 
+  document.getElementById('branchList').onchange = GetCPList;
+  document.getElementById('ps2Confirm').onclick = onPs2Confirm;
+  document.getElementById('ps2Servis').onclick = onPs2Servis;
+  document.getElementById('ps2Resolved').onclick = onPs2Resolved;
+
+ 
+  mtb = document.getElementById('mainTBody');
+  prepareToAnsi();
+
+ 
+  $("#backgroundPopup").click(function() {
+    disablePopup();
+  });
+  /*
+  $(document).keydown(function(e) {
+    if (e.keyCode == 27 && popupStatus > 0) {
+      disablePopup();
+    }
+  });
+  */
+  $("#popupPictCloseTransfer").click(function() {
+    if (popupStatus > 0) {            // Сразу закроем popup Transfer
+      $("#popupTransfer").fadeOut("fast");
+      popupStatus--;
+    }
+    if (popupStatus === 0) {          // Если Transfer был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
+      $("#backgroundPopup").fadeOut("fast");
+    }
+  });
+
+  $("#popupPictCloseStatus").click(function() {
+    if (popupStatus > 0) {            // Сразу закроем popup Status
+      $("#popupStatus").fadeOut("fast");
+      popupStatus--;
+    }
+    if (popupStatus === 0) {          // Если Status был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
+      $("#backgroundPopup").fadeOut("fast");
+    }
+  });
+
+  $("#popupPictCloseTicket").click(function() {
+    disablePopup();
+  });
+
+  
+  hiddenText = document.getElementById('hiddenText');
+  hiddenText.hidden = true;
+  
+  setInterval(oneMoreSecond, 1000); 
+  onBodyResize();  
+
+  Authorization("ESorokin", "49zPe2yN");   // Залогинимся
+};
+
+/******************************************************************************/
+function oneMoreSecond(){
+  if(refreshTime > 0){
+    refreshTime --;
+  }
+  if(refreshTime == 0 && netTimeout <= 0){
+    loadTickets();
+    refreshTime = 180;
+  } 
+  
+  if(netTimeout > 0){        // Если netTimeout > 0, значит идет какая-то сетевая операция
+    netTimeout --;
+  }
+  if(netTimeout == 0){      // Если netTimeout = 0, значит сетевая операция не удалась.
+    setStatus(strTimeout); 
+    refreshTime = -1; 
+    netTimeout = 0;        // остановим отсчет.
+  } 
+  
+}
+
+function showIt() {
+var str;  
+  $("#mainTBody").empty();
+  for(var key in Tickets) { 
+    if(filterUser != "" && Tickets[key].otv != filterUser) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
+    if(filterName != "" && Tickets[key].name.indexOf(filterName) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
+    var ttr = document.createElement('tr');
+    ttr.filial = Tickets[key].filial;
+    ttr.iidd = Tickets[key].id; 
+    
+    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td>' + Tickets[key].status;
+    if(Tickets[key].attention === true){
+      str += '(НП)';
+    }             
+    str += '</td><td>' + Tickets[key].data_open + '</td><td>' + Tickets[key].region + '</td><td>' + Tickets[key].author + '</td><td>' + Tickets[key].otv + '</td><td>' + Tickets[key].client + '</td><td>' + Tickets[key].name + '</td><td width = "100px">' + Tickets[key].clas + '</td></tr>';
+    ttr.innerHTML = str;
+    ttr.children[0].children[0].checked = Tickets[key].checked;
+
+    if(key == highlightedTT){
+      ttr.style.backgroundColor = "#FFFFCC";
+    }
+    mtb.insertBefore(ttr, mtb.children[0]);
+  } 
+//  document.getElementById('headChBox').checked = false;
+}
+
+function renewTickets(data) {
+  for(var i = 0; i < data.rows.length;  i ++) {
+    var tt = {};
+    tt.id = data.rows[i].id;                // 52956
+    tt.status = data.rows[i].status;        // Service / Обслуживание"
+    tt.data_open = data.rows[i].data_open;  // 05.09.2014 21:42
+    tt.region = data.rows[i].region;        // RST
+    tt.author = data.rows[i].author;        // Сорокин Е. Г.
+    tt.otv = data.rows[i].otv;              // Сорокин Е. Г. 
+    tt.client = data.rows[i].client;        // *M.VIDEO*
+    tt.name = data.rows[i].name;            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157 
+    tt.clas = data.rows[i].clas;            // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
+    tt.filial = data.rows[i].filial;        // Ростовская область
+    tt.branch = data.rows[i].branch;        // Технический департамент (МегаМакс).<br>МЕГАМАКС     
+                                            // 	{ "id":"52956", "status":"Service / Обслуживание", "data_open":"05.09.2014 21:42", "data_res":"", "data_close":"", "region":"RST", "author":"Сорокин Е. Г.", "otv":"Сорокин Е. Г.", "client":"*M.VIDEO*", "name":"Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157", "clas":"", "filial":"Ростовская область", "is_group":"-", "branch":"Технический департамент (МегаМакс).<br>МЕГАМАКС" }
+    tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
+    tt.permissions = "";                    // Названия всех доступных в тикете кнопок разделенные "***"
+                              
+    if(Tickets[tt.id] === undefined){       // Если такого тикета в списке еще нет, добавим
+      Tickets[tt.id] = tt;
+      Tickets[tt.id].checked = false;
+    }
+    else {
+      if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // Если отв. лицо изменилось на нас 
+        Tickets[tt.id].attention = true;
+        // тут должна быть проверка подтверждения пользователем смен отв. лица
+      }
+      Tickets[tt.id].status = tt.status;       
+      Tickets[tt.id].otv = tt.otv;              
+      Tickets[tt.id].clas = tt.clas;           
+      Tickets[tt.id].branch = tt.branch;            
+    }                                                 
+  }
+//  addTestTT();
+  showIt();
+}
+
+/******************************************************************************/
+function addTestTT(){
+  var tt = {};
+  tt.id = "49300";                // 52956
+  tt.status = "Closed / Закрыта";        // Service / Обслуживание"
+  tt.data_open = "02.07.2014 21:42";  // 05.09.2014 21:42
+  tt.region = "TMN";        // RST
+  tt.author = "Гостев А. Е.";        // Сорокин Е. Г.
+  tt.otv = "Валиокова Л. И.";              // Сорокин Е. Г. 
+  tt.client = "*M.VIDEO*";        // *M.VIDEO*
+  tt.name = "Город: Тюмень Адрес: Ул.М.Горького д.42 ТЦ 'Максим' Shop 158";            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157 
+  tt.clas = "6";            // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
+  tt.filial = "Тюменская область";        // Ростовская область
+  tt.branch = "Технический департамент (МегаМакс).<br>МЕГАМАКС";        // Технический департамент (МегаМакс).<br>МЕГАМАКС     
+  tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
+                              
+  Tickets[tt.id] = tt;
+  Tickets[tt.id].checked = false;
+
+}
+/******************************************************************************/
+
+function onRespIdChange(){
+  filterUser = $("#resp_id_s")[0][$("#resp_id_s")[0].selectedIndex].innerText;
+  if($("#resp_id_s")[0].selectedIndex === 0) 
+    filterUser = "";
+  showIt();
+}
+
+function onHeadChBoxClick(){
+  var flag = document.getElementById('headChBox').checked;
+  for (var i = 0; i < mtb.childElementCount; i ++) {
+    Tickets[mtb.children[i].iidd].checked = flag;
+  } 
+  showIt();
+}
+
+function onMainTBodyClick(e) {
+  if(e.target.nodeName === "INPUT") {
+    Tickets[e.target.parentNode.parentNode.iidd].checked = e.target.checked;
+  }
+  else if(e.target.nodeName === "TD" && e.target.cellIndex != 1){    // Если щелкнули не по галочке, откроем выбранный тикет
+    document.getElementById('popupTicket').iidd = e.target.parentNode.iidd; // Сразу передадим в popupTicket id отображаемого тикета
+    highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt() 
+    showIt();                              
+    if(Tickets[e.target.parentNode.iidd].attention === true) 
+      Tickets[e.target.parentNode.iidd].attention = false;
+    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
+  } 
+}
+
+/*
+  Правила переводов заявок:
+  Ориентироваться на названия кнопок из Tickets[id].permissions
+*/
+
+function onLeftTPopupClick(e) {
+  var tid = document.getElementById('popupTicket').iidd;
+  if(tid === undefined){ return;}
+  if(e.target.id === "otv"){     // Клик был по ответственному лицу.
+    if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html"); 
+      loadTickets();
+      return;
+    }
+    if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
+      for (var key in Tickets) {
+        Tickets[key].checked = false;
+      } 
+      Tickets[tid].checked = true;
+      loadPopupTransfer();
+      centerPopupTransfer();
+      return;
+    }
+  }
+  if(e.target.id === "stat"){     // Клик был по статусу.
+    document.getElementById('popupStatus').iidd = tid; // Сразу передадим в popupStatus id отображаемого тикета
+    loadPopupStatus();
+    centerPopupStatus();
+  } 
+}
+
+function onPs2Resolved() {        // Кнопка "Решена"
+  var tid = document.getElementById('popupTicket').iidd;
+  if(Tickets[tid].permissions.indexOf("Resolved / Решена") != -1){   // Можно переводить в решено. В принципе эта проверка здесь уже не нужна. Раз кнопка доступна, значит разрешение дано
+    var par = {};
+    par.branch_id = "100113";      // Подразделение автора по умолчанию
+    par.resp_person_id = "931";    // id пользователя по умолчанию
+    par.trouble_type_closed = document.getElementById('psClass').value;
+    par.trouble_subtype_closed = document.getElementById('psSubClass').value;
+    par.trouble_type_name = document.getElementById('psType').value;                   
+    par.trouble_type_resolution = document.getElementById('psResolve').value;
+    par.trouble_root_tt = "0";
+    par.id = tid;
+    par.status_id = "5";     // Решена
+    par.region_id = filialToRegionId(Tickets[tid].filial);
+    var str = document.getElementById('psComment').value;
+    if(str.length === 0){ par.comment = "."; }
+//    else { par.comment = encodeURIComponent(str); }
+    else { par.comment = str; }
+
+    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "json");
+    loadTickets();
+    $("#popupStatus").fadeOut("fast");
+    popupStatus--;
+    return;
+  }
+
+}
+function onPs2Servis() {        // Кнопка "Обслуживание"
+  var tid = document.getElementById('popupTicket').iidd;
+  if(Tickets[tid].permissions.indexOf("Service / Обслуживание") != -1){   // Можно брать в обслуживание
+    var par = {};
+    par.branch_id = "100113";      // Подразделение автора по умолчанию
+    par.resp_person_id = "931";    // id пользователя по умолчанию
+    par.trouble_type_closed = "0";
+    par.trouble_subtype_closed = "0";
+    par.trouble_type_name = "0";
+    par.trouble_type_resolution = "1";
+    par.trouble_root_tt = "0";
+    par.id = tid;
+    par.status_id = "2";     // В обслуживании
+    par.region_id = filialToRegionId(Tickets[tid].filial);
+    var str = document.getElementById('psComment').value;
+    if(str.length === 0){ par.comment = "."; }
+//    else { par.comment = encodeURIComponent(str); }
+    else { par.comment = str; }
+
+    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "json");
+    loadTickets();
+    $("#popupStatus").fadeOut("fast");
+    popupStatus--;
+    return;
+  }
+
+}
+function onPs2Confirm() {        // Кнопка "подтвердить"
+  var tid = document.getElementById('popupTicket').iidd;
+  if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
+    loadTickets();
+    return;
+  }
+
+}
+
+function onStatusNameClick() {   // По клику на имени залогиненого пользователя
+  if(userId != -1){
+    filterUser = userName;
+    showIt();
+  }
+  for(i = 0; i < resp_id.length; i ++) {     // И выберем его в выпадающем списке
+    if(resp_id[i].value === userId) {
+      $("#resp_id_s")[0].selectedIndex = i;
+      break;
+    }
+  }
+}
+
+function onStatusNameDblClick() {   // По клику на имени залогиненого пользователя
+  filterUser = "";
+  showIt();
+  $("#resp_id_s")[0].selectedIndex = 0;
+}
+
+function onButtonTwoClick(e) {                                                                             
+  loadPopupTransfer();
+  centerPopupTransfer();
+}
+
+function onButtonThreeClick(e) {
+  loadTickets();
+  refreshTime = 180;
+}
+function onBtnNewTTClick (e) {
+  loadPopupNewTT();
+  centerPopupNewTT();
+}
+
+function onBtnSaveTTClick (e) {      // Попап новый тикет -> Сохранить
+  if($("#shortTTDescr")[0].value.length < 10) return;
+  if($("#TTDescr")[0].value.length < 10) return;
+  if($("#ppClient")[0].selectedIndex === 0) return;
+  if($("#ppRegion")[0].selectedIndex === 0) return;
+  var id = document.getElementById('ppRegion'); 
+  var rid = id[id.selectedIndex].value;
+  id = document.getElementById('ppClient'); 
+  var cid = id[id.selectedIndex].value;
+  var param = "id=0&ip=&name=" + encodeURIComponent($("#shortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
+  param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#TTDescr")[0].value);
+  $.ajax({ 
+    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp", 
+    type: "POST", 
+    data: param, 
+    dataType : "html", 
+    contentType : "application/x-www-form-urlencoded; charset=windows-1251", 
+    error: function() { alert("Произошла ошибка при соединении с сервером!") }, 
+    success: function(data, textStatus) {
+      loadTickets();
+      setTimeout(callbackGetTicket(data, textStatus), 2000);
+      refreshTime = 180;
+      
+    } 
+  })
+  disablePopup();
+}
+
+function onBtnAlertClick (e) {
+  var str = $("#TTDescr")[0].value;
+  if(str.length === 0){
+    $("#TTDescr")[0].selectionStart = 0;                                              // Копируем список в буфер обмена
+    $("#TTDescr")[0].selectionEnd = str.length;
+    document.execCommand("Paste");
+    str = $("#TTDescr")[0].value;
+  } 
+  var adr0 = str.indexOf("№ удаленного объекта");
+  if(adr0 != -1) {str = str.substring(adr0);} 
+  var adr1 = str.indexOf("Город: ");
+  var adr2 = str.indexOf("Адрес: ");
+  var adr3 = str.indexOf("Канал: ");
+  if(adr1 === -1 || adr2 === -1 || adr2 === -1) return;
+  $("#shortTTDescr")[0].value = str.substring(adr1 + 7, adr2-1) + ", " + str.substring(adr2 + 7, adr3-1);
+  for(var i = 0; i < organization_id.length && organization_id[i].text != "*M.VIDEO*"; i ++){}  // Найдем в списке организаций мвидео
+    if(i != organization_id.length) {
+      document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
+    }
+  var adr4 = str.indexOf("**************************");
+  if(adr4 != -1) {str = str.substring(0, adr4-1);}
+  $("#TTDescr")[0].value = str; 
+  var city = str.substring(adr1 + 7, adr2-1);
+  if(city === "Москва"){
+    for(var i = 1; i < tt_region.length; i ++){
+      if(tt_region[i].text === city){
+        document.getElementById('ppRegion').selectedIndex = i;
+      } 
+    }
+  }
+  else {
+    document.getElementById('ppRegion')[0].text = "Определение региона";
+    document.getElementById('ppRegion').disabled = true;
+    $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1), title:"Служебная:Поиск", go:"Перейти" }, cbWiki, "html");
+  }
+}
+
+
+function onBodyResize() {
+   document.body.style.maxHeight = (window.innerHeight - 31) + "px";
+}
+
+function setStatus(status) {
+  document.getElementById('statusField').innerHTML = status;
+}
+
+function onMainTBodyKeyPress(e){
+  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){
+    var str = document.getElementById('comment').value;
+    var converted_str = encodeURIComponent(str);
+    var iidd = document.getElementById('popupTicket').iidd;
+    var param = "id=" + iidd + "&status_id=0&region_id=" + filialToRegionId(Tickets[iidd].filial) + "&comment=" + converted_str;
+  }
+}
+
+function commentOnKey(e){
+  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){
+    var str = document.getElementById('comment').value;
+    var converted_str = encodeURIComponent(str);
+    var iidd = document.getElementById('popupTicket').iidd;
+    var param = "id=" + iidd + "&status_id=0&region_id=" + filialToRegionId(Tickets[iidd].filial) + "&comment=" + converted_str;
+    $.ajax({
+      url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
+      type: "POST",
+      data: param,
+      dataType : "html",   
+      contentType : "application/x-www-form-urlencoded; charset=windows-1251",
+      error: function() { alert("Произошла ошибка при соединении с сервером!") },
+      success: function(data, textStatus) { }
+    })
+  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+  }
+}
+
+function setTimeout(duration, str){netTimeout = duration;strTimeout = str;}
+function resetTimeout(){netTimeout = -1; strTimeout = "";}
+
+function utf8_decode (aa) {
+  var bb = '', c = 0;
+  for (var i = 0; i < aa.length; i++) {
+    c = aa.charCodeAt(i);
+    if (c > 127) {
+      if (c > 1024) {
+        if (c == 1025) {
+          c = 1016;
+        } 
+        else if (c == 1105) {
+          c = 1032;
+        }
+        bb += String.fromCharCode(c - 848);
+      }
+    } 
+    else {
+      bb += aa.charAt(i);
+    }
+  }
+  return bb;
+} 
+
+function prepareToAnsi(){
+// Инициализируем таблицу перевода
+  for (var i = 0x410; i <= 0x44F; i++) {
+    transAnsiAjaxSys[i] = i - 0x350; // А-Яа-я
+  }
+  transAnsiAjaxSys[0x401] = 0xA8;    // Ё
+  transAnsiAjaxSys[0x451] = 0xB8;    // ё
+
+  //var escapeOrig = window.escape;
+  // Переопределяем функцию escape()
+  window.encodeURIComponent = function(str) {
+    var ret = [];
+    // Составляем массив кодов символов, попутно переводим кириллицу
+    for (var i = 0; i < str.length; i++){
+      var n = str.charCodeAt(i);
+      if (typeof transAnsiAjaxSys[n] != 'undefined')
+        n = transAnsiAjaxSys[n];
+      if (n <= 0xFF)
+        ret.push(n);
+    }
+    return escape(String.fromCharCode.apply(null, ret));
+  }
+}
+
+function fullName2FIO(fullName) {
+  var arrFio = [];
+  arrFio = fullName.split(" ", 3);
+  if(arrFio.length != 3) 
+    return "no_name"; 
+  fio = arrFio[0] + " " + arrFio[1].substring(0,1) + ". " + arrFio[2].substring(0,1) + "."; 
+  return fio;
+}
+
+function onSearchInput() {
+  filterName = this.value;
+  showIt();
+}
+function onTTKeyPress(e) {       // Ввод номера тикета
+  if(e.keyIdentifier === "Enter"){
+    if(!isNaN(parseInt(this.value, 10))){
+      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: this.value}, callbackGetTicket, "html");
+      this.value = "";
+    }       
+  }
+}

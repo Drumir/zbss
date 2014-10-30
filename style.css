@@ -1,0 +1,142 @@
+
+body {
+  margin: 5px;
+  background-color: #E4E4E4;
+  color: #490A73;
+  font-size: 13px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;  
+  overflow-y: scroll;
+  max-height: 850px;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button {
+  width: 100px;
+  line-height: 20px;
+  font-size: 14px;
+  border-radius:4px;
+  border: 1px solid #666;
+  background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2 99%);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  color: #555;
+}
+
+button:hover {
+  color: #333;
+  background: #A0A0A0;
+}
+
+button:active {
+  color: #000;
+  background: #A0A0A0;
+}
+
+hr {
+  border: none;
+  background: #A0A0A0;
+  height: 1px;
+  width: 100%;
+}
+
+#status_line {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  background-color: #C0C0C0;
+  color: #0A0A0A;
+  width: 100%;
+  padding: 2px 0 2px 18px;
+  font-size: 16px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+#status {
+  color: #0A0A0A;
+  background: #C0C0E0;
+  font-size: 16px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+
+#menuTable {
+  font-size: 16px;
+  font-family: 'Segoe UI', Tahoma, sans-serif; 
+}
+
+#backgroundPopup {
+  display: none;
+  position: fixed;
+  _position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: #000000;
+  border: 0px;
+  z-index: 2;
+}
+
+#popupTransfer {
+  background-color: #C0C0C0;
+  color: #0A0A0A;
+  display: none;
+  position: fixed;
+  _position: absolute;
+  height: 200px;
+  width: 300px;
+  background: #FFFFFF;
+  border: 2px solid #cecece;
+  z-index: 4;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 12px;
+}
+
+#popupStatus {
+  background-color: #C0C0C0;
+  color: #0A0A0A;
+  display: none;
+  position: fixed;
+  _position: absolute;
+  background: #FFFFFF;
+  border: 2px solid #cecece;
+  z-index: 4;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 12px;
+}
+
+#popupTicket {
+  background-color: #C0C0C0;
+  color: #0A0A0A;
+  display: none;
+  _position: absolute;
+  width: 1050px;
+  background: #FFFFFF;
+  border: 2px solid #cecece;
+  z-index: 3;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+#popupNewTT {
+  background-color: #C0C0C0;
+  color: #0A0A0A;
+  display: none;
+  _position: absolute;
+  width: 600px;
+  background: #FFFFFF;
+  border: 2px solid #cecece;
+  z-index: 3;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 12px;
+}
+
+#historyDiv {
+  max-height: 490px;
+  overflow-y: auto;
+  border:solid 1px black;
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta  http-equiv="Content-Type" content="text/html; charset=windows-1251">
+  
+  <title>BSS Parser</title>
+  
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  
+  <script type="text/javascript" src="\js\jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="\js\bss.js"></script>
+  <script type="text/javascript" src="\js\popup.js"></script>
+  <script type="text/javascript" src="\js\ajax.js"></script>
+
+  
+</head>                    
+
+<body> 
+  
+  <table id="menuTable">
+    <td id="statusName" STYLE='background-color:#FFA500'></td>
+    <td>
+    <button id="buttonTwo"   disabled="true">Перевести</button>
+    <button id="buttonThree" disabled="true">Обновить</button>
+    <button id="buttonNew" >Новый ТТ</button>
+    </td>
+    <td valign = "baseline">
+      <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
+      <input type="image" id="cancelSearch" align="absmiddle" src="/images/cancel.png">
+    </td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.1.8</td>
+  </table>
+  
+
+  <textarea id="hiddenText" hidden="true">This text invisible</textarea>
+
+  <table id="mainTable" border=0 width=100%>
+    <thead>
+      <tr style="background-color:#AAAAAA">
+        <td rowspan="2"><input id="headChBox" type="checkbox"></td>
+        <td width="1%" rowspan="2">№</td>
+        <td>
+          <select id="thsStatus">
+          <option value="0">Статус</option>
+          <option value="1">Оформление</option>
+          <option value="2">Обслуживание</option>
+          <option value="3">Решено</option>
+          <option value="4">Закрыто</option>
+          </select>
+        </td>
+        <td id="thDate" rowspan="2">Открытие</td>
+        <td id="thRegion" rowspan="2">Регион</td>
+        <td id="thAuthor" rowspan="2">Автор</td>
+        <td id="thOtv" rowspan="2">
+          <select id="resp_id_s" style="width:150px">
+          <option value="0">Все отв.лица</option>
+          </select>
+        </td>
+        <td id="thClient" rowspan="2">Клиент</td>
+        <td id="thName" rowspan="2"><input type="text" id="searchStr" placeholder="Краткое описание"></td>
+        <td id="thClass" rowspan="2">Класс</td>
+      </tr>
+    </thead>
+    <tbody id="mainTBody" style="background-color:#F8F8F8">
+    </tbody>
+  </table>
+    
+  <div id="status_line">
+    <output id="statusField"></output>
+  </div>
+
+<!----------------------------------------------------------------------------->
+  <div id="popupTransfer">
+    <a id="popupPictCloseTransfer"><img src="\images\quit.png" width="8" height="7"></a>
+    <h4>Перевести отмеченые ТТ:</h4>
+    <hr>
+    <p>
+      <select id="branchList" style="width:300px">
+        <option value="100184">Технический департамент (МегаМакс) (13)</option>
+      </select>
+      <select id="resp_person_id" style="width:300px">
+        <option value="0">- Все отв.лица -</option>
+      </select>
+    </p>
+    <button id="buttonTransfer" disabled="true">Перевести</button>
+  </div>
+<!----------------------------------------------------------------------------->  
+  <div id="popupTicket">
+    <table border ="0" contenteditable="true">
+      <tr>
+        <td id="leftPopupTicket" valign="top"></td>
+        <td id="rightPopupTicket" width="710px" valign="bottom">
+          <div id="historyDiv">
+            <table id=hTable></table>
+          </div>
+            <textarea id="comment" style="width:705px; height:52px"></textarea>
+        </td>
+      </tr>
+    </table>  
+  </div>
+<!----------------------------------------------------------------------------->  
+  <div id="popupNewTT">
+    <table border ="0" >
+      <tr><td>Краткое описание</td><td><input type="text" id="shortTTDescr" size="67"></td></tr>
+      <tr><td>Регион</td><td><select id="ppRegion" style="width:200px"></select></td></tr>
+      <tr><td>Клиент</td><td><select id="ppClient" style="width:200px"></select></td></tr>
+      <tr><td>Описание</td><td><textarea id="TTDescr" style="width:500px; height:150px"></textarea></td></tr>
+    </table>
+    <button id="ppBtnCreate">Сохранить</button>
+    <button id="ppBtnCGS" disabled="true" style="width:280px">Сохранить. На себя. В обслуживание</button>
+    <button id="ppBtnAlert">AlertDown</button>
+  </div> 
+  
+<!----------------------------------------------------------------------------->  
+  <div id="popupStatus">
+    <a id="popupPictCloseStatus"><img src="\images\quit.png" width="8" height="7"></a>
+    <table border ="0" >
+      <tr><td>Класс</td><td>
+        <select id="psClass" style="width:240px">
+          <option value="0">- Укажите класс аварии -</option>
+          <option value="25" title="Аварии на собственном станционном оборудовании ядра сети или сети агрегации,в том числе аварии на оборудовании БС, РРЛ и РТР, не попадающие под классификацию п.5, а также аварии на узлах телефонной связи">1. Аварии на опорной сети, сети агрегации</option>
+          <option value="26" title="Аварии на оборудовании узлов доступа собственной сети (РЭС абонентских комплектов, коммутаторы и маршрутизаторы, шлюзы точек коллективного доступа и т.п.), на оборудровании доступа VNO-сети (маршрутизаторы, коммутаторы, WiFi-точки, телефонные шлюзы и пр.), кроме случаев п.5 и п.6 ">2. Аварии на сети доступа клиентов GA</option>
+          <option value="27" title="Аварии на оборудовании узлов доступа собственной сети (РЭС абонентских комплектов, коммутаторы и маршрутизаторы, шлюзы точек коллективного доступа и т.п.), на оборудровании доступа VNO-сети (маршрутизаторы, коммутаторы, WiFi-точки, телефонные шлюзы и пр.), кроме случаев п.5 и п.6">3. Аварии на сети доступа клиентов B2B</option>
+          <option value="28" title="Аварии на узлах доступа собственной сети (РЭС абонентских комплектов, маршрутизаторы, коммутаторы, телефонные шлюзы узлов доступа, абонентские линии домовых распределительных сетей и т.п.), кроме случаев п.5 и п.6">4. Аварии на сети доступа клиентов B2C</option>
+          <option value="29" title="Аварии, связанные с обрывом ВОК (на сети уровня ядра, агрегации и доступа), аварии на АФУ и РЭС БС и РРЛ, расположенных на антенно-мачтовых сооружениях, дымовых трубах и друих сооружениях/зданиях со специальным режимом доступа к оборудованию">5. Аварии на линейно-кабельных сооружениях связи, антенно-фидерных устройствах БС, РРЛ или РТР</option>
+          <option value="30" title="Аварии на электросетях, отключение услуг VNO за неуплату, аварии у взаимодействующих операторов связи, проблемы с оборудованием клиента">6. Аварии вне зоны ответственности технической службы VC </option>
+          <option value="31" title="Прочее">7. Прочее</option>
+        </select></td></tr>
+      <tr><td>Подкласс</td><td><select id="psSubClass" style="width:240px"></select></td></tr>
+      <tr><td>Тип аварии</td><td>
+        <select id="psType" style="width:240px">
+          <option value="0" selected>Авария на собственной сети</option>
+          <option value="1">Авария на VNO-сети</option>
+        </select></td></tr>
+      <tr><td>Решение</td><td>
+        <select id="psResolve" style="width:240px">
+          <option value="1" selected>Решено удаленно</option>
+          <option value="2">Решено с выездом</option>
+        </select></td></tr>
+      <tr><td>Комментарий</td><td><input type="text" id="psComment" size="50" placeholder="."></td></tr>
+    </table>
+    <hr>
+    <button id="ps2Confirm" style="width:105px">Подтвердить</button>
+    <button id="ps2Servis" style="width:110px">Обслуживание</button>
+    <button id="ps2Resolved">Решена</button>
+    <button id="ps2Hold">Отложена</button>
+    <button id="ps2Investigating" style="width:120px">Расследование</button>
+    <button id="ps2Close">Закрыть</button>
+    <p id="psLabel">Нет доступных операций</p>
+  </div> 
+  
+  <div id="tempDiv" hidden="true">
+  </div>
+  <div id="backgroundPopup"></div>
+ 
+</body>
+
+</html>
+
+
