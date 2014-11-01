@@ -24,6 +24,8 @@ var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - и
 var strTimeout = "";
 var filterUser = "";
 var filterName = "";
+var filterStatus = "";
+var filterClient = "";
 
 var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
 var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
@@ -33,6 +35,7 @@ window.onload = function() {          //
   document.getElementById('buttonNew').onclick = onBtnNewTTClick;
   document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
   document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
+  document.getElementById('btResetFilter').onclick = onResetFilterClick;
   document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
   document.getElementById('buttonTransfer').disabled = false;
   document.body.onresize = onBodyResize;
@@ -48,12 +51,14 @@ window.onload = function() {          //
   document.getElementById('comment').onkeypress = commentOnKey;
   document.getElementById('leftPopupTicket').onclick = onLeftTPopupClick; 
   document.getElementById('searchStr').oninput = onSearchInput; 
+  document.getElementById('searchClient').oninput = onSearchClientInput; 
   document.getElementById('searchTT').onkeydown = onTTKeyPress; 
   document.getElementById('psClass').onchange = getSubClass; 
   document.getElementById('branchList').onchange = GetCPList;
   document.getElementById('ps2Confirm').onclick = onPs2Confirm;
   document.getElementById('ps2Servis').onclick = onPs2Servis;
   document.getElementById('ps2Resolved').onclick = onPs2Resolved;
+  document.getElementById('thsStatus').onchange = onThsStatusChange;
 
  
   mtb = document.getElementById('mainTBody');
@@ -129,9 +134,15 @@ function oneMoreSecond(){
 function showIt() {
 var str;  
   $("#mainTBody").empty();
+  document.getElementById('btResetFilter').hidden = true;
+  if(filterUser + filterName + filterClient + filterStatus != "") {
+    document.getElementById('btResetFilter').hidden = false;
+  }
   for(var key in Tickets) { 
     if(filterUser != "" && Tickets[key].otv != filterUser) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
-    if(filterName != "" && Tickets[key].name.indexOf(filterName) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filterName != "" && Tickets[key].name.toUpperCase().indexOf(filterName.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filterClient != "" && Tickets[key].client.toUpperCase().indexOf(filterClient.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filterStatus != "" && Tickets[key].status.indexOf(filterStatus) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
     var ttr = document.createElement('tr');
     ttr.filial = Tickets[key].filial;
     ttr.iidd = Tickets[key].id; 
@@ -218,6 +229,13 @@ function onRespIdChange(){
   showIt();
 }
 
+function onThsStatusChange(){
+  filterStatus = $("#thsStatus")[0][$("#thsStatus")[0].selectedIndex].innerText;
+  if($("#thsStatus")[0].selectedIndex === 0) 
+    filterStatus = "";
+  showIt();
+}
+
 function onHeadChBoxClick(){
   var flag = document.getElementById('headChBox').checked;
   for (var i = 0; i < mtb.childElementCount; i ++) {
@@ -230,14 +248,38 @@ function onMainTBodyClick(e) {
   if(e.target.nodeName === "INPUT") {
     Tickets[e.target.parentNode.parentNode.iidd].checked = e.target.checked;
   }
-  else if(e.target.nodeName === "TD" && e.target.cellIndex != 1){    // Если щелкнули не по галочке, откроем выбранный тикет
+  if(e.target.nodeName === "TD" && e.target.cellIndex != 1 && e.ctrlKey == false){    // Если щелкнули не по галочке, откроем выбранный тикет
     document.getElementById('popupTicket').iidd = e.target.parentNode.iidd; // Сразу передадим в popupTicket id отображаемого тикета
     highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt() 
     showIt();                              
     if(Tickets[e.target.parentNode.iidd].attention === true) 
       Tickets[e.target.parentNode.iidd].attention = false;
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
-  } 
+  }
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
+    var select = document.getElementById('thsStatus');
+    for( var i = 1; i < select.length; i ++){
+      if(select[i].innerText === e.target.innerText){
+        select.selectedIndex = i;
+        select.onchange();
+        break;
+      }
+    }
+  }
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 6 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
+    var select = document.getElementById('resp_id_s');
+    for( var i = 1; i < select.length; i ++){
+      if(select[i].innerText === e.target.innerText){
+        select.selectedIndex = i;
+        onRespIdChange();
+        break;
+      }
+    }
+  }
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 7 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
+    document.getElementById('searchClient').value = e.target.innerText;
+    document.getElementById('searchClient').oninput();
+  }
 }
 
 /*
@@ -454,9 +496,10 @@ function onMainTBodyKeyPress(e){
 function commentOnKey(e){
   if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){
     var str = document.getElementById('comment').value;
+    document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
     var converted_str = encodeURIComponent(str);
     var iidd = document.getElementById('popupTicket').iidd;
-    var param = "id=" + iidd + "&status_id=0&region_id=" + filialToRegionId(Tickets[iidd].filial) + "&comment=" + converted_str;
+    var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
     $.ajax({
       url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
       type: "POST",
@@ -473,27 +516,6 @@ function commentOnKey(e){
 function setTimeout(duration, str){netTimeout = duration;strTimeout = str;}
 function resetTimeout(){netTimeout = -1; strTimeout = "";}
 
-function utf8_decode (aa) {
-  var bb = '', c = 0;
-  for (var i = 0; i < aa.length; i++) {
-    c = aa.charCodeAt(i);
-    if (c > 127) {
-      if (c > 1024) {
-        if (c == 1025) {
-          c = 1016;
-        } 
-        else if (c == 1105) {
-          c = 1032;
-        }
-        bb += String.fromCharCode(c - 848);
-      }
-    } 
-    else {
-      bb += aa.charAt(i);
-    }
-  }
-  return bb;
-} 
 
 function prepareToAnsi(){
 // Инициализируем таблицу перевода
@@ -502,6 +524,7 @@ function prepareToAnsi(){
   }
   transAnsiAjaxSys[0x401] = 0xA8;    // Ё
   transAnsiAjaxSys[0x451] = 0xB8;    // ё
+  transAnsiAjaxSys[0x2116] = 0xB9;    // ё
 
   //var escapeOrig = window.escape;
   // Переопределяем функцию escape()
@@ -532,6 +555,10 @@ function onSearchInput() {
   filterName = this.value;
   showIt();
 }
+function onSearchClientInput() {
+  filterClient = this.value;
+  showIt();
+}
 function onTTKeyPress(e) {       // Ввод номера тикета
   if(e.keyIdentifier === "Enter"){
     if(!isNaN(parseInt(this.value, 10))){
@@ -539,4 +566,17 @@ function onTTKeyPress(e) {       // Ввод номера тикета
       this.value = "";
     }       
   }
+}
+
+function onResetFilterClick() {   // Сброс всех фильтров
+  document.getElementById('searchClient').value = "";
+  filterClient = "";
+  document.getElementById('searchStr').value = "";  
+  filterName = "";
+  document.getElementById('resp_id_s').value = "0";  
+  filterUser = "";
+  document.getElementById('thsStatus').value = "0";  
+  filterStatus = "";
+  
+  showIt();
 }

@@ -5,7 +5,7 @@
 <head>
   <meta  http-equiv="Content-Type" content="text/html; charset=windows-1251">
   
-  <title>BSS Parser</title>
+  <title>BSS Parser .0.</title>
   
   <link rel="stylesheet" type="text/css" href="style.css"/>
   
@@ -30,7 +30,8 @@
       <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
       <input type="image" id="cancelSearch" align="absmiddle" src="/images/cancel.png">
     </td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.0.0</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td><button id="btResetFilter" style="width:200px" hidden="true">Сбросить фильтр</button></td>
   </table>
   
 
@@ -45,9 +46,11 @@
           <select id="thsStatus">
           <option value="0">Статус</option>
           <option value="1">Оформление</option>
-          <option value="2">Обслуживание</option>
-          <option value="3">Решено</option>
-          <option value="4">Закрыто</option>
+          <option value="2">Service / Обслуживание</option>
+          <option value="3">Resolved / Решена</option>
+          <option value="4">Investigating / Расследование</option>
+          <option value="4">Hold / Отложена</option>
+          <option value="4">Closed / Закрыта</option>
           </select>
         </td>
         <td id="thDate" rowspan="2">Открытие</td>
@@ -58,7 +61,7 @@
           <option value="0">Все отв.лица</option>
           </select>
         </td>
-        <td id="thClient" rowspan="2">Клиент</td>
+        <td id="thClient" rowspan="2"><input type="text" id="searchClient" placeholder="Клиент"></td>
         <td id="thName" rowspan="2"><input type="text" id="searchStr" placeholder="Краткое описание"></td>
         <td id="thClass" rowspan="2">Класс</td>
       </tr>
