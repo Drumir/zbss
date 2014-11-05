@@ -232,6 +232,7 @@ function loadPopupNewTT() {
     $("#TTDescr")[0].value = "";
     $("#ppClient")[0].selectedIndex = 0;
     $("#ppRegion")[0].selectedIndex = 0;
+    $("#wikiLink")[0].text = "";     
 
     var reg =  $("#ppRegion");
     if(reg != undefined && reg[0].length === 0) {

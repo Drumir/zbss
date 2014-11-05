@@ -191,9 +191,10 @@ function cbWiki(data, textStatus) {
   document.getElementById('ppRegion')[0].text = "- Все регионы -";
   document.getElementById('ppRegion').disabled = false;
   document.getElementById('ppRegion').selectedIndex = 0;
+//  document.getElementById('wikiLink').text += " - Искать в Wiki";     
   var start = data.indexOf("Субъект федерации");
   if(start === -1){return;}
-  data = data.substring(start);
+  data = data.substring(start, start + 1000);
   start = data.indexOf('title="');
   if(start === -1){return;}
   data = data.substring(start);
@@ -201,7 +202,7 @@ function cbWiki(data, textStatus) {
   if(start === -1 || start > 100){return;}
   var region = data.substring(7, start);
   for(var i = 1; i < tt_region.length; i ++){
-    if(tt_region[i].text === region){
+    if(tt_region[i].text == region || ((tt_region[i].text.indexOf(region) != -1) && (tt_region[i].text.indexOf("Республика") != -1))){
       document.getElementById('ppRegion').selectedIndex = i;
       break;
     } 

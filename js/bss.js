@@ -59,6 +59,7 @@ window.onload = function() {          //
   document.getElementById('ps2Servis').onclick = onPs2Servis;
   document.getElementById('ps2Resolved').onclick = onPs2Resolved;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
+  document.getElementById('wikiLink').onclick = openWikiLink;
 
  
   mtb = document.getElementById('mainTBody');
@@ -471,7 +472,8 @@ function onBtnAlertClick (e) {
   else {
     document.getElementById('ppRegion')[0].text = "Определение региона";
     document.getElementById('ppRegion').disabled = true;
-    $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1), title:"Служебная:Поиск", go:"Перейти" }, cbWiki, "html");
+    document.getElementById('wikiLink').text = str.substring(adr1 + 7, adr2-1);     
+    $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1)}, cbWiki, "html");
   }
 }
 
@@ -579,4 +581,9 @@ function onResetFilterClick() {   // Сброс всех фильтров
   filterStatus = "";
   
   showIt();
+}
+
+function openWikiLink() {
+  window.open("https://ru.wikipedia.org/w/index.php?search=" + document.getElementById('wikiLink').text, null, null);  
+// $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1), title:"Служебная:Поиск", go:"Перейти" }, cbWiki, "html");
 }
