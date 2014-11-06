@@ -193,7 +193,7 @@ function loadPopupStatus() {
       actionCount++;
     }
     document.getElementById('ps2Close').hidden = true;
-    if(Tickets[tid].permissions.indexOf("!!!Закрыть!!!") != -1){
+    if(Tickets[tid].permissions.indexOf("Closed / Закрыта") != -1){
       document.getElementById('ps2Close').hidden = false;
       actionCount++;
     }
