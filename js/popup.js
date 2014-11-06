@@ -203,6 +203,12 @@ function loadPopupStatus() {
       document.getElementById('psLabel').hidden = false;
     }
     
+    document.getElementById('psClass').selectedIndex = 0;
+//    document.getElementById('psSubClass').selectedIndex = 0;
+    document.getElementById('psType').selectedIndex = 0;
+    document.getElementById('psResolve').selectedIndex = 0;
+    document.getElementById('psComment').value = "";
+    
     $("#backgroundPopup").css({
       "opacity": "0.7"
     });

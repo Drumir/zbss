@@ -334,7 +334,7 @@ function onPs2Resolved() {        // Кнопка "Решена"
 //    else { par.comment = encodeURIComponent(str); }
     else { par.comment = str; }
 
-    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "json");
+    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
     loadTickets();
     $("#popupStatus").fadeOut("fast");
     popupStatus--;
@@ -361,7 +361,7 @@ function onPs2Servis() {        // Кнопка "Обслуживание"
 //    else { par.comment = encodeURIComponent(str); }
     else { par.comment = str; }
 
-    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "json");
+    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
     loadTickets();
     $("#popupStatus").fadeOut("fast");
     popupStatus--;
@@ -435,16 +435,17 @@ function onBtnSaveTTClick (e) {      // Попап новый тикет -> Сохранить
     dataType : "html", 
     contentType : "application/x-www-form-urlencoded; charset=windows-1251", 
     error: function() { alert("Произошла ошибка при соединении с сервером!") }, 
-    success: function(data, textStatus) {
-      loadTickets();
-      setTimeout(callbackGetTicket(data, textStatus), 2000);
-      refreshTime = 180;
-      
-    } 
+    success:function(data, textStatus) {
+              loadTickets();
+              callbackGetTicket(data, textStatus);
+              refreshTime = 180;
+            } 
   })
   disablePopup();
 }
 
+
+    
 function onBtnAlertClick (e) {
   var str = $("#TTDescr")[0].value;
   if(str.length === 0){
