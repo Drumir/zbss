@@ -27,6 +27,8 @@ var filterName = "";
 var filterStatus = "";
 var filterClient = "";
 
+var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю  
+
 var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
 var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
 
@@ -200,6 +202,10 @@ function renewTickets(data) {
   }
 //  addTestTT();
   showIt();
+  if(delayedData != "") {                   // Костыль к onBtnSaveTTClick чтобы при отображении свежесозданного тикета в Tickets{} УЖЕ была запись о нём
+    callbackGetTicket(delayedData, "sucess");
+    delayedData = "";
+  }
 }
 
 /******************************************************************************/
@@ -436,8 +442,8 @@ function onBtnSaveTTClick (e) {      // Попап новый тикет -> Сохранить
     contentType : "application/x-www-form-urlencoded; charset=windows-1251", 
     error: function() { alert("Произошла ошибка при соединении с сервером!") }, 
     success:function(data, textStatus) {
+              delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
               loadTickets();
-              callbackGetTicket(data, textStatus);
               refreshTime = 180;
             } 
   })
