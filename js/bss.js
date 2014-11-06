@@ -58,8 +58,11 @@ window.onload = function() {          //
   document.getElementById('psClass').onchange = getSubClass; 
   document.getElementById('branchList').onchange = GetCPList;
   document.getElementById('ps2Confirm').onclick = onPs2Confirm;
-  document.getElementById('ps2Servis').onclick = onPs2Servis;
-  document.getElementById('ps2Resolved').onclick = onPs2Resolved;
+  document.getElementById('ps2Servis').onclick        = onPsActionClick;
+  document.getElementById('ps2Resolved').onclick      = onPsActionClick;
+  document.getElementById('ps2Hold').onclick          = onPsActionClick;
+  document.getElementById('ps2Investigating').onclick = onPsActionClick;
+  document.getElementById('ps2Close').onclick         = onPsActionClick;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
@@ -321,60 +324,58 @@ function onLeftTPopupClick(e) {
   } 
 }
 
-function onPs2Resolved() {        // Кнопка "Решена"
+function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в попап Status (Обслуживание, решена, закрыта и т.д)
   var tid = document.getElementById('popupTicket').iidd;
-  if(Tickets[tid].permissions.indexOf("Resolved / Решена") != -1){   // Можно переводить в решено. В принципе эта проверка здесь уже не нужна. Раз кнопка доступна, значит разрешение дано
-    var par = {};
-    par.branch_id = "100113";      // Подразделение автора по умолчанию
-    par.resp_person_id = "931";    // id пользователя по умолчанию
-    par.trouble_type_closed = document.getElementById('psClass').value;
-    par.trouble_subtype_closed = document.getElementById('psSubClass').value;
-    par.trouble_type_name = document.getElementById('psType').value;                   
-    par.trouble_type_resolution = document.getElementById('psResolve').value;
-    par.trouble_root_tt = "0";
-    par.id = tid;
-    par.status_id = "5";     // Решена
-    par.region_id = filialToRegionId(Tickets[tid].filial);
-    var str = document.getElementById('psComment').value;
-    if(str.length === 0){ par.comment = "."; }
-//    else { par.comment = encodeURIComponent(str); }
-    else { par.comment = str; }
-
-    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
-    loadTickets();
-    $("#popupStatus").fadeOut("fast");
-    popupStatus--;
-    return;
+  var par = {};
+  par.branch_id = "100113";      // Подразделение автора по умолчанию
+  par.resp_person_id = "931";    // id пользователя по умолчанию
+  par.trouble_root_tt = "0"; 
+  par.trouble_type_closed = "0";
+  par.trouble_subtype_closed = "0";
+  par.trouble_type_name = "0";
+  par.trouble_type_resolution = "1";
+  par.id = tid;
+  par.region_id = filialToRegionId(Tickets[tid].filial);
+  var str = document.getElementById('psComment').value;
+  if(str.length === 0){ par.comment = "."; }
+  else { par.comment = str; }  
+  switch(e.target.id){
+    case "ps2Servis": {
+      par.status_id = "2";     // В обслуживании
+      break;
+    }
+    case "ps2Resolved": {
+      par.trouble_type_closed = document.getElementById('psClass').value;
+      par.trouble_subtype_closed = document.getElementById('psSubClass').value;
+      par.trouble_type_name = document.getElementById('psType').value;                   
+      par.trouble_type_resolution = document.getElementById('psResolve').value;
+      par.status_id = "5";     // Решена
+      break;
+    }
+    case "ps2Hold": {
+      par.status_id = "4";     // Отложена
+      break;
+    }
+    case "ps2Investigating": {
+      par.status_id = "3";     // Расследование
+      break;
+    }
+    case "ps2Close": {
+      par.status_id = "7";     // Закрыта
+      break;
+    }
   }
 
-}
-function onPs2Servis() {        // Кнопка "Обслуживание"
-  var tid = document.getElementById('popupTicket').iidd;
-  if(Tickets[tid].permissions.indexOf("Service / Обслуживание") != -1){   // Можно брать в обслуживание
-    var par = {};
-    par.branch_id = "100113";      // Подразделение автора по умолчанию
-    par.resp_person_id = "931";    // id пользователя по умолчанию
-    par.trouble_type_closed = "0";
-    par.trouble_subtype_closed = "0";
-    par.trouble_type_name = "0";
-    par.trouble_type_resolution = "1";
-    par.trouble_root_tt = "0";
-    par.id = tid;
-    par.status_id = "2";     // В обслуживании
-    par.region_id = filialToRegionId(Tickets[tid].filial);
-    var str = document.getElementById('psComment').value;
-    if(str.length === 0){ par.comment = "."; }
-//    else { par.comment = encodeURIComponent(str); }
-    else { par.comment = str; }
-
-    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
-    loadTickets();
-    $("#popupStatus").fadeOut("fast");
-    popupStatus--;
-    return;
-  }
+  $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
+  loadTickets();
+  $("#popupStatus").fadeOut("fast");
+  popupStatus--;
+  return;
 
 }
+
+
+
 function onPs2Confirm() {        // Кнопка "подтвердить"
   var tid = document.getElementById('popupTicket').iidd;
   if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){

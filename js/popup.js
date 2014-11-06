@@ -199,8 +199,8 @@ function loadPopupStatus() {
     }
     
     document.getElementById('psLabel').hidden = true;
-    if(actionCount == 0){
-      document.getElementById('psLabel').hidden = false;
+    if(actionCount == 0){                                   // Если нет ни одной доступной операции
+      document.getElementById('psLabel').hidden = false;    // Отобразим сообветствующую надпись
     }
     
     document.getElementById('psClass').selectedIndex = 0;
