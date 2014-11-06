@@ -40,10 +40,10 @@ window.onload = function() {          //
   document.getElementById('buttonTransfer').disabled = false;
   document.body.onresize = onBodyResize;
   document.getElementById('headChBox').onchange = onHeadChBoxClick; 
-  document.getElementById('buttonTwo').onclick = onButtonTwoClick;
-  document.getElementById('buttonTwo').disabled = false;
-  document.getElementById('buttonThree').onclick = onButtonThreeClick;
-  document.getElementById('buttonThree').disabled = false; 
+  document.getElementById('buttonMove').onclick = onBtnMoveClick;
+  document.getElementById('buttonMove').disabled = false;
+  document.getElementById('buttonRenew').onclick = onBtnRenewClick;
+  document.getElementById('buttonRenew').disabled = false; 
   document.getElementById('mainTBody').onclick = onMainTBodyClick;
   document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
   document.getElementById('statusName').onclick = onStatusNameClick;
@@ -60,6 +60,7 @@ window.onload = function() {          //
   document.getElementById('ps2Resolved').onclick = onPs2Resolved;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
   document.getElementById('wikiLink').onclick = openWikiLink;
+  document.getElementById('plLogin').onclick = onLoginClick;
 
  
   mtb = document.getElementById('mainTBody');
@@ -107,7 +108,7 @@ window.onload = function() {          //
   setInterval(oneMoreSecond, 1000); 
   onBodyResize();  
 
-  $.get("https://oss.unitline.ru:995/adm/", null, Authorization, "html");
+  $.get("https://oss.unitline.ru:995/adm/", null, callbackAuthorization, "html");
 
 };
 
@@ -397,14 +398,19 @@ function onStatusNameDblClick() {   // По клику на имени залогиненого пользовате
   $("#resp_id_s")[0].selectedIndex = 0;
 }
 
-function onButtonTwoClick(e) {                                                                             
+function onBtnMoveClick(e) {                                                                             
   loadPopupTransfer();
   centerPopupTransfer();
 }
 
-function onButtonThreeClick(e) {
+function onBtnRenewClick(e) {
+  if(e.ctrlKey == true){
+    $.get("https://oss.unitline.ru:995/app/ruser/logoff.asp?refer=/", null, null, "html");
+    return;
+  }
   loadTickets();
   refreshTime = 180;
+ 
 }
 function onBtnNewTTClick (e) {
   loadPopupNewTT();
@@ -586,4 +592,20 @@ function onResetFilterClick() {   // Сброс всех фильтров
 function openWikiLink() {
   window.open("https://ru.wikipedia.org/w/index.php?search=" + document.getElementById('wikiLink').text, null, null);  
 // $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1), title:"Служебная:Поиск", go:"Перейти" }, cbWiki, "html");
+}
+
+function onLoginClick() {
+  setStatus("Авторизация  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Autorization' TITLE='Autorization'>");
+  var par = {};
+  par.refer = "";
+  par.hex = hex_md5(document.getElementById('sPass').value);
+  par.tries = "-1";
+  par.user = document.getElementById('sLogin').value;
+  par.password = document.getElementById('sPass').value;
+  setTimeout(6, "Ошибка авторизации");
+  $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
+  document.getElementById('sLogin').value = "";           // Сотрем имя пользователя
+  document.getElementById('sPass').value = "";            // Сотрем пароль 
+  disablePopup();
+
 }

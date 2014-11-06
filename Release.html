@@ -13,6 +13,7 @@
   <script type="text/javascript" src="\js\bss.js"></script>
   <script type="text/javascript" src="\js\popup.js"></script>
   <script type="text/javascript" src="\js\ajax.js"></script>
+  <script type="text/javascript" src="\js\md5.js"></script>
 
   
 </head>                    
@@ -22,8 +23,8 @@
   <table id="menuTable">
     <td id="statusName" STYLE='background-color:#FFA500'></td>
     <td>
-    <button id="buttonTwo"   disabled="true">Перевести</button>
-    <button id="buttonThree" disabled="true">Обновить</button>
+    <button id="buttonMove"   disabled="true">Перевести</button>
+    <button id="buttonRenew" disabled="true">Обновить</button>
     <button id="buttonNew" >Новый ТТ</button>
     </td>
     <td valign = "baseline">
@@ -152,6 +153,17 @@
     <button id="ps2Close">Закрыть</button>
     <p id="psLabel">Нет доступных операций</p>
   </div> 
+  
+  <div id="popupLogin" align="center">
+    <div id="divLoginInput" style="background-color:#ED1C24;width:250px">
+      <br>
+      <div><input id="sLogin" type="Text" maxlength="15" placeholder="Имя пользователя"></div>
+      <div><input id="sPass" type="Password" maxlength="15" placeholder="Пароль"></div>
+      <br>&nbsp;
+      <button id="plLogin" style="width:110px">Войти</button>
+      <br>&nbsp;
+    </div>
+  </div>
   
   <div id="tempDiv" hidden="true">
   </div>

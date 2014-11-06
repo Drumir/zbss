@@ -4,10 +4,10 @@ function Authorization() {
   setStatus("Авторизация  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Autorization' TITLE='Autorization'>");
   var par = {};
   par.refer = "";
-  par.hex = "3ebf20264ddfea73ef2717f93dfed2c1";
+  par.hex = hex_md5("49zPe2yN");
   par.tries = "-1";
   par.user = "ESorokin";
-  par.password = "49zPe2yN";
+//  par.password = "49zPe2yN";
   setTimeout(6, "Ошибка авторизации");
   $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
 }
@@ -19,11 +19,20 @@ function callbackAuthorization(data, textStatus){
     div1.hidden = true;
     div1.insertAdjacentHTML( 'beforeend', data );
     document.body.appendChild(div1);
-    userName = document.getElementById('divUserName').innerText; 
+    if(document.getElementById('divUserName') != undefined){  // Авторизация уже свершилась
+      userName = document.getElementById('divUserName').innerText; 
+      document.getElementById('statusName').innerText = userName; 
+      loadEnvironment(); 
+    }
+    if(document.getElementById('divLoginVirgin') != undefined){  // Получили запрос авторизации
+      loadPopupLogin();
+      centerPopupLogin();
+    }
+    if(document.getElementById('divLogin') != undefined){  // Авторизация отклонена   
+      setStatus("Авторизация  отклонена");
+    }
     document.body.removeChild(div1)
     div1.innerHTML = "";
-    document.getElementById('statusName').innerText = userName; 
-    loadEnvironment(); 
   }
 }
 

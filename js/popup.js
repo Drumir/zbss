@@ -84,8 +84,6 @@ function filialToRegionId(filial){
   return region;
 }
 
-//https://oss.unitline.ru:995/inc/jquery.asp?type=8&id=1&organization_id=0&resp_id=1347&tt_is_group=2&tt_priority_id=0&tt_gate=2&tt_region=0&tt_closed_name=128&tt_type_closed=0&tt_subtype_closed=0&tt_status_id=1000&DateFrom=01.01.2013&DateTo=31.08.2014&page=1&rows=100&hide=0
-
 function GetCPList() {
 	var branchID = $("#branchList").val();
 	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) { 
@@ -124,6 +122,7 @@ function disablePopup() {
     $("#popupStatus").fadeOut("fast");
     $("#popupTicket").fadeOut("fast");
     $("#popupNewTT").fadeOut("fast");
+    $("#popupLogin").fadeOut("fast");
     popupStatus = 0;
   }
 }
@@ -295,5 +294,31 @@ function centerPopupTicket() {
   
   $("#historyDiv").css({
     "max-height": popupHeight-70,
+  });
+}
+
+function loadPopupLogin() {
+  if (popupStatus == 0) {
+    $("#backgroundPopup").css({
+      "opacity": "0.7"
+    });
+    $("#backgroundPopup").fadeIn("fast");
+    $("#popupLogin").fadeIn("fast"); 
+    popupStatus++;
+  }
+}
+
+function centerPopupLogin() {
+  var windowWidth = document.documentElement.clientWidth;
+  var windowHeight = document.documentElement.clientHeight;
+  var popupHeight = $("#popupLogin").height();
+  var popupWidth = $("#popupLogin").width();
+  
+  $("#popupLogin").css({
+    "position": "absolute",
+    "height": popupHeight,
+    "top": windowHeight / 2 - popupHeight / 2,
+    "left": windowWidth / 2 - popupWidth / 2, 
+    "max-height": windowHeight-20
   });
 }
