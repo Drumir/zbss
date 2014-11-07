@@ -11,7 +11,7 @@ function onButtonTransferClick(e) {
   for (var key in Tickets) {
     if(Tickets[key].checked === true){
       var par = {};
-      par.branch_id = $("#branchList").val();           // ѕодразделение нового отв. лица
+      par.branch_id = $("#branchLiist").val();           // ѕодразделение нового отв. лица
       par.resp_person_id = $("#resp_person_id").val();  // id нового отв. лица
       par.trouble_type_closed = "0";
       par.trouble_subtype_closed = "0";
@@ -85,7 +85,7 @@ function filialToRegionId(filial){
 }
 
 function GetCPList() {
-	var branchID = $("#branchList").val();
+	var branchID = $("#branchLiist").val();
 	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) { 
 			$("#resp_person_id").empty();
 			if (data.list) { 

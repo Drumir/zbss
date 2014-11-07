@@ -56,7 +56,7 @@ window.onload = function() {          //
   document.getElementById('searchClient').oninput = onSearchClientInput; 
   document.getElementById('searchTT').onkeydown = onTTKeyPress; 
   document.getElementById('psClass').onchange = getSubClass; 
-  document.getElementById('branchList').onchange = GetCPList;
+  document.getElementById('branchLiist').onchange = GetCPList;
   document.getElementById('ps2Confirm').onclick = onPs2Confirm;
   document.getElementById('ps2Servis').onclick        = onPsActionClick;
   document.getElementById('ps2Resolved').onclick      = onPsActionClick;
@@ -66,6 +66,10 @@ window.onload = function() {          //
   document.getElementById('thsStatus').onchange = onThsStatusChange;
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
+  
+  document.getElementById('selectClient').onclick = qSelectClientClick;
+//  $("qSelectClient").click(qSelectClientClick);
+  
 
   mtb = document.getElementById('mainTBody');
  
@@ -467,9 +471,9 @@ function onBtnAlertClick (e) {
   if(adr1 === -1 || adr2 === -1 || adr2 === -1) return;
   $("#shortTTDescr")[0].value = str.substring(adr1 + 7, adr2-1) + ", " + str.substring(adr2 + 7, adr3-1);
   for(var i = 0; i < organization_id.length && organization_id[i].text != "*M.VIDEO*"; i ++){}  // Найдем в списке организаций мвидео
-    if(i != organization_id.length) {
-      document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
-    }
+  if(i != organization_id.length) {
+    document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
+  }
   var adr4 = str.indexOf("**************************");
   if(adr4 != -1) {str = str.substring(0, adr4-1);}
   $("#TTDescr")[0].value = str; 
@@ -489,7 +493,14 @@ function onBtnAlertClick (e) {
   }
 }
 
-
+function qSelectClientClick(e){
+  if(e.target.id === "qSelectClient"){
+    for(var i = 0; i < organization_id.length && organization_id[i].text != e.target.text; i ++);  // Найдем в списке организаций щелкнутоо клиента
+    if(i != organization_id.length) {
+      document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
+    }
+  }
+}
 function onBodyResize() {
    document.body.style.maxHeight = (window.innerHeight - 31) + "px";
 }

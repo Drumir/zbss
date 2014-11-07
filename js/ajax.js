@@ -77,13 +77,11 @@ function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк использ
                                       // Загрузим списки
     if(document.getElementById('branchlist') != undefined){
       branch_id = document.getElementById('branchlist').children;          // Ответственные лица
-//      document.getElementById('branchList').children = branch_id; // Загрузим список срузу в попап трансфер - список подразделений
-      $("#branchList").empty();                             // Загрузим список срузу в попап трансфер - список подразделений
+//      document.getElementById('branchLiist').children = branch_id; // Загрузим список срузу в попап трансфер - список подразделений
+      $("#branchLiist").empty();                             // Загрузим список срузу в попап трансфер - список подразделений
       for(var i = 0; i < branch_id.length; i ++) {
-        if(branch_id[i].value === "100184") {
-          branch_id[i].selected = true;
-        }
-        $("#branchList").append(branch_id[i])
+//        if(branch_id[i].value === "100184") {branch_id[i].selected = true;}
+        $("#branchLiist").append("<option value='" + branch_id[i].value + "'>" + branch_id[i].text + "</option>")
       }
     }   
     else {

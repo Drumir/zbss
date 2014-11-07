@@ -80,7 +80,7 @@
     <h4>Перевести отмеченые ТТ:</h4>
     <hr>
     <p>
-      <select id="branchList" style="width:300px">
+      <select id="branchLiist" style="width:300px">
         <option value="100184">Технический департамент (МегаМакс) (13)</option>
       </select>
       <select id="resp_person_id" style="width:300px">
@@ -107,12 +107,23 @@
   <div id="popupNewTT">
     <table border ="0" >
       <tr><td>Краткое описание</td><td><input type="text" id="shortTTDescr" size="67"></td></tr>
-      <tr><td>Регион</td><td><select id="ppRegion" style="width:200px"></select>&nbsp;&nbsp;<a id="wikiLink" style="color:#3333DD"></a></td></tr>
-      <tr><td>Клиент</td><td><select id="ppClient" style="width:200px"></select></td></tr>
+      <tr>
+        <td>Регион</td>
+        <td>
+          <select id="ppRegion" style="width:200px"></select>&nbsp;&nbsp;<a id="wikiLink" style="color:#3333DD"></a>
+        </td>
+      </tr>
+      <tr>
+        <td>Клиент</td>
+        <td id="selectClient">
+          <select id="ppClient" style="width:200px"></select>&nbsp;&nbsp;
+          <a id="qSelectClient" style="color:#777777">*M.VIDEO*</a>&nbsp;&nbsp;        
+          <a id="qSelectClient" style="color:#777777">*X5*</a>&nbsp;&nbsp;        
+        </td>
+      </tr>
       <tr><td>Описание</td><td><textarea id="TTDescr" style="width:500px; height:150px"></textarea></td></tr>
     </table>
     <button id="ppBtnCreate">Сохранить</button>
-    <button id="ppBtnCGS" disabled="true" style="width:280px">Сохранить. На себя. В обслуживание</button>
     <button id="ppBtnAlert">AlertDown</button>
   </div> 
   
