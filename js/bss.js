@@ -67,10 +67,7 @@ window.onload = function() {          //
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
 
- 
   mtb = document.getElementById('mainTBody');
-  prepareToAnsi();
-
  
   $("#backgroundPopup").click(function() {
     disablePopup();
@@ -429,25 +426,26 @@ function onBtnSaveTTClick (e) {      // Попап новый тикет -> Сохранить
   if($("#TTDescr")[0].value.length < 10) return;
   if($("#ppClient")[0].selectedIndex === 0) return;
   if($("#ppRegion")[0].selectedIndex === 0) return;
-  var id = document.getElementById('ppRegion'); 
-  var rid = id[id.selectedIndex].value;
-  id = document.getElementById('ppClient'); 
-  var cid = id[id.selectedIndex].value;
-  var param = "id=0&ip=&name=" + encodeURIComponent($("#shortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
-  param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#TTDescr")[0].value);
-  $.ajax({ 
-    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp", 
-    type: "POST", 
-    data: param, 
-    dataType : "html", 
-    contentType : "application/x-www-form-urlencoded; charset=windows-1251", 
-    error: function() { alert("Произошла ошибка при соединении с сервером!") }, 
-    success:function(data, textStatus) {
-              delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
-              loadTickets();
-              refreshTime = 180;
-            } 
-  })
+
+  var par = {};
+  par.id = "0";
+  par.ip = "";
+  par.name = $("#shortTTDescr")[0].value;
+  par.trouble_ticket_type_id = "33";
+  par.priority = "1";
+  var t = document.getElementById('ppRegion'); 
+  par.region_id = t[t.selectedIndex].value;
+  t = document.getElementById('ppClient'); 
+  par.organization_id = t[t.selectedIndex].value;
+  par.descr = $("#TTDescr")[0].value;
+  $.post( "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", 
+          par, 
+          function () {
+            delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
+            loadTickets();
+            refreshTime = 180;
+          }, 
+          "html");
   disablePopup();
 }
 
@@ -510,53 +508,24 @@ function onMainTBodyKeyPress(e){
 }
 
 function commentOnKey(e){
-  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){
-    var str = document.getElementById('comment').value;
+  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){   // Нужна проверка на максимальную длинну
+    var par = {};                                          
+    par.id = document.getElementById('popupTicket').iidd;
+    par.status_id = "0";
+    par.comment = document.getElementById('comment').value;
     document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
-    var converted_str = encodeURIComponent(str);
-    var iidd = document.getElementById('popupTicket').iidd;
-    var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
-    $.ajax({
-      url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
-      type: "POST",
-      data: param,
-      dataType : "html",   
-      contentType : "application/x-www-form-urlencoded; charset=windows-1251",
-      error: function() { alert("Произошла ошибка при соединении с сервером!") },
-      success: function(data, textStatus) { }
-    })
-  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", 
+          par, 
+          function() {
+            $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: document.getElementById('popupTicket').iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+          }, 
+          "html");
+    
   }
 }
 
 function setTimeout(duration, str){netTimeout = duration;strTimeout = str;}
 function resetTimeout(){netTimeout = -1; strTimeout = "";}
-
-
-function prepareToAnsi(){
-// Инициализируем таблицу перевода
-  for (var i = 0x410; i <= 0x44F; i++) {
-    transAnsiAjaxSys[i] = i - 0x350; // А-Яа-я
-  }
-  transAnsiAjaxSys[0x401] = 0xA8;    // Ё
-  transAnsiAjaxSys[0x451] = 0xB8;    // ё
-  transAnsiAjaxSys[0x2116] = 0xB9;    // ё
-
-  //var escapeOrig = window.escape;
-  // Переопределяем функцию escape()
-  window.encodeURIComponent = function(str) {
-    var ret = [];
-    // Составляем массив кодов символов, попутно переводим кириллицу
-    for (var i = 0; i < str.length; i++){
-      var n = str.charCodeAt(i);
-      if (typeof transAnsiAjaxSys[n] != 'undefined')
-        n = transAnsiAjaxSys[n];
-      if (n <= 0xFF)
-        ret.push(n);
-    }
-    return escape(String.fromCharCode.apply(null, ret));
-  }
-}
 
 function fullName2FIO(fullName) {
   var arrFio = [];

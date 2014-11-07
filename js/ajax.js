@@ -1,17 +1,5 @@
 var printArea;
 
-function Authorization() {
-  setStatus("Авторизация  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Autorization' TITLE='Autorization'>");
-  var par = {};
-  par.refer = "";
-  par.hex = hex_md5("49zPe2yN");
-  par.tries = "-1";
-  par.user = "ESorokin";
-//  par.password = "49zPe2yN";
-  setTimeout(6, "Ошибка авторизации");
-  $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
-}
-
 function callbackAuthorization(data, textStatus){
   resetTimeout();      // Остановим отсчет
   if(data != null) {  // null ли?! 
