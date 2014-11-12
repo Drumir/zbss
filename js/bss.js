@@ -65,13 +65,10 @@ window.onload = function() {          //
   document.getElementById('thsStatus').onchange = onThsStatusChange;
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
-  
   document.getElementById('selectClient').onclick = qSelectClientClick;
-//  document.onerror = onWindowError;
-//  $("qSelectClient").click(qSelectClientClick);
-  
 
   mtb = document.getElementById('mainTBody');
+  
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования 
    
   $("#backgroundPopup").click(function() {
@@ -114,15 +111,18 @@ window.onload = function() {          //
   
   setInterval(oneMoreSecond, 1000); 
   onBodyResize();  
+  
+//  $.get("https://oss.unitline.ru:995/adm/", null, callbackAuthorization, "html");
+  $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
-  $.get("https://oss.unitline.ru:995/adm/", null, callbackAuthorization, "html");
-
-};
-/*
-function onWindowError(e){
-document.iiiddd = "223";
 }
-*/
+
+function onLoadError(jqXHR, textStatus){
+  if(jqXHR.status == 404 && textStatus == "error") {
+    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrome");
+  }
+}
+
 /******************************************************************************/
 function oneMoreSecond(){
   if(refreshTime > 0){
@@ -392,7 +392,11 @@ function onPs2Confirm() {        // Кнопка "подтвердить"
 
 }
 
-function onStatusNameClick() {   // По клику на имени залогиненого пользователя
+function onStatusNameClick(e) {   // По клику на имени залогиненого пользователя
+  if(e.ctrlKey == true){       // Если кликнули с Ctrl - разлогинимся.
+    $.get("https://oss.unitline.ru:995/app/ruser/logoff.asp?refer=/", null, callbackAuthorization, "html");
+    return;
+  }
   if(userId != -1){
     filterUser = userName;
     showIt();
@@ -411,13 +415,8 @@ function onBtnMoveClick(e) {
 }
 
 function onBtnRenewClick(e) {
-  if(e.ctrlKey == true){
-    $.get("https://oss.unitline.ru:995/app/ruser/logoff.asp?refer=/", null, null, "html");
-    return;
-  }
   loadTickets();
   refreshTime = 180;
- 
 }
 function onBtnNewTTClick (e) {
   loadPopupNewTT();
@@ -447,7 +446,7 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
               loadTickets();
               refreshTime = 180;
             } 
-  })
+  });
   disablePopup();
 }
 /*
