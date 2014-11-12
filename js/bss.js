@@ -49,7 +49,6 @@ window.onload = function() {          //
   document.getElementById('mainTBody').onclick = onMainTBodyClick;
   document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
   document.getElementById('statusName').onclick = onStatusNameClick;
-  document.getElementById('statusName').ondblclick = onStatusNameDblClick;
   document.getElementById('comment').onkeypress = commentOnKey;
   document.getElementById('leftPopupTicket').onclick = onLeftTPopupClick; 
   document.getElementById('searchStr').oninput = onSearchInput; 
@@ -68,6 +67,7 @@ window.onload = function() {          //
   document.getElementById('plLogin').onclick = onLoginClick;
   
   document.getElementById('selectClient').onclick = qSelectClientClick;
+//  document.onerror = onWindowError;
 //  $("qSelectClient").click(qSelectClientClick);
   
 
@@ -118,7 +118,11 @@ window.onload = function() {          //
   $.get("https://oss.unitline.ru:995/adm/", null, callbackAuthorization, "html");
 
 };
-
+/*
+function onWindowError(e){
+document.iiiddd = "223";
+}
+*/
 /******************************************************************************/
 function oneMoreSecond(){
   if(refreshTime > 0){
@@ -401,12 +405,6 @@ function onStatusNameClick() {   // По клику на имени залогиненого пользователя
   }
 }
 
-function onStatusNameDblClick() {   // По клику на имени залогиненого пользователя
-  filterUser = "";
-  showIt();
-  $("#resp_id_s")[0].selectedIndex = 0;
-}
-
 function onBtnMoveClick(e) {                                                                             
   loadPopupTransfer();
   centerPopupTransfer();
@@ -450,7 +448,7 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
               refreshTime = 180;
             } 
   })
-
+  disablePopup();
 }
 /*
 function onBtnSaveTTClick (e) {     // $.post версия  // Попап новый тикет -> Сохранить
