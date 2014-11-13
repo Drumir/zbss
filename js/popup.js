@@ -23,9 +23,9 @@ function onButtonTransferClick(e) {
       par.id = Tickets[key].id;   //52458 id тикета
       par.region_id = filialToRegionId(Tickets[key].filial);
       transQueue.push(par);
-      Tickets[key].checked = false;    
+      Tickets[key].checked = false;
     }
-  } 
+  }
   checkAndTransfer();
 }
 
@@ -40,14 +40,14 @@ function checkAndTransfer() {
 }
 
 function cbCheckAndTransfer(data, textStatus){
-  if(data != null) {  // null ли?! 
+  if(data != null) {  // null ли?!
     document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
     var buttons = document.getElementsByClassName('inpButton');  // Получим список доступных кнопок
     var permissions = "";
     for(var i = 0; i < buttons.length; i ++) {           // Перепишем все их названия в permissions Через ***
-      permissions += buttons[i].value + "***";  
+      permissions += buttons[i].value + "***";
     }
-    document.getElementById('tempDiv').innerHTML = ""; 
+    document.getElementById('tempDiv').innerHTML = "";
 
     if(1){ // Не выполнять проверку на правомерность перевода
 //    if(permissions.indexOf("Ответственное лицо") != -1){ // Если среди кнопок есть "Ответственное лицо", можно переводить
@@ -80,15 +80,15 @@ function filialToRegionId(filial){
       region = tt_region[i].value;
       break;
     }
-  } 
+  }
   return region;
 }
 
 function GetCPList() {
 	var branchID = $("#branchLiist").val();
-	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) { 
+	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) {
 			$("#resp_person_id").empty();
-			if (data.list) { 
+			if (data.list) {
 				for (var i in data.list) {
 					$("#resp_person_id").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
 				}
@@ -103,16 +103,17 @@ function getSubClass() {
 		type: "POST",
 		data: "type=3&id=" + sVal,
 		dataType : "json",
-		error: function() { console.log("Произошла ошибка при соединении с сервером!") },
-		success: function(data, textStatus) { 
-			$("#psSubClass").empty();
-			if (data.list) { 
-				for (var i in data.list) {
-					$("#psSubClass").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
-				}
-			}
-		}
+		//error: function() { console.log("Произошла ошибка при соединении с сервером!") },
+		success: onGetSubClassSuccess
 	})
+}
+function onGetSubClassSuccess(data, textStatus) {   // Callback для соседней функции getSubClass()
+  $("#psSubClass").empty();
+  if (data.list) {
+    for (var i in data.list) {
+      $("#psSubClass").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
+    }
+  }
 }
 
 function disablePopup() {
@@ -132,11 +133,11 @@ function loadPopupTransfer() {
       // Если вдруг список подразделений еще не заполнен, нужно открыть первый тикет из очереди с тем, чтобы спереть оттуда этот список
     if(branch_id.length == 0){
       for (var key in Tickets) {
-        if(Tickets[key].checked === true){   // Найдем первый отмеченный тикет 
+        if(Tickets[key].checked === true){   // Найдем первый отмеченный тикет
           break;
         }
-      } 
-      setTimeout(6, "Ошибка загрузки списка подразделений");
+      }
+      setTimeout(12, "Ошибка загрузки списка подразделений");
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: key}, callbackLoadEnvironment2, "html");
     }
     GetCPList();                  // Загрузим между делом список ответственных лиц
@@ -145,6 +146,8 @@ function loadPopupTransfer() {
     });
     $("#backgroundPopup").fadeIn("fast");
     $("#popupTransfer").fadeIn("fast");
+    document.getElementById('buttonTransfer').hidden = false;
+    document.getElementById('btTransfNote').text = "";
     popupStatus++;
   }
 }
@@ -154,7 +157,7 @@ function centerPopupTransfer() {
   var windowHeight = document.documentElement.clientHeight;
   var popupHeight = $("#popupTransfer").height();
   var popupWidth = $("#popupTransfer").width();
-  
+
   $("#popupTransfer").css({
     "position": "absolute",
     "top": windowHeight / 2 - popupHeight / 2,
@@ -164,7 +167,7 @@ function centerPopupTransfer() {
 
 function loadPopupStatus() {
   if (popupStatus < 2) {   // Этот попап может быть показан поверх другого попапа! Вторым, но не третьим "этажом"
-    //GetCPList();                  // Загрузим между делом список ответственных лиц 
+    //GetCPList();                  // Загрузим между делом список ответственных лиц
     var tid = document.getElementById('popupStatus').iidd;
     var actionCount = 0;
     document.getElementById('ps2Confirm').hidden = true;
@@ -197,18 +200,18 @@ function loadPopupStatus() {
       document.getElementById('ps2Close').hidden = false;
       actionCount++;
     }
-    
+
     document.getElementById('psLabel').hidden = true;
     if(actionCount == 0){                                   // Если нет ни одной доступной операции
       document.getElementById('psLabel').hidden = false;    // Отобразим сообветствующую надпись
     }
-    
+
     document.getElementById('psClass').selectedIndex = 0;
 //    document.getElementById('psSubClass').selectedIndex = 0;
     document.getElementById('psType').selectedIndex = 0;
     document.getElementById('psResolve').selectedIndex = 0;
     document.getElementById('psComment').value = "";
-    
+
     $("#backgroundPopup").css({
       "opacity": "0.7"
     });
@@ -223,7 +226,7 @@ function centerPopupStatus() {
   var windowHeight = document.documentElement.clientHeight;
   var popupHeight = $("#popupStatus").height();
   var popupWidth = $("#popupStatus").width();
-  
+
   $("#popupStatus").css({
     "position": "absolute",
     "top": windowHeight / 2 - popupHeight / 2,
@@ -237,14 +240,14 @@ function loadPopupNewTT() {
     $("#TTDescr")[0].value = "";
     $("#ppClient")[0].selectedIndex = 0;
     $("#ppRegion")[0].selectedIndex = 0;
-    $("#wikiLink")[0].text = "";     
+    $("#wikiLink")[0].text = "";
 
     var reg =  $("#ppRegion");
     if(reg != undefined && reg[0].length === 0) {
       for(var i = 0; i < tt_region.length; i ++){
         reg.append("<option value='" + tt_region[i].value + "'>" + tt_region[i].text + "</option>");
       }
-    } 
+    }
     reg =  $("#ppClient");
     if(reg != undefined && reg[0].length === 0) {
       for(i = 0; i < organization_id.length; i ++){
@@ -265,7 +268,7 @@ function centerPopupNewTT() {
   var windowHeight = document.documentElement.clientHeight;
   var popupHeight = $("#popupNewTT").height();
   var popupWidth = $("#popupNewTT").width();
-  
+
   $("#popupNewTT").css({
     "position": "absolute",
     "top": windowHeight / 2 - popupHeight / 2,
@@ -289,15 +292,15 @@ function centerPopupTicket() {
   var windowHeight = document.documentElement.clientHeight;
   var popupHeight = $("#leftPopupTicket").height() + 8;;
   var popupWidth = $("#popupTicket").width();
-  
+
   $("#popupTicket").css({
     "position": "absolute",
     "height": popupHeight,
     "top": windowHeight / 2 - popupHeight / 2,
-    "left": windowWidth / 2 - popupWidth / 2, 
+    "left": windowWidth / 2 - popupWidth / 2,
     "max-height": windowHeight-20
   });
-  
+
   $("#historyDiv").css({
     "max-height": popupHeight-70,
   });
@@ -309,7 +312,7 @@ function loadPopupLogin() {
       "opacity": "0.7"
     });
     $("#backgroundPopup").fadeIn("fast");
-    $("#popupLogin").fadeIn("fast"); 
+    $("#popupLogin").fadeIn("fast");
     popupStatus++;
   }
 }
@@ -319,12 +322,12 @@ function centerPopupLogin() {
   var windowHeight = document.documentElement.clientHeight;
   var popupHeight = $("#popupLogin").height();
   var popupWidth = $("#popupLogin").width();
-  
+
   $("#popupLogin").css({
     "position": "absolute",
     "height": popupHeight,
     "top": windowHeight / 2 - popupHeight / 2,
-    "left": windowWidth / 2 - popupWidth / 2, 
+    "left": windowWidth / 2 - popupWidth / 2,
     "max-height": windowHeight-20
   });
 }

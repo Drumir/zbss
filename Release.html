@@ -4,22 +4,22 @@
 
 <head>
   <meta  http-equiv="Content-Type" content="text/html; charset=windows-1251">
-  
+
   <title>BSS Parser o_O</title>
-  
+
   <link rel="stylesheet" type="text/css" href="style.css"/>
-  
+
   <script type="text/javascript" src="\js\jquery-2.0.3.min.js"></script>
   <script type="text/javascript" src="\js\bss.js"></script>
   <script type="text/javascript" src="\js\popup.js"></script>
   <script type="text/javascript" src="\js\ajax.js"></script>
   <script type="text/javascript" src="\js\md5.js"></script>
 
-  
-</head>                    
 
-<body> 
-  
+</head>
+
+<body>
+
   <table id="menuTable">
     <td id="statusName" STYLE='background-color:#FFA500'></td>
     <td>
@@ -32,9 +32,9 @@
       <input type="image" id="cancelSearch" align="absmiddle" src="/images/cancel.png">
     </td>
     <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser vO_o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-    <td><button id="btResetFilter" style="width:170px" hidden="true">Сбросить фильтр</button></td>
+    <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать всё</button></td>
   </table>
-  
+
 
   <textarea id="hiddenText" hidden="true">This text invisible</textarea>
 
@@ -70,7 +70,7 @@
     <tbody id="mainTBody" style="background-color:#F8F8F8">
     </tbody>
   </table>
-    
+
   <div id="status_line">
     <output id="statusField"></output>
   </div>
@@ -88,6 +88,7 @@
       </select>
     </p>
     <button id="buttonTransfer" disabled="true">Перевести</button>
+    <p id="btTransfNote"></p>
   </div>
 
   <div id="popupTicket">
@@ -101,7 +102,7 @@
           <textarea id="comment" style="width:705px; height:52px"></textarea>
         </td>
       </tr>
-    </table>  
+    </table>
   </div>
 
   <div id="popupNewTT">
@@ -117,16 +118,16 @@
         <td>Клиент</td>
         <td id="selectClient">
           <select id="ppClient" style="width:200px"></select>&nbsp;&nbsp;
-          <a id="qSelectClient" style="color:#777777">*M.VIDEO*</a>&nbsp;&nbsp;        
-          <a id="qSelectClient" style="color:#777777">*X5*</a>&nbsp;&nbsp;        
+          <a id="qSelectClient" style="color:#777777">*M.VIDEO*</a>&nbsp;&nbsp;
+          <a id="qSelectClient" style="color:#777777">*X5*</a>&nbsp;&nbsp;
         </td>
       </tr>
       <tr><td>Описание</td><td><textarea id="TTDescr" style="width:500px; height:150px"></textarea></td></tr>
     </table>
     <button id="ppBtnCreate">Сохранить</button>
     <button id="ppBtnAlert">AlertDown</button>
-  </div> 
-  
+  </div>
+
 
   <div id="popupStatus">
     <a id="popupPictCloseStatus"><img src="\images\quit.png" width="8" height="7"></a>
@@ -163,8 +164,8 @@
     <button id="ps2Investigating" style="width:120px">Расследование</button>
     <button id="ps2Close">Закрыть</button>
     <p id="psLabel">Нет доступных операций</p>
-  </div> 
-  
+  </div>
+
   <div id="popupLogin" align="center">
     <div id="divLoginInput" style="background-color:#ED1C24;width:250px">
       <br>
@@ -175,11 +176,11 @@
       <br>&nbsp;
     </div>
   </div>
-  
+
   <div id="tempDiv" hidden="true">
   </div>
   <div id="backgroundPopup"></div>
- 
+
 </body>
 
 </html>

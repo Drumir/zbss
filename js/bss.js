@@ -1,6 +1,6 @@
 //
 //    BSS Parser by drumir@mail.ru
-//    
+//
 //
 var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете"}}. Актуализируется раз в n секунд
 var transQueue = [];        // Очередь запросов на перевод тикета.
@@ -27,34 +27,34 @@ var filterName = "";
 var filterStatus = "";
 var filterClient = "";
 
-var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю  
+var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
 
 var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
 var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
 
-window.onload = function() {          // 
-                             
+window.onload = function() {          //
+
   document.getElementById('buttonNew').onclick = onBtnNewTTClick;
   document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
   document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
   document.getElementById('btResetFilter').onclick = onResetFilterClick;
   document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
-  document.getElementById('buttonTransfer').disabled = false;
   document.body.onresize = onBodyResize;
-  document.getElementById('headChBox').onchange = onHeadChBoxClick; 
+  document.getElementById('headChBox').onchange = onHeadChBoxClick;
   document.getElementById('buttonMove').onclick = onBtnMoveClick;
   document.getElementById('buttonMove').disabled = false;
   document.getElementById('buttonRenew').onclick = onBtnRenewClick;
-  document.getElementById('buttonRenew').disabled = false; 
+  document.getElementById('buttonRenew').disabled = false;
   document.getElementById('mainTBody').onclick = onMainTBodyClick;
   document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
   document.getElementById('statusName').onclick = onStatusNameClick;
   document.getElementById('comment').onkeypress = commentOnKey;
-  document.getElementById('leftPopupTicket').onclick = onLeftTPopupClick; 
-  document.getElementById('searchStr').oninput = onSearchInput; 
-  document.getElementById('searchClient').oninput = onSearchClientInput; 
-  document.getElementById('searchTT').onkeydown = onTTKeyPress; 
-  document.getElementById('psClass').onchange = getSubClass; 
+  document.getElementById('sPass').onkeypress = sPassKeyPress;
+  document.getElementById('leftPopupTicket').onclick = onLeftTPopupClick;
+  document.getElementById('searchStr').oninput = onSearchInput;
+  document.getElementById('searchClient').oninput = onSearchClientInput;
+  document.getElementById('searchTT').onkeydown = onTTKeyPress;
+  document.getElementById('psClass').onchange = getSubClass;
   document.getElementById('branchLiist').onchange = GetCPList;
   document.getElementById('ps2Confirm').onclick = onPs2Confirm;
   document.getElementById('ps2Servis').onclick        = onPsActionClick;
@@ -68,9 +68,9 @@ window.onload = function() {          //
   document.getElementById('selectClient').onclick = qSelectClientClick;
 
   mtb = document.getElementById('mainTBody');
-  
-  prepareToAnsi();                            // Подготавливает таблицу для перекодирования 
-   
+
+  prepareToAnsi();                            // Подготавливает таблицу для перекодирования
+
   $("#backgroundPopup").click(function() {
     disablePopup();
   });
@@ -105,13 +105,13 @@ window.onload = function() {          //
     disablePopup();
   });
 
-  
+
   hiddenText = document.getElementById('hiddenText');
   hiddenText.hidden = true;
-  
-  setInterval(oneMoreSecond, 1000); 
-  onBodyResize();  
-  
+
+  setInterval(oneMoreSecond, 1000);
+  onBodyResize();
+
 //  $.get("https://oss.unitline.ru:995/adm/", null, callbackAuthorization, "html");
   $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
@@ -131,39 +131,39 @@ function oneMoreSecond(){
   if(refreshTime == 0 && netTimeout <= 0){
     loadTickets();
     refreshTime = 180;
-  } 
-  
+  }
+
   if(netTimeout > 0){        // Если netTimeout > 0, значит идет какая-то сетевая операция
     netTimeout --;
   }
   if(netTimeout == 0){      // Если netTimeout = 0, значит сетевая операция не удалась.
-    setStatus(strTimeout); 
-    refreshTime = -1; 
+    setStatus(strTimeout);
+    refreshTime = -1;
     netTimeout = 0;        // остановим отсчет.
-  } 
-  
+  }
+
 }
 
 function showIt() {
-var str;  
+var str;
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
   if(filterUser + filterName + filterClient + filterStatus != "") {
     document.getElementById('btResetFilter').hidden = false;
   }
-  for(var key in Tickets) { 
+  for(var key in Tickets) {
     if(filterUser != "" && Tickets[key].otv != filterUser) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
     if(filterName != "" && Tickets[key].name.toUpperCase().indexOf(filterName.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
     if(filterClient != "" && Tickets[key].client.toUpperCase().indexOf(filterClient.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
     if(filterStatus != "" && Tickets[key].status.indexOf(filterStatus) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
     var ttr = document.createElement('tr');
     ttr.filial = Tickets[key].filial;
-    ttr.iidd = Tickets[key].id; 
-    
+    ttr.iidd = Tickets[key].id;
+
     str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td>' + Tickets[key].status;
     if(Tickets[key].attention === true){
       str += '(НП)';
-    }             
+    }
     str += '</td><td>' + Tickets[key].data_open + '</td><td>' + Tickets[key].region + '</td><td>' + Tickets[key].author + '</td><td>' + Tickets[key].otv + '</td><td>' + Tickets[key].client + '</td><td>' + Tickets[key].name + '</td><td width = "100px">' + Tickets[key].clas + '</td></tr>';
     ttr.innerHTML = str;
     ttr.children[0].children[0].checked = Tickets[key].checked;
@@ -172,7 +172,7 @@ var str;
       ttr.style.backgroundColor = "#FFFFCC";
     }
     mtb.insertBefore(ttr, mtb.children[0]);
-  } 
+  }
 //  document.getElementById('headChBox').checked = false;
 }
 
@@ -184,30 +184,30 @@ function renewTickets(data) {
     tt.data_open = data.rows[i].data_open;  // 05.09.2014 21:42
     tt.region = data.rows[i].region;        // RST
     tt.author = data.rows[i].author;        // Сорокин Е. Г.
-    tt.otv = data.rows[i].otv;              // Сорокин Е. Г. 
+    tt.otv = data.rows[i].otv;              // Сорокин Е. Г.
     tt.client = data.rows[i].client;        // *M.VIDEO*
-    tt.name = data.rows[i].name;            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157 
+    tt.name = data.rows[i].name;            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157
     tt.clas = data.rows[i].clas;            // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
     tt.filial = data.rows[i].filial;        // Ростовская область
-    tt.branch = data.rows[i].branch;        // Технический департамент (МегаМакс).<br>МЕГАМАКС     
+    tt.branch = data.rows[i].branch;        // Технический департамент (МегаМакс).<br>МЕГАМАКС
                                             // 	{ "id":"52956", "status":"Service / Обслуживание", "data_open":"05.09.2014 21:42", "data_res":"", "data_close":"", "region":"RST", "author":"Сорокин Е. Г.", "otv":"Сорокин Е. Г.", "client":"*M.VIDEO*", "name":"Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157", "clas":"", "filial":"Ростовская область", "is_group":"-", "branch":"Технический департамент (МегаМакс).<br>МЕГАМАКС" }
     tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
     tt.permissions = "";                    // Названия всех доступных в тикете кнопок разделенные "***"
-                              
+
     if(Tickets[tt.id] === undefined){       // Если такого тикета в списке еще нет, добавим
       Tickets[tt.id] = tt;
       Tickets[tt.id].checked = false;
     }
     else {
-      if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // Если отв. лицо изменилось на нас 
+      if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // Если отв. лицо изменилось на нас
         Tickets[tt.id].attention = true;
         // тут должна быть проверка подтверждения пользователем смен отв. лица
       }
-      Tickets[tt.id].status = tt.status;       
-      Tickets[tt.id].otv = tt.otv;              
-      Tickets[tt.id].clas = tt.clas;           
-      Tickets[tt.id].branch = tt.branch;            
-    }                                                 
+      Tickets[tt.id].status = tt.status;
+      Tickets[tt.id].otv = tt.otv;
+      Tickets[tt.id].clas = tt.clas;
+      Tickets[tt.id].branch = tt.branch;
+    }
   }
 //  addTestTT();
   showIt();
@@ -225,14 +225,14 @@ function addTestTT(){
   tt.data_open = "02.07.2014 21:42";  // 05.09.2014 21:42
   tt.region = "TMN";        // RST
   tt.author = "Гостев А. Е.";        // Сорокин Е. Г.
-  tt.otv = "Валиокова Л. И.";              // Сорокин Е. Г. 
+  tt.otv = "Валиокова Л. И.";              // Сорокин Е. Г.
   tt.client = "*M.VIDEO*";        // *M.VIDEO*
-  tt.name = "Город: Тюмень Адрес: Ул.М.Горького д.42 ТЦ 'Максим' Shop 158";            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157 
+  tt.name = "Город: Тюмень Адрес: Ул.М.Горького д.42 ТЦ 'Максим' Shop 158";            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157
   tt.clas = "6";            // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
   tt.filial = "Тюменская область";        // Ростовская область
-  tt.branch = "Технический департамент (МегаМакс).<br>МЕГАМАКС";        // Технический департамент (МегаМакс).<br>МЕГАМАКС     
+  tt.branch = "Технический департамент (МегаМакс).<br>МЕГАМАКС";        // Технический департамент (МегаМакс).<br>МЕГАМАКС
   tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
-                              
+
   Tickets[tt.id] = tt;
   Tickets[tt.id].checked = false;
 
@@ -241,14 +241,14 @@ function addTestTT(){
 
 function onRespIdChange(){
   filterUser = $("#resp_id_s")[0][$("#resp_id_s")[0].selectedIndex].innerText;
-  if($("#resp_id_s")[0].selectedIndex === 0) 
+  if($("#resp_id_s")[0].selectedIndex === 0)
     filterUser = "";
   showIt();
 }
 
 function onThsStatusChange(){
   filterStatus = $("#thsStatus")[0][$("#thsStatus")[0].selectedIndex].innerText;
-  if($("#thsStatus")[0].selectedIndex === 0) 
+  if($("#thsStatus")[0].selectedIndex === 0)
     filterStatus = "";
   showIt();
 }
@@ -257,7 +257,7 @@ function onHeadChBoxClick(){
   var flag = document.getElementById('headChBox').checked;
   for (var i = 0; i < mtb.childElementCount; i ++) {
     Tickets[mtb.children[i].iidd].checked = flag;
-  } 
+  }
   showIt();
 }
 
@@ -267,9 +267,9 @@ function onMainTBodyClick(e) {
   }
   if(e.target.nodeName === "TD" && e.target.cellIndex != 1 && e.ctrlKey == false){    // Если щелкнули не по галочке, откроем выбранный тикет
     document.getElementById('popupTicket').iidd = e.target.parentNode.iidd; // Сразу передадим в popupTicket id отображаемого тикета
-    highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt() 
-    showIt();                              
-    if(Tickets[e.target.parentNode.iidd].attention === true) 
+    highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt()
+    showIt();
+    if(Tickets[e.target.parentNode.iidd].attention === true)
       Tickets[e.target.parentNode.iidd].attention = false;
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
   }
@@ -309,14 +309,14 @@ function onLeftTPopupClick(e) {
   if(tid === undefined){ return;}
   if(e.target.id === "otv"){     // Клик был по ответственному лицу.
     if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
-      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html"); 
+      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
       loadTickets();
       return;
     }
     if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
       for (var key in Tickets) {
         Tickets[key].checked = false;
-      } 
+      }
       Tickets[tid].checked = true;
       loadPopupTransfer();
       centerPopupTransfer();
@@ -327,7 +327,7 @@ function onLeftTPopupClick(e) {
     document.getElementById('popupStatus').iidd = tid; // Сразу передадим в popupStatus id отображаемого тикета
     loadPopupStatus();
     centerPopupStatus();
-  } 
+  }
 }
 
 function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в попап Status (Обслуживание, решена, закрыта и т.д)
@@ -335,7 +335,7 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
   var par = {};
   par.branch_id = "100113";      // Подразделение автора по умолчанию
   par.resp_person_id = "931";    // id пользователя по умолчанию
-  par.trouble_root_tt = "0"; 
+  par.trouble_root_tt = "0";
   par.trouble_type_closed = "0";
   par.trouble_subtype_closed = "0";
   par.trouble_type_name = "0";
@@ -344,7 +344,7 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
   par.region_id = filialToRegionId(Tickets[tid].filial);
   var str = document.getElementById('psComment').value;
   if(str.length === 0){ par.comment = "."; }
-  else { par.comment = str; }  
+  else { par.comment = str; }
   switch(e.target.id){
     case "ps2Servis": {
       par.status_id = "2";     // В обслуживании
@@ -353,7 +353,7 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
     case "ps2Resolved": {
       par.trouble_type_closed = document.getElementById('psClass').value;
       par.trouble_subtype_closed = document.getElementById('psSubClass').value;
-      par.trouble_type_name = document.getElementById('psType').value;                   
+      par.trouble_type_name = document.getElementById('psType').value;
       par.trouble_type_resolution = document.getElementById('psResolve').value;
       par.status_id = "5";     // Решена
       break;
@@ -409,7 +409,7 @@ function onStatusNameClick(e) {   // По клику на имени залогиненого пользователя
   }
 }
 
-function onBtnMoveClick(e) {                                                                             
+function onBtnMoveClick(e) {
   loadPopupTransfer();
   centerPopupTransfer();
 }
@@ -428,57 +428,28 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
   if($("#TTDescr")[0].value.length < 10) return;
   if($("#ppClient")[0].selectedIndex === 0) return;
   if($("#ppRegion")[0].selectedIndex === 0) return;
-  var id = document.getElementById('ppRegion'); 
+  var id = document.getElementById('ppRegion');
   var rid = id[id.selectedIndex].value;
-  id = document.getElementById('ppClient'); 
+  id = document.getElementById('ppClient');
   var cid = id[id.selectedIndex].value;
   var param = "id=0&ip=&name=" + encodeURIComponent($("#shortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
   param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#TTDescr")[0].value);
-  $.ajax({ 
-    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp", 
-    type: "POST", 
-    data: param, 
-    dataType : "html", 
-    contentType : "application/x-www-form-urlencoded; charset=windows-1251", 
-    error: function() { alert("Произошла ошибка при соединении с сервером!") }, 
-    success:function(data, textStatus) {
-              delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
-              loadTickets();
-              refreshTime = 180;
-            } 
+  $.ajax({
+    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp",
+    type: "POST",
+    data: param,
+    dataType : "html",
+    contentType : "application/x-www-form-urlencoded; charset=windows-1251",
+    success : onTtEditProcessSuccess
   });
   disablePopup();
 }
-/*
-function onBtnSaveTTClick (e) {     // $.post версия  // Попап новый тикет -> Сохранить
-  if($("#shortTTDescr")[0].value.length < 10) return;
-  if($("#TTDescr")[0].value.length < 10) return;
-  if($("#ppClient")[0].selectedIndex === 0) return;
-  if($("#ppRegion")[0].selectedIndex === 0) return;
-  var par = {};
-  par.id = "0";
-  par.ip = "";
-  par.name = $("#shortTTDescr")[0].value;
-  par.trouble_ticket_type_id = "33";
-  par.priority = "1";
-  var t = document.getElementById('ppRegion'); 
-  par.region_id = t[t.selectedIndex].value;
-  t = document.getElementById('ppClient'); 
-  par.organization_id = t[t.selectedIndex].value;
-  par.descr = $("#TTDescr")[0].value;
-  $.post( "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", 
-          par, 
-          function () {
-            delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
-            loadTickets();
-            refreshTime = 180;
-          }, 
-          "html");
-  disablePopup();
+function onTtEditProcessSuccess(data, textStatus) {  // Callback для соседней функции onBtnSaveTTClick(e)
+  delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
+  loadTickets();
+  refreshTime = 180;
 }
-*/
 
-    
 function onBtnAlertClick (e) {
   var str = $("#TTDescr")[0].value;
   if(str.length === 0){
@@ -486,9 +457,9 @@ function onBtnAlertClick (e) {
     $("#TTDescr")[0].selectionEnd = str.length;
     document.execCommand("Paste");
     str = $("#TTDescr")[0].value;
-  } 
+  }
   var adr0 = str.indexOf("№ удаленного объекта");
-  if(adr0 != -1) {str = str.substring(adr0);} 
+  if(adr0 != -1) {str = str.substring(adr0);}
   var adr1 = str.indexOf("Город: ");
   var adr2 = str.indexOf("Адрес: ");
   var adr3 = str.indexOf("Канал: ");
@@ -500,19 +471,19 @@ function onBtnAlertClick (e) {
   }
   var adr4 = str.indexOf("**************************");
   if(adr4 != -1) {str = str.substring(0, adr4-1);}
-  $("#TTDescr")[0].value = str; 
+  $("#TTDescr")[0].value = str;
   var city = str.substring(adr1 + 7, adr2-1);
-  if(city === "Москва"){
+  if(city === "Москва" || city === "Санкт-Петербург"){
     for(var i = 1; i < tt_region.length; i ++){
       if(tt_region[i].text === city){
         document.getElementById('ppRegion').selectedIndex = i;
-      } 
+      }
     }
   }
   else {
     document.getElementById('ppRegion')[0].text = "Определение региона";
     document.getElementById('ppRegion').disabled = true;
-    document.getElementById('wikiLink').text = str.substring(adr1 + 7, adr2-1);     
+    document.getElementById('wikiLink').text = str.substring(adr1 + 7, adr2-1);
     $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1)}, cbWiki, "html");
   }
 }
@@ -535,10 +506,7 @@ function setStatus(status) {
 
 function onMainTBodyKeyPress(e){
   if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){
-    var str = document.getElementById('comment').value;
-    var converted_str = encodeURIComponent(str);
-    var iidd = document.getElementById('popupTicket').iidd;
-    var param = "id=" + iidd + "&status_id=0&region_id=" + filialToRegionId(Tickets[iidd].filial) + "&comment=" + converted_str;
+
   }
 }
 
@@ -553,33 +521,18 @@ function commentOnKey(e){     //$.ajax версия
       url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
       type: "POST",
       data: param,
-      dataType : "html",   
+      dataType : "html",
       contentType : "application/x-www-form-urlencoded; charset=windows-1251",
-      error: function() { alert("Произошла ошибка при соединении с сервером!") },
-      success: function(data, textStatus) { }
     })
   $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
   }
 }
 
-/*        
-function commentOnKey(e){     // $.post версия
-  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){   // Нужна проверка на максимальную длинну
-    var par = {};                                          
-    par.id = document.getElementById('popupTicket').iidd;
-    par.status_id = "0";
-    par.comment = document.getElementById('comment').value;
-    document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
-    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", 
-          par, 
-          function() {
-            $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: document.getElementById('popupTicket').iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
-          }, 
-          "html");
-    
+function sPassKeyPress(e){     //Нажатие Ентер в окне ввода пароля
+  if(e.keyIdentifier === "Enter" && document.getElementById('sPass').value.length > 0){     //
+    onLoginClick();
   }
 }
-*/
 
 function setTimeout(duration, str){netTimeout = duration;strTimeout = str;}
 function resetTimeout(){netTimeout = -1; strTimeout = "";}
@@ -587,9 +540,9 @@ function resetTimeout(){netTimeout = -1; strTimeout = "";}
 function fullName2FIO(fullName) {
   var arrFio = [];
   arrFio = fullName.split(" ", 3);
-  if(arrFio.length != 3) 
-    return "no_name"; 
-  fio = arrFio[0] + " " + arrFio[1].substring(0,1) + ". " + arrFio[2].substring(0,1) + "."; 
+  if(arrFio.length != 3)
+    return "no_name";
+  fio = arrFio[0] + " " + arrFio[1].substring(0,1) + ". " + arrFio[2].substring(0,1) + ".";
   return fio;
 }
 
@@ -606,25 +559,25 @@ function onTTKeyPress(e) {       // Ввод номера тикета
     if(!isNaN(parseInt(this.value, 10))){
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: this.value}, callbackGetTicket, "html");
       this.value = "";
-    }       
+    }
   }
 }
 
 function onResetFilterClick() {   // Сброс всех фильтров
   document.getElementById('searchClient').value = "";
   filterClient = "";
-  document.getElementById('searchStr').value = "";  
+  document.getElementById('searchStr').value = "";
   filterName = "";
-  document.getElementById('resp_id_s').value = "0";  
+  document.getElementById('resp_id_s').value = "0";
   filterUser = "";
-  document.getElementById('thsStatus').value = "0";  
+  document.getElementById('thsStatus').value = "0";
   filterStatus = "";
-  
+
   showIt();
 }
 
 function openWikiLink() {
-  window.open("https://ru.wikipedia.org/w/index.php?search=" + document.getElementById('wikiLink').text, null, null);  
+  window.open("https://ru.wikipedia.org/w/index.php?search=" + document.getElementById('wikiLink').text, null, null);
 // $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1), title:"Служебная:Поиск", go:"Перейти" }, cbWiki, "html");
 }
 
@@ -636,10 +589,10 @@ function onLoginClick() {
   par.tries = "-1";
   par.user = document.getElementById('sLogin').value;
   par.password = document.getElementById('sPass').value;
-  setTimeout(6, "Ошибка авторизации");
+  setTimeout(12, "Ошибка авторизации");
   $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
   document.getElementById('sLogin').value = "";           // Сотрем имя пользователя
-  document.getElementById('sPass').value = "";            // Сотрем пароль 
+  document.getElementById('sPass').value = "";            // Сотрем пароль
   disablePopup();
 
 }
