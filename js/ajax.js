@@ -1,7 +1,7 @@
 var printArea;
 
 function callbackAuthorization(data, textStatus){
-  resetTimeout();      // Остановим отсчет
+  remySetTimeout();      // Остановим отсчет
   if(data != null) {  // null ли?!
     var div1 = document.createElement('div');
     div1.hidden = true;
@@ -25,13 +25,13 @@ function callbackAuthorization(data, textStatus){
 }
 
 function loadEnvironment() {
-  setTimeout(12, "Ошибка загрузки переменных окружения");
+  mySetTimeout(12, "Ошибка загрузки переменных окружения");
   $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_list.asp", {type: "8", id: "1", tt_gate: "2", page: "1", rows: "10", hide: "0"}, callbackLoadEnvironment, "html");
   setStatus("Загрузка переменных окружения  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Renew' TITLE='Renew'>");
 }
 
 function callbackLoadEnvironment(data, textStatus) {
-  resetTimeout();
+  remySetTimeout();
   if(data != null) {  // null ли?!
     var div1 = document.createElement('div');
     div1.insertAdjacentHTML( 'beforeend', data );                 // Создадим из data DOM дерево
@@ -68,7 +68,7 @@ function callbackLoadEnvironment(data, textStatus) {
 }
 
 function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк используется для получения списка подразделений авторов. Вызывается при первой загрузуки попапа трансфер
-  resetTimeout();
+  remySetTimeout();
   if(data != null) {  // null ли?!
     var div1 = document.createElement('div');
     div1.insertAdjacentHTML( 'beforeend', data );                 // Создадим из data DOM дерево
@@ -94,14 +94,14 @@ function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк использ
 }
 
 function loadTickets() {
-  setTimeout(12, "Ошибка загрузки списка тикетов");
+  mySetTimeout(12, "Ошибка загрузки списка тикетов");
   $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "8", id: "1", organization_id: "0", resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: "0", tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: "1000", page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
                                                       //                     Организация        , Отв. Лицо   , Группов. авария ,  Приоритет         ,все кроме шлюза, Регион        , тип сети             , класс аварии       , подкласс аварии       , Все кроме закрытых  ,
   setStatus("Загрузка списка тикетов  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Renew' TITLE='Renew'>");
 }
 
 function callbackLoadTickets(data, textStatus) {
-  resetTimeout();
+  remySetTimeout();
   if(data != null) {
     renewTickets(data);
   }

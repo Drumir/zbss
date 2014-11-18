@@ -31,6 +31,8 @@ var delayedData = "";      // Здесь хранится html код страницы свежесозданного т
 
 var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
 var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
+var TTOkTransferCount = 0; // Хранит количество успешно переведенных тикетов
+var TTErTransferCount = 0; // Хранит количество ошибок при переводе тикетов
 
 window.onload = function() {          //
 
@@ -39,6 +41,7 @@ window.onload = function() {          //
   document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
   document.getElementById('btResetFilter').onclick = onResetFilterClick;
   document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
+  document.getElementById('buttonTransfer').disabled = false;
   document.body.onresize = onBodyResize;
   document.getElementById('headChBox').onchange = onHeadChBoxClick;
   document.getElementById('buttonMove').onclick = onBtnMoveClick;
@@ -112,12 +115,11 @@ window.onload = function() {          //
   setInterval(oneMoreSecond, 1000);
   onBodyResize();
 
-//  $.get("https://oss.unitline.ru:995/adm/", null, callbackAuthorization, "html");
+    // Попытка авторизоваться
   $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
-
-function onLoadError(jqXHR, textStatus){
+function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
   if(jqXHR.status == 404 && textStatus == "error") {
     setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrome");
   }
@@ -534,8 +536,8 @@ function sPassKeyPress(e){     //Нажатие Ентер в окне ввода пароля
   }
 }
 
-function setTimeout(duration, str){netTimeout = duration;strTimeout = str;}
-function resetTimeout(){netTimeout = -1; strTimeout = "";}
+function mySetTimeout(duration, str){netTimeout = duration;strTimeout = str;}
+function remySetTimeout(){netTimeout = -1; strTimeout = "";}
 
 function fullName2FIO(fullName) {
   var arrFio = [];
@@ -589,7 +591,7 @@ function onLoginClick() {
   par.tries = "-1";
   par.user = document.getElementById('sLogin').value;
   par.password = document.getElementById('sPass').value;
-  setTimeout(12, "Ошибка авторизации");
+  mySetTimeout(12, "Ошибка авторизации");
   $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
   document.getElementById('sLogin').value = "";           // Сотрем имя пользователя
   document.getElementById('sPass').value = "";            // Сотрем пароль

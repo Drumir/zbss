@@ -6,7 +6,7 @@
 
 var popupStatus = 0;
 
-function onButtonTransferClick(e) {
+function onButtonTransferClick(e) {        // Функция только формирует очередь transQueue из выбраных тикетов
   transQueue.length = 0;
   for (var key in Tickets) {
     if(Tickets[key].checked === true){
@@ -26,6 +26,9 @@ function onButtonTransferClick(e) {
       Tickets[key].checked = false;
     }
   }
+  document.getElementById('buttonTransfer').hidden = true;
+  TTOkTransferCount = 0;
+  TTErTransferCount = 0;
   checkAndTransfer();
 }
 
@@ -35,7 +38,8 @@ function checkAndTransfer() {
   }
   else {
     loadTickets();
-    disablePopup();
+    setTimeout(disablePopup(), 1000);
+    setStatus("ТТ переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount);
   }
 }
 
@@ -49,14 +53,19 @@ function cbCheckAndTransfer(data, textStatus){
     }
     document.getElementById('tempDiv').innerHTML = "";
 
-    if(1){ // Не выполнять проверку на правомерность перевода
-//    if(permissions.indexOf("Ответственное лицо") != -1){ // Если среди кнопок есть "Ответственное лицо", можно переводить
+//    if(1){ // Не выполнять проверку на правомерность перевода
+    if(permissions.indexOf("Ответственное лицо") != -1){ // Если среди кнопок есть "Ответственное лицо", можно переводить
       $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", transQueue[0], checkAndTransfer, "html"); //Перевод
+      TTOkTransferCount ++;
+      document.getElementById('btTransfNote').text = "ТТ осталось " + transQueue.length + "; Переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount;
+      transQueue.splice(0, 1);    // Удалить из очереди первый тикет
     }
     else {
-      // Какое-нибудь ругательство об отсутствии права переводить этот тикет
+      TTErTransferCount ++;
+      window.setTimeout(checkAndTransfer, 300);
+      transQueue.splice(0, 1);    // Удалить из очереди первый тикет
+      document.getElementById('btTransfNote').innerText = "ТТ осталось " + transQueue.length + "; Переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount;
     }
-  transQueue.splice(0, 1);    // Удалить из очереди первый тикет
   }
 }
 
@@ -137,7 +146,7 @@ function loadPopupTransfer() {
           break;
         }
       }
-      setTimeout(12, "Ошибка загрузки списка подразделений");
+      mySetTimeout(12, "Ошибка загрузки списка подразделений");
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: key}, callbackLoadEnvironment2, "html");
     }
     GetCPList();                  // Загрузим между делом список ответственных лиц
@@ -148,6 +157,9 @@ function loadPopupTransfer() {
     $("#popupTransfer").fadeIn("fast");
     document.getElementById('buttonTransfer').hidden = false;
     document.getElementById('btTransfNote').text = "";
+//    document.getElementById('popupTransfer').TTCount = 0;     // Количество переводимых тикетов
+//    document.getElementById('popupTransfer').TTOk = 0;        // Количество успешно переведенных тикетов
+//    document.getElementById('popupTransfer').TTError = 0;     // Количество ошибок
     popupStatus++;
   }
 }
