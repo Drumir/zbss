@@ -28,6 +28,7 @@ var filterStatus = "";
 var filterClient = "";
 
 var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
+var newSelectedIndex = 0;  // Переменная для onchange и onmouseup выпадающего списка фильтра по статусу
 
 var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
 var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
@@ -66,6 +67,7 @@ window.onload = function() {          //
   document.getElementById('ps2Investigating').onclick = onPsActionClick;
   document.getElementById('ps2Close').onclick         = onPsActionClick;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
+  document.getElementById('thsStatus').onmouseup = onThsStatusMouseUp;
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
   document.getElementById('selectClient').onclick = qSelectClientClick;
@@ -107,7 +109,6 @@ window.onload = function() {          //
   $("#popupPictCloseTicket").click(function() {
     disablePopup();
   });
-
 
   hiddenText = document.getElementById('hiddenText');
   hiddenText.hidden = true;
@@ -157,7 +158,7 @@ function showIt() {         // Отображает таблицу тикетов
     if(filterUser != "" && Tickets[key].otv != filterUser) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
     if(filterName != "" && Tickets[key].name.toUpperCase().indexOf(filterName.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
     if(filterClient != "" && Tickets[key].client.toUpperCase().indexOf(filterClient.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filterStatus != "" && Tickets[key].status.indexOf(filterStatus) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filterStatus != "" && filterStatus.indexOf(Tickets[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
     var ttr = document.createElement('tr');
     ttr.filial = Tickets[key].filial;
     ttr.iidd = Tickets[key].id;
@@ -184,7 +185,7 @@ function showIt() {         // Отображает таблицу тикетов
     }
     mtb.insertBefore(ttr, mtb.children[0]);
   }
-  document.getElementById('statusFieldRight').innerText = "Офрм:" + stat.begin + " Обсл:" + stat.service + " Решн:" + stat.resolved + " Расл:" + stat.investigating + " Отлж:" + stat.hold + " Закр:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
+  document.getElementById('statusFieldRight').innerText = "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
 function renewTickets(data) {
@@ -257,11 +258,23 @@ function onRespIdChange(){
   showIt();
 }
 
-function onThsStatusChange(){
-  filterStatus = $("#thsStatus")[0][$("#thsStatus")[0].selectedIndex].innerText;
-  if($("#thsStatus")[0].selectedIndex === 0)
+function onThsStatusChange(){   // Т.к. в событии onchange нельзя узнать нажат ли шифт, просто сохраним новый статус в newSelectedIndex
+  newSelectedIndex = document.getElementById('thsStatus').selectedIndex;
+  if(newSelectedIndex == 0)
     filterStatus = "";
   showIt();
+}
+
+function onThsStatusMouseUp(e){  // После onchange будет onmouseup из которого мы узнает статус шифта и создадим соответствующий фильтр
+  if(newSelectedIndex > 0){
+    if(e.shiftKey == true){
+      filterStatus += $("#thsStatus")[0][newSelectedIndex].innerText;
+    }else {
+      filterStatus = $("#thsStatus")[0][newSelectedIndex].innerText;
+    }
+  newSelectedIndex = 0;
+  showIt();
+  }
 }
 
 function onHeadChBoxClick(){
@@ -276,7 +289,7 @@ function onMainTBodyClick(e) {
   if(e.target.nodeName === "INPUT") {
     Tickets[e.target.parentNode.parentNode.iidd].checked = e.target.checked;
   }
-  if(e.target.nodeName === "TD" && e.target.cellIndex != 1 && e.ctrlKey == false){    // Если щелкнули не по галочке, откроем выбранный тикет
+  if(e.target.nodeName === "TD" && e.target.cellIndex != 1 && e.ctrlKey == false && e.shiftKey == false){    // Если щелкнули не по галочке, откроем выбранный тикет
     document.getElementById('popupTicket').iidd = e.target.parentNode.iidd; // Сразу передадим в popupTicket id отображаемого тикета
     highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt()
     showIt();
@@ -284,12 +297,13 @@ function onMainTBodyClick(e) {
       Tickets[e.target.parentNode.iidd].attention = false;
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
   }
-  if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && (e.ctrlKey == true || e.shiftKey == true) ){    // Если щелкнули по статусу c ctrl или shift
     var select = document.getElementById('thsStatus');
     for( var i = 1; i < select.length; i ++){
       if(select[i].innerText === e.target.innerText){
         select.selectedIndex = i;
-        select.onchange();
+        newSelectedIndex = i;
+        onThsStatusMouseUp(e);
         break;
       }
     }
