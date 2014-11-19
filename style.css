@@ -4,7 +4,7 @@ body {
   background-color: #E4E4E4;
   color: #490A73;
   font-size: 13px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;  
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   overflow-y: scroll;
   max-height: 850px;
 }
@@ -49,7 +49,7 @@ hr {
   background-color: #C0C0C0;
   color: #0A0A0A;
   width: 100%;
-  padding: 2px 0 2px 18px;
+  padding: 0px 0px 0px 0px;
   font-size: 16px;
   font-family: 'Segoe UI', Tahoma, sans-serif;
 }
@@ -64,7 +64,7 @@ hr {
 
 #menuTable {
   font-size: 16px;
-  font-family: 'Segoe UI', Tahoma, sans-serif; 
+  font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 #backgroundPopup {

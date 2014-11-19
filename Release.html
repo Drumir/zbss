@@ -19,25 +19,21 @@
 </head>
 
 <body>
-
   <table id="menuTable">
-    <td id="statusName" STYLE='background-color:#FFA500'></td>
+    <td id="statusName" style='background-color:#FFA500'></td>
     <td>
-    <button id="buttonMove"   disabled="true">Перевести</button>
-    <button id="buttonRenew" disabled="true">Обновить</button>
-    <button id="buttonNew" >Новый ТТ</button>
+      <button id="buttonMove"   disabled="true">Перевести</button>
+      <button id="buttonRenew" disabled="true" style="width:120px">Обновить</button>
+      <button id="buttonNew" >Новый ТТ</button>
     </td>
     <td valign = "baseline">
       <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
-      <input type="image" id="cancelSearch" align="absmiddle" src="/images/cancel.png">
     </td>
     <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser vO_o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать все ТТ</button></td>
   </table>
 
-
   <textarea id="hiddenText" hidden="true">This text invisible</textarea>
-
   <table id="mainTable" border=0 width=100%>
     <thead>
       <tr style="background-color:#AAAAAA">
@@ -72,7 +68,15 @@
   </table>
 
   <div id="status_line">
-    <output id="statusField"></output>
+    <table border=0 width=100%>
+      <tbody>
+        <tr>
+          <td id="statusFieldLeft" align="left"></td>
+          <td id="statusFieldCenter"></td>
+          <td id="statusFieldRight" align="right"></td>
+        <tr>
+      </tbody>
+    </table>
   </div>
 
   <div id="popupTransfer">

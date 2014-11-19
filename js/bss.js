@@ -129,12 +129,12 @@ function onLoadError(jqXHR, textStatus){      // callback для соседней авторизац
 function oneMoreSecond(){
   if(refreshTime > 0){
     refreshTime --;
+    document.getElementById('buttonRenew').innerText = "Обновить (" + refreshTime + ")";
   }
   if(refreshTime == 0 && netTimeout <= 0){
     loadTickets();
-    refreshTime = 180;
+    refreshTime = 60;
   }
-
   if(netTimeout > 0){        // Если netTimeout > 0, значит идет какая-то сетевая операция
     netTimeout --;
   }
@@ -143,11 +143,11 @@ function oneMoreSecond(){
     refreshTime = -1;
     netTimeout = 0;        // остановим отсчет.
   }
-
 }
 
-function showIt() {
-var str;
+function showIt() {         // Отображает таблицу тикетов
+  var str;
+  var stat = {begin:0, service:0, resolved:0, investigating:0, hold:0, closed:0};
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
   if(filterUser + filterName + filterClient + filterStatus != "") {
@@ -170,12 +170,21 @@ var str;
     ttr.innerHTML = str;
     ttr.children[0].children[0].checked = Tickets[key].checked;
 
+    switch(Tickets[key].status) {
+      case "Оформление": {stat.begin ++; break;}
+      case "Service / Обслуживание": {stat.service ++; break;}
+      case "Resolved / Решена": {stat.resolved ++; break;}
+      case "Investigating / Расследование": {stat.investigating ++; break;}
+      case "Hold / Отложена": {stat.hold ++; break;}
+      case "Closed / Закрыта": {stat.closed ++; break;}
+    }
+
     if(key == highlightedTT){
       ttr.style.backgroundColor = "#FFFFCC";
     }
     mtb.insertBefore(ttr, mtb.children[0]);
   }
-//  document.getElementById('headChBox').checked = false;
+  document.getElementById('statusFieldRight').innerText = "Офрм:" + stat.begin + " Обсл:" + stat.service + " Решн:" + stat.resolved + " Расл:" + stat.investigating + " Отлж:" + stat.hold + " Закр:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
 function renewTickets(data) {
@@ -389,6 +398,8 @@ function onPs2Confirm() {        // Кнопка "подтвердить"
   if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
     loadTickets();
+    $("#popupStatus").fadeOut("fast");
+    popupStatus--;
     return;
   }
 
@@ -418,7 +429,7 @@ function onBtnMoveClick(e) {
 
 function onBtnRenewClick(e) {
   loadTickets();
-  refreshTime = 180;
+  refreshTime = 60;
 }
 function onBtnNewTTClick (e) {
   loadPopupNewTT();
@@ -449,7 +460,7 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
 function onTtEditProcessSuccess(data, textStatus) {  // Callback для соседней функции onBtnSaveTTClick(e)
   delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
   loadTickets();
-  refreshTime = 180;
+  refreshTime = 60;
 }
 
 function onBtnAlertClick (e) {
@@ -503,7 +514,7 @@ function onBodyResize() {
 }
 
 function setStatus(status) {
-  document.getElementById('statusField').innerHTML = status;
+  document.getElementById('statusFieldLeft').innerHTML = status;
 }
 
 function onMainTBodyKeyPress(e){
@@ -537,7 +548,7 @@ function sPassKeyPress(e){     //Нажатие Ентер в окне ввода пароля
 }
 
 function mySetTimeout(duration, str){netTimeout = duration;strTimeout = str;}
-function remySetTimeout(){netTimeout = -1; strTimeout = "";}
+function resetTimeout(){netTimeout = -1; strTimeout = "";}
 
 function fullName2FIO(fullName) {
   var arrFio = [];

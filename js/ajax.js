@@ -1,7 +1,7 @@
 var printArea;
 
 function callbackAuthorization(data, textStatus){
-  remySetTimeout();      // Остановим отсчет
+  resetTimeout();      // Остановим отсчет
   if(data != null) {  // null ли?!
     var div1 = document.createElement('div');
     div1.hidden = true;
@@ -31,7 +31,7 @@ function loadEnvironment() {
 }
 
 function callbackLoadEnvironment(data, textStatus) {
-  remySetTimeout();
+  resetTimeout();
   if(data != null) {  // null ли?!
     var div1 = document.createElement('div');
     div1.insertAdjacentHTML( 'beforeend', data );                 // Создадим из data DOM дерево
@@ -68,7 +68,7 @@ function callbackLoadEnvironment(data, textStatus) {
 }
 
 function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк используется для получения списка подразделений авторов. Вызывается при первой загрузуки попапа трансфер
-  remySetTimeout();
+  resetTimeout();
   if(data != null) {  // null ли?!
     var div1 = document.createElement('div');
     div1.insertAdjacentHTML( 'beforeend', data );                 // Создадим из data DOM дерево
@@ -97,11 +97,11 @@ function loadTickets() {
   mySetTimeout(12, "Ошибка загрузки списка тикетов");
   $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "8", id: "1", organization_id: "0", resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: "0", tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: "1000", page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
                                                       //                     Организация        , Отв. Лицо   , Группов. авария ,  Приоритет         ,все кроме шлюза, Регион        , тип сети             , класс аварии       , подкласс аварии       , Все кроме закрытых  ,
-  setStatus("Загрузка списка тикетов  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Renew' TITLE='Renew'>");
+  setStatus("Загрузка списка тикетов  <IMG SRC='/images/wait.gif' alignment='vertical' alt='Renew'>");
 }
 
 function callbackLoadTickets(data, textStatus) {
-  remySetTimeout();
+  resetTimeout();
   if(data != null) {
     renewTickets(data);
   }
