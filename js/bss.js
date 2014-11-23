@@ -189,6 +189,9 @@ function showIt() {         // Отображает таблицу тикетов
 }
 
 function renewTickets(data) {
+  for(var key in Tickets)               // Пометик каждый тикет в списке как еще не обновленный
+    Tickets[key].renewed = false;
+
   for(var i = 0; i < data.rows.length;  i ++) {
     var tt = {};
     tt.id = data.rows[i].id;                // 52956
@@ -209,6 +212,7 @@ function renewTickets(data) {
     if(Tickets[tt.id] === undefined){       // Если такого тикета в списке еще нет, добавим
       Tickets[tt.id] = tt;
       Tickets[tt.id].checked = false;
+      Tickets[tt.id].renewed = true;
     }
     else {
       if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // Если отв. лицо изменилось на нас
@@ -219,9 +223,14 @@ function renewTickets(data) {
       Tickets[tt.id].otv = tt.otv;
       Tickets[tt.id].clas = tt.clas;
       Tickets[tt.id].branch = tt.branch;
+      Tickets[tt.id].renewed = true;
     }
   }
-//  addTestTT();
+
+  for(var key in Tickets)               // Удалим из списка все тикеты, которые не обновились. (они, вероятно, уже закрыты)
+    if(Tickets[key].renewed == false)
+      delete Tickets[key];
+
   showIt();
   if(delayedData != "") {                   // Костыль к onBtnSaveTTClick чтобы при отображении свежесозданного тикета в Tickets{} УЖЕ была запись о нём
     callbackGetTicket(delayedData, "sucess");
