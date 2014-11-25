@@ -80,8 +80,10 @@ function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк использ
 //      document.getElementById('branchLiist').children = branch_id; // Загрузим список срузу в попап трансфер - список подразделений
       $("#branchLiist").empty();                             // Загрузим список срузу в попап трансфер - список подразделений
       for(var i = 0; i < branch_id.length; i ++) {
-//        if(branch_id[i].value === "100184") {branch_id[i].selected = true;}
-        $("#branchLiist").append("<option value='" + branch_id[i].value + "'>" + branch_id[i].text + "</option>")
+        if(branch_id[i].value === "100184")
+          $("#branchLiist").append("<option value='" + branch_id[i].value + "' selected = 'true'>" + branch_id[i].text + "</option>");
+        else
+          $("#branchLiist").append("<option value='" + branch_id[i].value + "'>" + branch_id[i].text + "</option>");
       }
     }
     else {

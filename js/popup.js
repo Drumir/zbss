@@ -38,7 +38,7 @@ function checkAndTransfer() {
   }
   else {
     loadTickets();
-    setTimeout(disablePopup(), 1000);
+    setTimeout(disablePopup, 1000);
     setStatus("ТТ переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount);
   }
 }

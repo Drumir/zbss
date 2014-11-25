@@ -141,7 +141,7 @@ function oneMoreSecond(){
   }
   if(netTimeout == 0){      // Если netTimeout = 0, значит сетевая операция не удалась.
     setStatus(strTimeout);
-    refreshTime = -1;
+    refreshTime = 60;
     netTimeout = 0;        // остановим отсчет.
   }
 }
