@@ -2,7 +2,7 @@
 //    BSS Parser by drumir@mail.ru
 //
 //
-var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете"}}. Актуализируется раз в n секунд
+var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете", timer:"Сколько минут осталось до звонка"}}. Актуализируется раз в n секунд
 var transQueue = [];        // Очередь запросов на перевод тикета.
 var hiddenText;             // Переменная - TEXTAREA
 var a, b;
@@ -220,6 +220,7 @@ function renewTickets(data) {
                                             // 	{ "id":"52956", "status":"Service / Обслуживание", "data_open":"05.09.2014 21:42", "data_res":"", "data_close":"", "region":"RST", "author":"Сорокин Е. Г.", "otv":"Сорокин Е. Г.", "client":"*M.VIDEO*", "name":"Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157", "clas":"", "filial":"Ростовская область", "is_group":"-", "branch":"Технический департамент (МегаМакс).<br>МЕГАМАКС" }
     tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
     tt.permissions = "";                    // Названия всех доступных в тикете кнопок разделенные "***"
+    tt.timer = -1;                          // Таймер-напоминалка отключен
 
     if(Tickets[tt.id] === undefined){       // Если такого тикета в списке еще нет, добавим
       Tickets[tt.id] = tt;
@@ -251,25 +252,6 @@ function renewTickets(data) {
 }
 
 /******************************************************************************/
-function addTestTT(){
-  var tt = {};
-  tt.id = "49300";                // 52956
-  tt.status = "Closed / Закрыта";        // Service / Обслуживание"
-  tt.data_open = "02.07.2014 21:42";  // 05.09.2014 21:42
-  tt.region = "TMN";        // RST
-  tt.author = "Гостев А. Е.";        // Сорокин Е. Г.
-  tt.otv = "Валиокова Л. И.";              // Сорокин Е. Г.
-  tt.client = "*M.VIDEO*";        // *M.VIDEO*
-  tt.name = "Город: Тюмень Адрес: Ул.М.Горького д.42 ТЦ 'Максим' Shop 158";            // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157
-  tt.clas = "6";            // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
-  tt.filial = "Тюменская область";        // Ростовская область
-  tt.branch = "Технический департамент (МегаМакс).<br>МЕГАМАКС";        // Технический департамент (МегаМакс).<br>МЕГАМАКС
-  tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
-
-  Tickets[tt.id] = tt;
-  Tickets[tt.id].checked = false;
-
-}
 /******************************************************************************/
 
 function onRespIdChange(){
@@ -353,39 +335,50 @@ function onMainTBodyClick(e) {
 function onLeftTPopupClick(e) {
   var tid = document.getElementById('popupTicket').iidd;
   if(tid === undefined){ return;}
-  if(e.target.id === "otv"){     // Клик был по ответственному лицу.
-    if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
-      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
-      loadTickets();
-      return;
-    }
-    if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
-      for (var key in Tickets) {
-        Tickets[key].checked = false;
-      }
-      Tickets[tid].checked = true;
-      loadPopupTransfer();
-      centerPopupTransfer();
-      return;
-    }
-  }
-  if(e.target.id === "stat"){     // Клик был по статусу.
-    document.getElementById('popupStatus').iidd = tid; // Сразу передадим в popupStatus id отображаемого тикета
-    loadPopupStatus();
-    centerPopupStatus();
-  }
 
-  if(e.target.id === "toTabs"){     // Клик был по "В закладки".
-    if(Tabs[tid] === undefined){
-      var tab = {};
-      tab.name = Tickets[tid].name;  // Запомним имя для отображения
-      tab.text = document.getElementById('comment').value; // Запомним набираемый текст
-      Tabs[tid] = tab;
-    }else{
-      delete Tabs[tid];
+  switch(e.target.id){
+    case "otv":{     // Клик был по ответственному лицу.
+      if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+        $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
+        loadTickets();
+        return;
+      }
+      if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
+        for (var key in Tickets) {
+          Tickets[key].checked = false;
+        }
+        Tickets[tid].checked = true;
+        loadPopupTransfer();
+        centerPopupTransfer();
+        return;
+      }
+      break;
     }
-    disablePopup();
-    showIt();
+    case "stat":{     // Клик был по статусу.
+      document.getElementById('popupStatus').iidd = tid; // Сразу передадим в popupStatus id отображаемого тикета
+      loadPopupStatus();
+      centerPopupStatus();
+      break;
+    }
+    case "toTabs":{     // Клик был по "В закладки".
+      if(Tabs[tid] === undefined){
+        var tab = {};
+        tab.name = Tickets[tid].name;  // Запомним имя для отображения
+        tab.text = document.getElementById('comment').value; // Запомним набираемый текст
+        Tabs[tid] = tab;
+      }else{
+        delete Tabs[tid];
+      }
+      disablePopup();
+      showIt();
+      break;
+    }
+    case "plus05":{     // Клик по добавить 0,5 часа.
+      break;
+    }
+    case "plus1":{     // Клик по добавить 1 час.
+      break;
+    }
   }
 }
 

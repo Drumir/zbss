@@ -104,7 +104,28 @@
   <div id="popupTicket">
     <table border ="0" contenteditable="true">
       <tr>
-        <td id="leftPopupTicket" valign="top"></td>
+        <td id="leftPopupTicket" valign="top">
+          <table cellpadding="5" cellspacing="1" border="1">
+            <tbody id="leftPTtBody">
+              <tr><td style="width:75px">Номер ТТ</td><td style="width:255px"></td></tr>
+              <tr><td>Создан</td><td></td></tr>
+              <tr><td>Заголовок</td><td></td></tr>
+              <tr>
+                <td>
+                  <a id="toTabs" style="color:#6666FF">В закладки</a>
+                </td>
+                <td id="timeLeft">Напомнить через 0ч (<a id="plus05" style="color:#6666FF">30м</a>&nbsp;<a id="plus1" style="color:#6666FF">1ч</a>&nbsp;<a id="plus3" style="color:#6666FF">3ч</a>&nbsp;<a id="plus6" style="color:#6666FF">6ч</a>&nbsp;<a id="plus0" style="color:#6666FF">0</a>&nbsp;)</td>
+              </tr>
+              <tr><td>Автор</td><td></td></tr>
+              <tr><td id="otv">Отв.лицо</td><td></td></tr>
+              <tr><td>Приоритет</td><td></td></tr>
+              <tr><td id="stat">Статус</td><td></td></tr>
+              <tr><td>Регион</td><td></td></tr>
+              <tr><td>Клиент</td><td></td></tr>
+              <tr><td>Описание</td><td></td></tr>
+            </tbody>
+          </table>
+        </td>
         <td id="rightPopupTicket" width="710px" valign="bottom">
           <div id="historyDiv">
             <table id=hTable></table>

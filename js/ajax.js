@@ -1,4 +1,3 @@
-var printArea;
 
 function callbackAuthorization(data, textStatus){
   resetTimeout();      // Остановим отсчет
@@ -111,52 +110,43 @@ function callbackLoadTickets(data, textStatus) {
 }
 
 function callbackGetTicket(data, textStatus) {
-  var permissions;
+  var tid, permissions;
   if(data != null) {  // null ли?!
-    if(printArea != undefined){
-      printArea.parentNode.removeChild(printArea);
-      printArea.innerHTML = "";
-    }
     document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
-    printArea = document.getElementById('PrintArea');
+    var tb = document.getElementById('PrintArea').children[1].children[0];    // исходная таблица
+    var ltb = document.getElementById('leftPTtBody');                         // Моя таблица
     var buttons = document.getElementsByClassName('inpButton');  // Получим список доступных кнопок
     permissions = "";
     for(var i = 0; i < buttons.length; i ++) {                          // Перепишем все их названия в permissions Через ***
       permissions += buttons[i].value + "***";
     }
-    var tid = printArea.children[1].children[0].children[0].children[1].innerText;
+
+    tid = tb.children[0].children[1].innerText;
     if(Tickets[tid] != undefined) Tickets[tid].permissions = permissions;                                 // Выставим permissions для текущего тикета
     document.getElementById('popupTicket').iidd = tid
-    document.getElementById('tempDiv').innerHTML = "";
-    printArea.removeChild(printArea.children[2]);    // Удалим верхние кнопки
-    var tb = printArea.children[1].children[0];
-    tb.children[1].children[0].innerText = "Создан";
-    tb.children[3].children[0].innerText = "В закладки";
-    if(Tabs[tid] != undefined) {
-      tb.children[3].children[0].innerText = "Из закладок";
-    }
-    tb.children[3].children[0].style.color = "#6666FF";
-    tb.children[3].children[0].id = "toTabs";
-    tb.children[3].children[1].innerText = "";
-    tb.children[5].children[0].innerText = "Отв. лицо";
-    tb.children[5].children[1].id = "otv";  // Для простой идентификации по e.target.id
-    tb.children[7].children[1].id = "stat";  // Для простой идентификации по e.target.id
+
+
+    ltb.children[0].children[1].innerText = tid;
+    ltb.children[1].children[1].innerText = tb.children[1].children[1].innerText;   // Создан
+    ltb.children[2].children[1].innerText = tb.children[2].children[1].innerText;   // Заголовок
+    ltb.children[3].children[0].children[0].innerText = "В закладки"; if(Tabs[tid] != undefined) ltb.children[3].children[0].children[0].innerText = "Из закладок";
+    ltb.children[4].children[1].innerText = tb.children[4].children[1].innerText;   // Автор
+    ltb.children[5].children[1].innerText = tb.children[5].children[1].innerText;   // Отв. лицо
+    ltb.children[6].children[1].innerText = tb.children[6].children[1].innerText;   // Приоритет
+    ltb.children[7].children[1].innerText = tb.children[7].children[1].innerText;   // Статус
+    ltb.children[8].children[1].innerText = tb.children[8].children[1].innerText;   // Регион
+    ltb.children[9].children[1].innerHTML = tb.children[9].children[1].innerHTML;   // Клиент
+    ltb.children[10].children[1].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
 
     if(permissions.indexOf("Подтвердить") != -1){ // Если принятие заявки не подтверждено - выделим цветом
-      tb.children[5].children[1].style.backgroundColor = "#FFA500";
+      ltb.children[5].children[1].style.backgroundColor = "#FFA500";
     }
-    tb.children[0].children[0].width = "75px";
-    tb.children[0].children[1].width = "255px";
-    printArea.children[1].width = "";
-//    printArea.children[1].clas = "";
-    printArea.children[1].border = "1";
-    printArea.removeChild(printArea.children[0]);    // Удалим заголовок
-    document.getElementById('leftPopupTicket').appendChild(printArea);
     document.getElementById('hTable').innerHTML = "";
+    delete tb;
+    document.getElementById('tempDiv').innerHTML = "";
     loadPopupTicket();
     centerPopupTicket();
     document.getElementById('historyDiv').height = document.getElementById('leftPopupTicket').height - 75;
-//    var a = document.getElementById('popupTicket');
     $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
   }
 }
