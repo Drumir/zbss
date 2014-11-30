@@ -131,7 +131,13 @@ function callbackGetTicket(data, textStatus) {
     printArea.removeChild(printArea.children[2]);    // Удалим верхние кнопки
     var tb = printArea.children[1].children[0];
     tb.children[1].children[0].innerText = "Создан";
-    tb.children[3].children[0].innerText = "Тип";
+    tb.children[3].children[0].innerText = "В закладки";
+    if(Tabs[tid] != undefined) {
+      tb.children[3].children[0].innerText = "Из закладок";
+    }
+    tb.children[3].children[0].style.color = "#6666FF";
+    tb.children[3].children[0].id = "toTabs";
+    tb.children[3].children[1].innerText = "";
     tb.children[5].children[0].innerText = "Отв. лицо";
     tb.children[5].children[1].id = "otv";  // Для простой идентификации по e.target.id
     tb.children[7].children[1].id = "stat";  // Для простой идентификации по e.target.id
@@ -159,6 +165,9 @@ function callbackGetHistory(data, textStatus) {
   if(data != null) {  // null ли?!
     var innerHTML = "";
     document.getElementById('comment').value = "";
+    if(Tabs[document.getElementById('popupTicket').iidd] != undefined) {  // Если этот тикет ест во вкладках, восстановим набранный в comment текст
+      document.getElementById('comment').value = Tabs[document.getElementById('popupTicket').iidd].text;
+    }
     for(var i = 0; i < data.rows.length;  i ++) {
       arrFio = data.rows[i].fio.split(" ", 3);
       fio = arrFio[0] + " " + arrFio[1].substring(0,1) + ". " + arrFio[2].substring(0,1) + ".";

@@ -7,6 +7,7 @@ var transQueue = [];        // Очередь запросов на перевод тикета.
 var hiddenText;             // Переменная - TEXTAREA
 var a, b;
 var transAnsiAjaxSys = [];
+var Tabs = {};             // Хранит список табов/закладок в формате id:{name:"", text:"Незапощенный комент"}
 
 
 var userName;              // Имя залогиненого пользователя Иванов И.И.
@@ -71,6 +72,7 @@ window.onload = function() {          //
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
   document.getElementById('selectClient').onclick = qSelectClientClick;
+  document.getElementById('tabsTable').onclick = onTabsClick;
 
   mtb = document.getElementById('mainTBody');
 
@@ -147,8 +149,18 @@ function oneMoreSecond(){
 }
 
 function showIt() {         // Отображает таблицу тикетов
-  var str;
+  var str = "";
   var stat = {begin:0, service:0, resolved:0, investigating:0, hold:0, closed:0};
+
+  document.getElementById('tabsTable').hidden = true;      // Спрячем панель закладок
+  for(var key in Tabs) {                                   // Заполним панель закладками
+    str = '<td id="' + key + '">' + key + ' ' + Tabs[key].name + '</td>' + str;
+  }
+  if(str.length > 0) {                                     // Если есть хоть одна закладка, покажем панель
+    document.getElementById('tabsTable').hidden = false;
+  }
+  document.getElementById('tabs').innerHTML = str;
+
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
   if(filterUser + filterName + filterClient + filterStatus != "") {
@@ -361,6 +373,19 @@ function onLeftTPopupClick(e) {
     document.getElementById('popupStatus').iidd = tid; // Сразу передадим в popupStatus id отображаемого тикета
     loadPopupStatus();
     centerPopupStatus();
+  }
+
+  if(e.target.id === "toTabs"){     // Клик был по "В закладки".
+    if(Tabs[tid] === undefined){
+      var tab = {};
+      tab.name = Tickets[tid].name;  // Запомним имя для отображения
+      tab.text = document.getElementById('comment').value; // Запомним набираемый текст
+      Tabs[tid] = tab;
+    }else{
+      delete Tabs[tid];
+    }
+    disablePopup();
+    showIt();
   }
 }
 
@@ -631,6 +656,19 @@ function onLoginClick() {
   document.getElementById('sPass').value = "";            // Сотрем пароль
   disablePopup();
 
+}
+
+function onTabsClick(e){
+  if(e.ctrlKey == false){
+    document.getElementById('popupTicket').iidd = e.target.id; // Сразу передадим в popupTicket id отображаемого тикета
+    highlightedTT = e.target.id;  // Запомним номер тикета для его подсветки в showIt()
+    showIt();
+    document.getElementById('comment').value = Tabs[e.target.id].text;
+    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.id}, callbackGetTicket, "html");
+  }else{
+    delete Tabs[e.target.id];
+    showIt();
+  }
 }
 
 function prepareToAnsi(){
