@@ -302,7 +302,7 @@ function loadPopupTicket() {
 function centerPopupTicket() {
   var windowWidth = document.documentElement.clientWidth;
   var windowHeight = document.documentElement.clientHeight;
-  var popupHeight = $("#leftPopupTicket").height() + 8;;
+  var popupHeight = $("#leftPopupTicket").height() + 28;
   var popupWidth = $("#popupTicket").width();
 
   $("#popupTicket").css({
@@ -314,7 +314,7 @@ function centerPopupTicket() {
   });
 
   $("#historyDiv").css({
-    "max-height": popupHeight-70,
+    "max-height": popupHeight-92,
   });
 }
 

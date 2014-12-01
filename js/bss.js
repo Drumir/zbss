@@ -55,7 +55,7 @@ window.onload = function() {          //
   document.getElementById('statusName').onclick = onStatusNameClick;
   document.getElementById('comment').onkeypress = commentOnKey;
   document.getElementById('sPass').onkeypress = sPassKeyPress;
-  document.getElementById('leftPopupTicket').onclick = onLeftTPopupClick;
+  document.getElementById('popupTicket').onclick = onTPopupClick;
   document.getElementById('searchStr').oninput = onSearchInput;
   document.getElementById('searchClient').oninput = onSearchClientInput;
   document.getElementById('searchTT').onkeydown = onTTKeyPress;
@@ -296,8 +296,6 @@ function onMainTBodyClick(e) {
     document.getElementById('popupTicket').iidd = e.target.parentNode.iidd; // Сразу передадим в popupTicket id отображаемого тикета
     highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt()
     showIt();
-    if(Tickets[e.target.parentNode.iidd].attention === true)
-      Tickets[e.target.parentNode.iidd].attention = false;
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
   }
   if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && (e.ctrlKey == true || e.shiftKey == true) ){    // Если щелкнули по статусу c ctrl или shift
@@ -332,7 +330,7 @@ function onMainTBodyClick(e) {
   Ориентироваться на названия кнопок из Tickets[id].permissions
 */
 
-function onLeftTPopupClick(e) {
+function onTPopupClick(e) {
   var tid = document.getElementById('popupTicket').iidd;
   if(tid === undefined){ return;}
 

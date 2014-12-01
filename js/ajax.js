@@ -129,14 +129,15 @@ function callbackGetTicket(data, textStatus) {
     ltb.children[0].children[1].innerText = tid;
     ltb.children[1].children[1].innerText = tb.children[1].children[1].innerText;   // Создан
     ltb.children[2].children[1].innerText = tb.children[2].children[1].innerText;   // Заголовок
-    ltb.children[3].children[0].children[0].innerText = "В закладки"; if(Tabs[tid] != undefined) ltb.children[3].children[0].children[0].innerText = "Из закладок";
-    ltb.children[4].children[1].innerText = tb.children[4].children[1].innerText;   // Автор
-    ltb.children[5].children[1].innerText = tb.children[5].children[1].innerText;   // Отв. лицо
-    ltb.children[6].children[1].innerText = tb.children[6].children[1].innerText;   // Приоритет
-    ltb.children[7].children[1].innerText = tb.children[7].children[1].innerText;   // Статус
-    ltb.children[8].children[1].innerText = tb.children[8].children[1].innerText;   // Регион
-    ltb.children[9].children[1].innerHTML = tb.children[9].children[1].innerHTML;   // Клиент
-    ltb.children[10].children[1].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
+    ltb.children[3].children[1].innerText = tb.children[4].children[1].innerText;   // Автор
+    ltb.children[4].children[1].innerText = tb.children[5].children[1].innerText;   // Отв. лицо
+    ltb.children[5].children[1].innerText = tb.children[6].children[1].innerText;   // Приоритет
+    ltb.children[6].children[1].innerText = tb.children[7].children[1].innerText;   // Статус
+    ltb.children[7].children[1].innerText = tb.children[8].children[1].innerText;   // Регион
+    ltb.children[8].children[1].innerHTML = tb.children[9].children[1].innerHTML;   // Клиент
+    ltb.children[9].children[1].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
+
+    document.getElementById('toTabs').innerText = "В закладки"; if(Tabs[tid] != undefined) document.getElementById('toTabs').innerText = "Из закладок";
 
     if(permissions.indexOf("Подтвердить") != -1){ // Если принятие заявки не подтверждено - выделим цветом
       ltb.children[5].children[1].style.backgroundColor = "#FFA500";
@@ -144,9 +145,9 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('hTable').innerHTML = "";
     delete tb;
     document.getElementById('tempDiv').innerHTML = "";
+//    document.getElementById('historyDiv').height = document.getElementById('leftPopupTicket').height - 75;
     loadPopupTicket();
     centerPopupTicket();
-    document.getElementById('historyDiv').height = document.getElementById('leftPopupTicket').height - 75;
     $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
   }
 }
