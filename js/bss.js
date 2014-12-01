@@ -683,6 +683,12 @@ function prepareToAnsi(){
       if (n <= 0xFF)
         ret.push(n);
     }
-    return escape(String.fromCharCode.apply(null, ret));
+    var s = escape(String.fromCharCode.apply(null, ret));
+    var j = s.indexOf("+");                              // Перекодировка "+"
+    while(j != -1) {
+      s = s.substring(0, j) + "%2B" + s.substring(j+1);
+      j = s.indexOf("+");
+    }
+    return s;
   }
 }
