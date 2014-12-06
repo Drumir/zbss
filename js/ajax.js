@@ -135,7 +135,7 @@ function callbackGetTicket(data, textStatus) {
     ltb.children[6].children[1].innerText = tb.children[7].children[1].innerText;   // Статус
     ltb.children[7].children[1].innerText = tb.children[8].children[1].innerText;   // Регион
     ltb.children[8].children[1].innerHTML = tb.children[9].children[1].innerHTML;   // Клиент
-    ltb.children[9].children[1].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
+    ltb.children[9].children[1].children[0].innerHTML = tb.children[10].children[1].innerHTML;   // Текст. Замени на innerText и появится перенос строк!
 
     document.getElementById('toTabs').innerText = "В закладки"; if(Tabs[tid] != undefined) document.getElementById('toTabs').innerText = "Из закладок";
 

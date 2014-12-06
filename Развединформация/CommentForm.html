@@ -1,0 +1,20 @@
+    <form method="post" action="trouble_ticket_status_process.asp">
+   
+          <select id="branchlist" name="branch_id" onChange="GetCPList()" class="elemRound" style="width: 400px"></select>
+          <select id="resp_person_id" name="resp_person_id" class="elemRound" style="width: 400px"></select>
+          <select name="trouble_type_closed" id="trouble_type_closed" class="elemRound" style="width: 400px" onclick="getSubClass()"></select>
+          <select name="trouble_subtype_closed" id="trouble_subtype_closed" class="elemRound" style="width: 400px"></select>
+          <select name="trouble_type_name" class="elemRound"></select>
+          <select name="trouble_type_resolution" class="elemRound"></select>
+          <select name="trouble_root_tt" class="elemRound" id="rootTT" style="width:400px"></select>            
+          <input type="checkbox" name="is_group" value="1">
+      
+          <input type="hidden" name="id" value="54071">
+          <input type="hidden" name="status_id" value="0">
+          <input type="hidden" name="region_id" value="28">
+          <textarea rows="10" cols="75" name="comment"></textarea>
+      
+          <input class="inpButton" title="Изменить статус"               type="button" value="Service / Обслуживание" onClick="if (confirm('Изменить статус?')) {this.form.status_id.value = 2; this.form.submit();} else {}">
+          <input class="inpButton" title="Назначить ответственное лицо"  type="button" value="Ответственное лицо" onClick="if (confirm('Вы действительно желаете определить ответственное лицо? После такого определения часть функций может стать недоступна.')) {this.form.status_id.value = -1; this.form.submit();} else {}">
+          <input class="inpButton" title="Оставить комментарий"          type="button" value="Комментарий" onClick="this.form.status_id.value = 0; this.form.submit();"></div>
+    </form>

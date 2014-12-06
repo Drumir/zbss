@@ -14,7 +14,7 @@ https://developer.chrome.com/extensions/api_index.html
 <button id="ppBtnCGS" disabled="true" style="width:280px">Сохранить. На себя. В обслуживание</button>
 По номеру магаза в забиксе можно искать RB и к примеру, давать график пинга
 Раскрасить статусы
-
+Для проверки проблем с высотой PopupTicket тикеты 57577
 https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp не вызывает калбек!!!
 
 

@@ -157,8 +157,8 @@ hr {
   border:solid 1px black;
 }
 
-#leftPopupTicket {
-  max-height: 700px;
-  max-width: 330px;
+#leftPopupTicketDescription {
+  max-height: 300px;
+  /*max-width: 330px;*/
   overflow-y: auto;
 }
