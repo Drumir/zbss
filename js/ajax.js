@@ -110,7 +110,7 @@ function callbackLoadTickets(data, textStatus) {
 }
 
 function callbackGetTicket(data, textStatus) {
-  var tid, permissions;
+  var tid, permissions, t, h, m, str;
   if(data != null) {  // null ли?!
     document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
     var tb = document.getElementById('PrintArea').children[1].children[0];    // исходная таблица
@@ -145,7 +145,22 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('hTable').innerHTML = "";
     delete tb;
     document.getElementById('tempDiv').innerHTML = "";
-//    document.getElementById('historyDiv').height = document.getElementById('leftPopupTicket').height - 75;
+
+    document.getElementById('timeLeft').innerText = " через  0ч  0м";
+    var now = new Date();
+    now = now.getTime();
+    if(Tickets[tid].timer > now){
+      t = Math.floor((Tickets[tid].timer - now) / 60000);
+      h = Math.floor(t/60);
+      m = t - h*60;
+      str = "&nbsp;через&nbsp;";
+      if(h < 10) str += "&nbsp";
+      str += h + "ч&nbsp;";
+      if(m < 10) str += "&nbsp";
+      str += m + "м";
+      document.getElementById('timeLeft').innerHTML = str;
+    }
+
     loadPopupTicket();
     centerPopupTicket();
     $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");

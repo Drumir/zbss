@@ -73,6 +73,7 @@ window.onload = function() {          //
   document.getElementById('plLogin').onclick = onLoginClick;
   document.getElementById('selectClient').onclick = qSelectClientClick;
   document.getElementById('tabsTable').onclick = onTabsClick;
+  document.getElementById('PTtimer').onclick = setTimer;
 
   mtb = document.getElementById('mainTBody');
 
@@ -176,9 +177,9 @@ function showIt() {         // Отображает таблицу тикетов
     ttr.iidd = Tickets[key].id;
 
     str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td>' + Tickets[key].status;
-    if(Tickets[key].attention === true){
+/*    if(Tickets[key].attention === true){
       str += '(НП)';
-    }
+    }*/
     str += '</td><td>' + Tickets[key].data_open + '</td><td>' + Tickets[key].region + '</td><td>' + Tickets[key].author + '</td><td>' + Tickets[key].otv + '</td><td>' + Tickets[key].client + '</td><td>' + Tickets[key].name + '</td><td width = "100px">' + Tickets[key].clas + '</td></tr>';
     ttr.innerHTML = str;
     ttr.children[0].children[0].checked = Tickets[key].checked;
@@ -220,7 +221,7 @@ function renewTickets(data) {
                                             // 	{ "id":"52956", "status":"Service / Обслуживание", "data_open":"05.09.2014 21:42", "data_res":"", "data_close":"", "region":"RST", "author":"Сорокин Е. Г.", "otv":"Сорокин Е. Г.", "client":"*M.VIDEO*", "name":"Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157", "clas":"", "filial":"Ростовская область", "is_group":"-", "branch":"Технический департамент (МегаМакс).<br>МЕГАМАКС" }
     tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
     tt.permissions = "";                    // Названия всех доступных в тикете кнопок разделенные "***"
-    tt.timer = -1;                          // Таймер-напоминалка отключен
+    tt.timer = 0;                          // Таймер-напоминалка отключен
 
     if(Tickets[tt.id] === undefined){       // Если такого тикета в списке еще нет, добавим
       Tickets[tt.id] = tt;
@@ -691,4 +692,48 @@ function prepareToAnsi(){
     }
     return s;
   }
+}
+
+function setTimer(e){
+  var tid = document.getElementById('popupTicket').iidd;
+  var now = new Date();
+  now = now.getTime();
+  if(Tickets[tid].timer < now)
+    Tickets[tid].timer = now;
+
+  switch(e.target.id){
+    case "plus5": {
+      Tickets[tid].timer += 5;
+      break;
+    }
+    case "plus15": {
+      Tickets[tid].timer += 15*60000;
+      break;
+    }
+    case "plus1": {
+      Tickets[tid].timer += 60*60000;
+      break;
+    }
+    case "plus3": {
+      Tickets[tid].timer += 180*60000;
+      break;
+    }
+    case "plus6": {
+      Tickets[tid].timer += 360*60000;
+      break;
+    }
+    case "plus0": {
+      Tickets[tid].timer = 0;
+      break;
+    }
+  }
+  var t = Math.floor((Tickets[tid].timer - now)/60000);
+  var h = Math.floor(t/60);
+  var m = t - h*60;
+  var str = "&nbsp;через&nbsp;";
+  if(h < 10) str += "&nbsp";
+  str += h + "ч&nbsp;";
+  if(m < 10) str += "&nbsp";
+  str += m + "м";
+  document.getElementById('timeLeft').innerHTML = str;
 }
