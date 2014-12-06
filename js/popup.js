@@ -316,6 +316,8 @@ function centerPopupTicket() {
   $("#historyDiv").css({
     "max-height": popupHeight-92,
   });
+
+  document.getElementById('comment').focus();
 }
 
 function loadPopupLogin() {

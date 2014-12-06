@@ -36,7 +36,7 @@
   <textarea id="hiddenText" hidden="true">This text invisible</textarea>
   <table id="tabsTable" border=1 width=100%>
     <tbody>
-      <tr id="tabs">
+      <tr id="tabs" style='background-color:#999999'>
       </tr>
     </tbody>
   </table>
@@ -102,12 +102,12 @@
   </div>
 
   <div id="popupTicket" cellpadding="1">
-    <table border ="0" cellpadding="1" contenteditable="true">
+    <table border ="0" cellpadding="1">
       <tr>
         <td id="leftPopupTicket" valign="top">
           <table cellpadding="5" cellspacing="1" border="1">
-            <tbody id="leftPTtBody">
-              <tr><td style="width:75px">Номер ТТ</td><td style="width:255px"></td></tr>
+            <tbody id="leftPTtBody" contenteditable="true">
+              <tr><td style="width:100px">Номер ТТ</td><td style="width:255px"></td></tr>
               <tr><td>Создан</td><td></td></tr>
               <tr><td>Заголовок</td><td></td></tr>
               <tr><td>Автор</td><td></td></tr>
@@ -122,7 +122,7 @@
         </td>
         <td id="rightPopupTicket" width="710px" valign="bottom">
           <div id="historyDiv">
-            <table id=hTable></table>
+            <table id=hTable contenteditable="true"></table>
           </div>
           <textarea id="comment" style="width:704px; height:55px"></textarea>
         </td>

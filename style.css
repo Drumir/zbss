@@ -113,7 +113,7 @@ hr {
   color: #0A0A0A;
   display: none;
   _position: absolute;
-  width: 1050px;
+  width: 1075px;
   background: #FFFFFF;
   border: 1px solid #cecece;
   z-index: 3;
@@ -154,7 +154,7 @@ hr {
   max-height: 490px;
   max-width: 712px;
   overflow-y: auto;
-  border:solid 1px black;
+/*  border:solid 1px black;*/
 }
 
 #leftPopupTicketDescription {
