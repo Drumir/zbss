@@ -140,7 +140,7 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('toTabs').innerText = "В закладки"; if(Tabs[tid] != undefined) document.getElementById('toTabs').innerText = "Из закладок";
 
     if(permissions.indexOf("Подтвердить") != -1){ // Если принятие заявки не подтверждено - выделим цветом
-      ltb.children[5].children[1].style.backgroundColor = "#FFA500";
+      ltb.children[4].children[1].style.backgroundColor = "#FFA500";
     }
     document.getElementById('hTable').innerHTML = "";
     delete tb;

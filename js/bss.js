@@ -51,6 +51,7 @@ window.onload = function() {          //
   document.getElementById('buttonRenew').onclick = onBtnRenewClick;
   document.getElementById('buttonRenew').disabled = false;
   document.getElementById('mainTBody').onclick = onMainTBodyClick;
+  document.getElementById('mainTBody').onmousedown = onMTBmouseDown;
   document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
   document.getElementById('statusName').onclick = onStatusNameClick;
   document.getElementById('comment').onkeypress = commentOnKey;
@@ -147,6 +148,24 @@ function oneMoreSecond(){
     refreshTime = 60;
     netTimeout = 0;        // остановим отсчет.
   }
+  var fNeedRepaint = false;
+  var now = new Date();
+  now = now.getTime();
+  for(var key in Tickets) {
+    if(Tickets[key].timer != 0 && Tickets[key].timer < now){
+//      Tickets[key].timer = 0;
+      Tickets[key].attention = true;   // Пометим тикет как требующий внимания
+      fNeedRepaint = true;
+      if(Tabs[key] == undefined){
+        var tab = {};
+        tab.name = Tickets[key].name;
+        tab.text = "";
+        Tabs[key] = tab;               // Добавим тикет в закладки
+      }
+
+    }
+  }
+  if(fNeedRepaint) {showIt();}
 }
 
 function showIt() {         // Отображает таблицу тикетов
@@ -154,13 +173,16 @@ function showIt() {         // Отображает таблицу тикетов
   var stat = {begin:0, service:0, resolved:0, investigating:0, hold:0, closed:0};
 
   document.getElementById('tabsTable').hidden = true;      // Спрячем панель закладок
-  for(var key in Tabs) {                                   // Заполним панель закладками
-    str = '<td id="' + key + '">' + key + ' ' + Tabs[key].name + '</td>' + str;
-  }
-  if(str.length > 0) {                                     // Если есть хоть одна закладка, покажем панель
+  if(Object.keys(Tabs).length > 0){                          // Если есть закладки - отобразим их
+    str = "";
+    for(var key in Tabs) {                                   // Сформируем HTML код панели закладок
+      if(Tickets[key].attention === true){ str += '<td id="' + key + '" style="background-color:#F87777">';}
+      else {str += '<td id="' + key + '">';}
+      str += key + ' ' + Tabs[key].name + '</td>';
+    }
+    document.getElementById('tabs').innerHTML = str;
     document.getElementById('tabsTable').hidden = false;
   }
-  document.getElementById('tabs').innerHTML = str;
 
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
@@ -177,9 +199,6 @@ function showIt() {         // Отображает таблицу тикетов
     ttr.iidd = Tickets[key].id;
 
     str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td>' + Tickets[key].status;
-/*    if(Tickets[key].attention === true){
-      str += '(НП)';
-    }*/
     str += '</td><td>' + Tickets[key].data_open + '</td><td>' + Tickets[key].region + '</td><td>' + Tickets[key].author + '</td><td>' + Tickets[key].otv + '</td><td>' + Tickets[key].client + '</td><td>' + Tickets[key].name + '</td><td width = "100px">' + Tickets[key].clas + '</td></tr>';
     ttr.innerHTML = str;
     ttr.children[0].children[0].checked = Tickets[key].checked;
@@ -194,7 +213,10 @@ function showIt() {         // Отображает таблицу тикетов
     }
 
     if(key == highlightedTT){
-      ttr.style.backgroundColor = "#FFFFCC";
+      ttr.style.backgroundColor = "#FFFFCC"; // Выделеный тикет
+    }
+    if(Tickets[key].attention === true){
+      ttr.style.backgroundColor = "#F87777"; // Тикет требующий внимания
     }
     mtb.insertBefore(ttr, mtb.children[0]);
   }
@@ -323,6 +345,19 @@ function onMainTBodyClick(e) {
   if(e.target.nodeName === "TD" && e.target.cellIndex === 7 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
     document.getElementById('searchClient').value = e.target.innerText;
     document.getElementById('searchClient').oninput();
+  }
+}
+
+function onMTBmouseDown(e) {             // Функция отлавливает и обрабатывает щелчёк колесиком
+  if(e.button === 1) {                   // Если щелкнули колесиком
+    var tid = e.target.parentNode.iidd;  // Определим id щелкнутого тикета
+    if(Tabs[tid] === undefined){         // Если в закладках еще нет такого тикета
+      var tab = {};
+      tab.name = Tickets[tid].name;  // Запомним имя для отображения
+      tab.text = "";
+      Tabs[tid] = tab;
+    }
+    showIt();
   }
 }
 
@@ -702,38 +737,43 @@ function setTimer(e){
     Tickets[tid].timer = now;
 
   switch(e.target.id){
-    case "plus5": {
-      Tickets[tid].timer += 5;
+    case "plus5m": {
+      Tickets[tid].timer += 5*60000;
       break;
     }
-    case "plus15": {
+    case "plus15m": {
       Tickets[tid].timer += 15*60000;
       break;
     }
-    case "plus1": {
+    case "plus1h": {
       Tickets[tid].timer += 60*60000;
       break;
     }
-    case "plus3": {
+    case "plus3h": {
       Tickets[tid].timer += 180*60000;
       break;
     }
-    case "plus6": {
+    case "plus6h": {
       Tickets[tid].timer += 360*60000;
       break;
     }
     case "plus0": {
       Tickets[tid].timer = 0;
+      Tickets[tid].attention = false;
+      showIt();
       break;
     }
   }
-  var t = Math.floor((Tickets[tid].timer - now)/60000);
-  var h = Math.floor(t/60);
-  var m = t - h*60;
-  var str = "&nbsp;через&nbsp;";
-  if(h < 10) str += "&nbsp";
-  str += h + "ч&nbsp;";
-  if(m < 10) str += "&nbsp";
-  str += m + "м";
+  var str =  '&nbsp;через&nbsp;&nbsp;0ч&nbsp;&nbsp;0м';
+  if(Tickets[tid].timer != 0){
+    var t = Math.floor((Tickets[tid].timer - now)/60000);
+    var h = Math.floor(t/60);
+    var m = t - h*60;
+    str = "&nbsp;через&nbsp;";
+    if(h < 10) str += "&nbsp";
+    str += h + "ч&nbsp;";
+    if(m < 10) str += "&nbsp";
+    str += m + "м";
+  }
   document.getElementById('timeLeft').innerHTML = str;
 }

@@ -16,6 +16,9 @@ https://developer.chrome.com/extensions/api_index.html
 Раскрасить статусы
 Для проверки проблем с высотой PopupTicket тикеты 57577
 https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp не вызывает калбек!!!
+Вероятно если сделать addEventListener(onclick), то станет возможным выделение текста и на не editable элементах. Проверить
+
+Интергация с ZABBIX !!!!!!!!!!!!!!!!!!! Поиск адреса по номеру магаза, поиск по 2 и более словам (наложением (&) 2 найденных списков)
 
 
 +Статистика заявок в главном окне
