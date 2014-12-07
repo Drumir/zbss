@@ -135,7 +135,7 @@ function callbackGetTicket(data, textStatus) {
     ltb.children[6].children[1].innerText = tb.children[7].children[1].innerText;   // Статус
     ltb.children[7].children[1].innerText = tb.children[8].children[1].innerText;   // Регион
     ltb.children[8].children[1].innerHTML = tb.children[9].children[1].innerHTML;   // Клиент
-    ltb.children[9].children[1].children[0].innerHTML = tb.children[10].children[1].innerHTML;   // Текст. Замени на innerText и появится перенос строк!
+    ltb.children[9].children[1].children[0].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
 
     document.getElementById('toTabs').innerText = "В закладки"; if(Tabs[tid] != undefined) document.getElementById('toTabs').innerText = "Из закладок";
 
@@ -146,20 +146,30 @@ function callbackGetTicket(data, textStatus) {
     delete tb;
     document.getElementById('tempDiv').innerHTML = "";
 
-    document.getElementById('timeLeft').innerText = " через  0ч  0м";
+    if(Tickets[tid] != undefined && Tickets[tid].timer === 0){
+      document.getElementById('timeLeft').style.fontWeight = "normal";
+      document.getElementById('timeLeft').innerHTML = "&nbsp;&nbsp;&nbsp;отключен&nbsp;&nbsp;&nbsp;";
+      document.getElementById('timeLeft').style.color = "#666666";
+    }
     var now = new Date();
     now = now.getTime();
-    if(Tickets[tid].timer > now){
+    if(Tickets[tid] != undefined && Tickets[tid].timer > now){
       t = Math.floor((Tickets[tid].timer - now) / 60000);
       h = Math.floor(t/60);
       m = t - h*60;
-      str = "&nbsp;через&nbsp;";
+      str = "осталось";
       if(h < 10) str += "&nbsp";
       str += h + "ч&nbsp;";
       if(m < 10) str += "&nbsp";
       str += m + "м";
+      if(t === 0) str = "осталось < 1 м";
+      document.getElementById('timeLeft').style.fontWeight = "bold";
+      document.getElementById('timeLeft').style.color = "#113311";
       document.getElementById('timeLeft').innerHTML = str;
     }
+
+    if(Tickets[tid] != undefined && Tickets[tid].attention === true) Tickets[tid].attention = false; //При открытии требующего внимания тикета, отметка сбрасывается
+    showIt();
 
     loadPopupTicket();
     centerPopupTicket();
@@ -170,14 +180,19 @@ function callbackGetTicket(data, textStatus) {
 function callbackGetHistory(data, textStatus) {
   if(data != null) {  // null ли?!
     var innerHTML = "";
+    var ht = document.getElementById('hTable');
+    ht.hidden = true;
+    ht.innerHTML = "";
     document.getElementById('comment').value = "";
     if(Tabs[document.getElementById('popupTicket').iidd] != undefined) {  // Если этот тикет ест во вкладках, восстановим набранный в comment текст
       document.getElementById('comment').value = Tabs[document.getElementById('popupTicket').iidd].text;
     }
     for(var i = 0; i < data.rows.length;  i ++) {
+      var ttr = document.createElement('tr');
       arrFio = data.rows[i].fio.split(" ", 3);
       fio = arrFio[0] + " " + arrFio[1].substring(0,1) + ". " + arrFio[2].substring(0,1) + ".";
-      innerHTML += '<tr align="left" style="color:#1111bb"><td><b>' + ' ' + fio + '('+ data.rows[i].date +') ';
+
+      innerHTML = '<td style="color:#1111bb"><b>' + ' ' + fio + '('+ data.rows[i].date +') ';
       if(data.rows[i].action.indexOf("Назначено ответственное лицо") != -1){
         innerHTML += "<IMG SRC='/images/arrow.png'> " + fullName2FIO(data.rows[i].action.substring(29));
       }
@@ -190,12 +205,16 @@ function callbackGetHistory(data, textStatus) {
       else {
         innerHTML += data.rows[i].action;
       }
-      innerHTML += '<b></td></tr>';
+      innerHTML += '</b></td>';
+      ttr.innerHTML = innerHTML;
+      ht.appendChild(ttr);
       if(data.rows[i].comment.length > 1){
-        innerHTML += '<tr style="color:#330000"><td>&nbsp;' + data.rows[i].comment + '</td></tr>';
+        ttr = document.createElement('tr');
+        ttr.innerHTML = '<td>&nbsp;' + data.rows[i].comment + '</td>';
+        ht.appendChild(ttr);
       }
     }
-    document.getElementById('hTable').innerHTML = innerHTML;
+    ht.hidden = false;
   }
 
 }

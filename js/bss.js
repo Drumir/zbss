@@ -74,6 +74,7 @@ window.onload = function() {          //
   document.getElementById('plLogin').onclick = onLoginClick;
   document.getElementById('selectClient').onclick = qSelectClientClick;
   document.getElementById('tabsTable').onclick = onTabsClick;
+  document.getElementById('tabsTable').onmousedown = onTabsMouseDown;
   document.getElementById('PTtimer').onclick = setTimer;
 
   mtb = document.getElementById('mainTBody');
@@ -153,15 +154,15 @@ function oneMoreSecond(){
   now = now.getTime();
   for(var key in Tickets) {
     if(Tickets[key].timer != 0 && Tickets[key].timer < now){
-//      Tickets[key].timer = 0;
+      Tickets[key].timer = 0;          // Отключим таймер
       Tickets[key].attention = true;   // Пометим тикет как требующий внимания
       fNeedRepaint = true;
-      if(Tabs[key] == undefined){
+ /*     if(Tabs[key] == undefined){    // Добавим тикет в закладки
         var tab = {};
         tab.name = Tickets[key].name;
         tab.text = "";
-        Tabs[key] = tab;               // Добавим тикет в закладки
-      }
+        Tabs[key] = tab;
+      }    */
 
     }
   }
@@ -171,6 +172,7 @@ function oneMoreSecond(){
 function showIt() {         // Отображает таблицу тикетов
   var str = "";
   var stat = {begin:0, service:0, resolved:0, investigating:0, hold:0, closed:0};
+  var fNeedAttention = false;    // Флаг, что у какого-то тикета вышел таймер и он требует внимания
 
   document.getElementById('tabsTable').hidden = true;      // Спрячем панель закладок
   if(Object.keys(Tabs).length > 0){                          // Если есть закладки - отобразим их
@@ -217,10 +219,13 @@ function showIt() {         // Отображает таблицу тикетов
     }
     if(Tickets[key].attention === true){
       ttr.style.backgroundColor = "#F87777"; // Тикет требующий внимания
+      fNeedAttention = true;
     }
     mtb.insertBefore(ttr, mtb.children[0]);
   }
-  document.getElementById('statusFieldRight').innerText = "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
+  document.getElementById('statusFieldRight').innerHTML = "";
+  if(fNeedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
+  document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
 function renewTickets(data) {
@@ -698,6 +703,14 @@ function onTabsClick(e){
   }
 }
 
+
+function onTabsMouseDown(e){
+  if(e.button === 1){
+    delete Tabs[e.target.id];
+    showIt();
+  }
+}
+
 function prepareToAnsi(){
 // Инициализируем таблицу перевода
   for (var i = 0x410; i <= 0x44F; i++) {
@@ -764,16 +777,23 @@ function setTimer(e){
       break;
     }
   }
-  var str =  '&nbsp;через&nbsp;&nbsp;0ч&nbsp;&nbsp;0м';
-  if(Tickets[tid].timer != 0){
+  if(Tickets[tid] != undefined && Tickets[tid].timer === 0){
+    document.getElementById('timeLeft').style.fontWeight = "normal";
+    document.getElementById('timeLeft').innerHTML = "&nbsp;&nbsp;&nbsp;отключен&nbsp;&nbsp;&nbsp;";
+    document.getElementById('timeLeft').style.color = "#666666";
+  }
+  if(Tickets[tid] != undefined && Tickets[tid].timer != 0){
     var t = Math.floor((Tickets[tid].timer - now)/60000);
     var h = Math.floor(t/60);
     var m = t - h*60;
-    str = "&nbsp;через&nbsp;";
+    str = "&nbsp;&nbsp;через&nbsp;&nbsp;";
     if(h < 10) str += "&nbsp";
     str += h + "ч&nbsp;";
     if(m < 10) str += "&nbsp";
     str += m + "м";
+    if(t === 0) str = "осталось < 1 м";
+    document.getElementById('timeLeft').style.fontWeight = "bold";
+    document.getElementById('timeLeft').style.color = "#113311";
+    document.getElementById('timeLeft').innerHTML = str;
   }
-  document.getElementById('timeLeft').innerHTML = str;
 }
