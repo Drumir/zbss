@@ -308,14 +308,6 @@ function onThsStatusMouseUp(e){  // После onchange будет onmouseup из которого м
   }
 }
 
-function onHeadChBoxClick(){
-  var flag = document.getElementById('headChBox').checked;
-  for (var i = 0; i < mtb.childElementCount; i ++) {
-    Tickets[mtb.children[i].iidd].checked = flag;
-  }
-  showIt();
-}
-
 function onMainTBodyClick(e) {
   if(e.target.nodeName === "INPUT") {
     Tickets[e.target.parentNode.parentNode.iidd].checked = e.target.checked;
@@ -371,55 +363,6 @@ function onMTBmouseDown(e) {             // Функция отлавливает и обрабатывает щ
   Ориентироваться на названия кнопок из Tickets[id].permissions
 */
 
-function onTPopupClick(e) {
-  var tid = document.getElementById('popupTicket').iidd;
-  if(tid === undefined){ return;}
-
-  switch(e.target.id){
-    case "otv":{     // Клик был по ответственному лицу.
-      if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
-        $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
-        loadTickets();
-        return;
-      }
-      if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
-        for (var key in Tickets) {
-          Tickets[key].checked = false;
-        }
-        Tickets[tid].checked = true;
-        loadPopupTransfer();
-        centerPopupTransfer();
-        return;
-      }
-      break;
-    }
-    case "stat":{     // Клик был по статусу.
-      document.getElementById('popupStatus').iidd = tid; // Сразу передадим в popupStatus id отображаемого тикета
-      loadPopupStatus();
-      centerPopupStatus();
-      break;
-    }
-    case "toTabs":{     // Клик был по "В закладки".
-      if(Tabs[tid] === undefined){
-        var tab = {};
-        tab.name = Tickets[tid].name;  // Запомним имя для отображения
-        tab.text = document.getElementById('comment').value; // Запомним набираемый текст
-        Tabs[tid] = tab;
-      }else{
-        delete Tabs[tid];
-      }
-      disablePopup();
-      showIt();
-      break;
-    }
-    case "plus05":{     // Клик по добавить 0,5 часа.
-      break;
-    }
-    case "plus1":{     // Клик по добавить 1 час.
-      break;
-    }
-  }
-}
 
 function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в попап Status (Обслуживание, решена, закрыта и т.д)
   var tid = document.getElementById('popupTicket').iidd;
@@ -502,93 +445,11 @@ function onStatusNameClick(e) {   // По клику на имени залогиненого пользователя
   }
 }
 
-function onBtnMoveClick(e) {
-  loadPopupTransfer();
-  centerPopupTransfer();
-}
-
 function onBtnRenewClick(e) {
   loadTickets();
   refreshTime = 60;
 }
-function onBtnNewTTClick (e) {
-  loadPopupNewTT();
-  centerPopupNewTT();
-}
 
-function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет -> Сохранить
-  if($("#shortTTDescr")[0].value.length < 10) return;
-  if($("#TTDescr")[0].value.length < 10) return;
-  if($("#ppClient")[0].selectedIndex === 0) return;
-  if($("#ppRegion")[0].selectedIndex === 0) return;
-  var id = document.getElementById('ppRegion');
-  var rid = id[id.selectedIndex].value;
-  id = document.getElementById('ppClient');
-  var cid = id[id.selectedIndex].value;
-  var param = "id=0&ip=&name=" + encodeURIComponent($("#shortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
-  param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#TTDescr")[0].value);
-  $.ajax({
-    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp",
-    type: "POST",
-    data: param,
-    dataType : "html",
-    contentType : "application/x-www-form-urlencoded; charset=windows-1251",
-    success : onTtEditProcessSuccess
-  });
-  disablePopup();
-}
-function onTtEditProcessSuccess(data, textStatus) {  // Callback для соседней функции onBtnSaveTTClick(e)
-  delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
-  loadTickets();
-  refreshTime = 60;
-}
-
-function onBtnAlertClick (e) {
-  var str = $("#TTDescr")[0].value;
-  if(str.length === 0){
-    $("#TTDescr")[0].selectionStart = 0;                                              // Копируем список в буфер обмена
-    $("#TTDescr")[0].selectionEnd = str.length;
-    document.execCommand("Paste");
-    str = $("#TTDescr")[0].value;
-  }
-  var adr0 = str.indexOf("№ удаленного объекта");
-  if(adr0 != -1) {str = str.substring(adr0);}
-  var adr1 = str.indexOf("Город: ");
-  var adr2 = str.indexOf("Адрес: ");
-  var adr3 = str.indexOf("Канал: ");
-  if(adr1 === -1 || adr2 === -1 || adr2 === -1) return;
-  $("#shortTTDescr")[0].value = str.substring(adr1 + 7, adr2-1) + ", " + str.substring(adr2 + 7, adr3-1);
-  for(var i = 0; i < organization_id.length && organization_id[i].text != "*M.VIDEO*"; i ++){}  // Найдем в списке организаций мвидео
-  if(i != organization_id.length) {
-    document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
-  }
-  var adr4 = str.indexOf("**************************");
-  if(adr4 != -1) {str = str.substring(0, adr4-1);}
-  $("#TTDescr")[0].value = str;
-  var city = str.substring(adr1 + 7, adr2-1);
-  if(city === "Москва" || city === "Санкт-Петербург"){
-    for(var i = 1; i < tt_region.length; i ++){
-      if(tt_region[i].text === city){
-        document.getElementById('ppRegion').selectedIndex = i;
-      }
-    }
-  }
-  else {
-    document.getElementById('ppRegion')[0].text = "Определение региона";
-    document.getElementById('ppRegion').disabled = true;
-    document.getElementById('wikiLink').text = str.substring(adr1 + 7, adr2-1);
-    $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1)}, cbWiki, "html");
-  }
-}
-
-function qSelectClientClick(e){
-  if(e.target.id === "qSelectClient"){
-    for(var i = 0; i < organization_id.length && organization_id[i].text != e.target.text; i ++);  // Найдем в списке организаций щелкнутоо клиента
-    if(i != organization_id.length) {
-      document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
-    }
-  }
-}
 function onBodyResize() {
    document.body.style.maxHeight = (window.innerHeight - 31) + "px";
 }
@@ -600,30 +461,6 @@ function setStatus(status) {
 function onMainTBodyKeyPress(e){
   if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){
 
-  }
-}
-
-function commentOnKey(e){     //$.ajax версия
-  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){     // Нужна проверка на максимальную длинну
-    var str = document.getElementById('comment').value;
-    document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
-    var converted_str = encodeURIComponent(str);
-    var iidd = document.getElementById('popupTicket').iidd;
-    var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
-    $.ajax({
-      url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
-      type: "POST",
-      data: param,
-      dataType : "html",
-      contentType : "application/x-www-form-urlencoded; charset=windows-1251",
-    })
-  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
-  }
-}
-
-function sPassKeyPress(e){     //Нажатие Ентер в окне ввода пароля
-  if(e.keyIdentifier === "Enter" && document.getElementById('sPass').value.length > 0){     //
-    onLoginClick();
   }
 }
 
@@ -669,26 +506,6 @@ function onResetFilterClick() {   // Сброс всех фильтров
   showIt();
 }
 
-function openWikiLink() {
-  window.open("https://ru.wikipedia.org/w/index.php?search=" + document.getElementById('wikiLink').text, null, null);
-// $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1), title:"Служебная:Поиск", go:"Перейти" }, cbWiki, "html");
-}
-
-function onLoginClick() {
-  setStatus("Авторизация  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Autorization' TITLE='Autorization'>");
-  var par = {};
-  par.refer = "";
-  par.hex = hex_md5(document.getElementById('sPass').value);
-  par.tries = "-1";
-  par.user = document.getElementById('sLogin').value;
-  par.password = document.getElementById('sPass').value;
-  mySetTimeout(12, "Ошибка авторизации");
-  $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
-  document.getElementById('sLogin').value = "";           // Сотрем имя пользователя
-  document.getElementById('sPass').value = "";            // Сотрем пароль
-  disablePopup();
-
-}
 
 function onTabsClick(e){
   if(e.ctrlKey == false){
@@ -742,58 +559,3 @@ function prepareToAnsi(){
   }
 }
 
-function setTimer(e){
-  var tid = document.getElementById('popupTicket').iidd;
-  var now = new Date();
-  now = now.getTime();
-  if(Tickets[tid].timer < now)
-    Tickets[tid].timer = now;
-
-  switch(e.target.id){
-    case "plus5m": {
-      Tickets[tid].timer += 5*60000;
-      break;
-    }
-    case "plus15m": {
-      Tickets[tid].timer += 15*60000;
-      break;
-    }
-    case "plus1h": {
-      Tickets[tid].timer += 60*60000;
-      break;
-    }
-    case "plus3h": {
-      Tickets[tid].timer += 180*60000;
-      break;
-    }
-    case "plus6h": {
-      Tickets[tid].timer += 360*60000;
-      break;
-    }
-    case "plus0": {
-      Tickets[tid].timer = 0;
-      Tickets[tid].attention = false;
-      showIt();
-      break;
-    }
-  }
-  if(Tickets[tid] != undefined && Tickets[tid].timer === 0){
-    document.getElementById('timeLeft').style.fontWeight = "normal";
-    document.getElementById('timeLeft').innerHTML = "&nbsp;&nbsp;&nbsp;отключен&nbsp;&nbsp;&nbsp;";
-    document.getElementById('timeLeft').style.color = "#666666";
-  }
-  if(Tickets[tid] != undefined && Tickets[tid].timer != 0){
-    var t = Math.floor((Tickets[tid].timer - now)/60000);
-    var h = Math.floor(t/60);
-    var m = t - h*60;
-    str = "&nbsp;&nbsp;через&nbsp;&nbsp;";
-    if(h < 10) str += "&nbsp";
-    str += h + "ч&nbsp;";
-    if(m < 10) str += "&nbsp";
-    str += m + "м";
-    if(t === 0) str = "осталось < 1 м";
-    document.getElementById('timeLeft').style.fontWeight = "bold";
-    document.getElementById('timeLeft').style.color = "#113311";
-    document.getElementById('timeLeft').innerHTML = str;
-  }
-}
