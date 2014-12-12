@@ -149,3 +149,14 @@ function qSelectClientClick(e){
   }
 }
 
+function onBtnNewToTabsClick(e){
+  for(var i = 0; Tabs["new"+i] != undefined ; i ++);  // Создадим временный id для этой закладки
+  var tab = {};
+  tab.name = document.getElementById('shortTTDescr').value;  // Запомним имя для отображения
+  tab.text = document.getElementById('TTDescr').value;
+  tab.region = document.getElementById('ppRegion').selectedIndex;
+  tab.client = document.getElementById('ppClient').selectedIndex;
+  Tabs["new"+i] = tab;
+  disablePopup();
+  showIt();
+}

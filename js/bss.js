@@ -42,6 +42,7 @@ window.onload = function() {          //
   document.getElementById('buttonNew').onclick = onBtnNewTTClick;
   document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
   document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
+  document.getElementById('ppBtnToTabs').onclick = onBtnNewToTabsClick;
   document.getElementById('btResetFilter').onclick = onResetFilterClick;
   document.getElementById('btnTransOnSelf').onclick = onBtnTransOnSelfClick;
   document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
@@ -130,7 +131,7 @@ window.onload = function() {          //
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
   if(jqXHR.status == 404 && textStatus == "error") {
-    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrome");
+    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrom, или нет связи.");
   }
 }
 
@@ -181,7 +182,7 @@ function showIt() {         // Отображает таблицу тикетов
   if(Object.keys(Tabs).length > 0){                          // Если есть закладки - отобразим их
     str = "";
     for(var key in Tabs) {                                   // Сформируем HTML код панели закладок
-      if(Tickets[key].attention === true){ str += '<td id="' + key + '" style="background-color:#F87777">';}
+      if(Tickets[key] != undefined && Tickets[key].attention === true){ str += '<td id="' + key + '" style="background-color:#F87777">';}
       else {str += '<td id="' + key + '">';}
       str += key + ' ' + Tabs[key].name + '</td>';
     }
@@ -511,16 +512,26 @@ function onResetFilterClick() {   // Сброс всех фильтров
 
 
 function onTabsClick(e){
-  if(e.ctrlKey == false){
-    document.getElementById('popupTicket').iidd = e.target.id; // Сразу передадим в popupTicket id отображаемого тикета
-    highlightedTT = e.target.id;  // Запомним номер тикета для его подсветки в showIt()
-    showIt();
-    document.getElementById('comment').value = Tabs[e.target.id].text;
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.id}, callbackGetTicket, "html");
-  }else{
+  if(e.ctrlKey == true){
     delete Tabs[e.target.id];
     showIt();
+    return;
   }
+  if(e.target.id.indexOf("new") == -1){     // клик закладке на существующтй тикет
+    document.getElementById('popupTicket').iidd = e.target.id; // Сразу передадим в popupTicket id отображаемого тикета
+    highlightedTT = e.target.id;  // Запомним номер тикета для его подсветки в showIt()
+    document.getElementById('comment').value = Tabs[e.target.id].text;
+    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.id}, callbackGetTicket, "html");
+  } else {                                  // клик по закладке на недосозданный тикет
+    loadPopupNewTT();
+    centerPopupNewTT();
+    document.getElementById('shortTTDescr').value = Tabs[e.target.id].name;  // Запомним имя для отображения
+    document.getElementById('TTDescr').value = Tabs[e.target.id].text;
+    document.getElementById('ppRegion').selectedIndex = Tabs[e.target.id].region;
+    document.getElementById('ppClient').selectedIndex = Tabs[e.target.id].client;
+    delete Tabs[e.target.id];
+  }
+  showIt();
 }
 
 
