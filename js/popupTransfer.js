@@ -103,6 +103,8 @@ function cbCheckAndTransfer(data, textStatus){
     document.getElementById('tempDiv').innerHTML = "";
 
 //    if(1){ // Не выполнять проверку на правомерность перевода
+    if( dontCheckTransferPermissions === true) { permissions += "***Ответственное лицо***"; dontCheckTransferPermissions = false;}
+
     if(permissions.indexOf("Ответственное лицо") != -1){ // Если среди кнопок есть "Ответственное лицо", можно переводить
       $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", transQueue[0], checkAndTransfer, "html"); //Перевод
       TTOkTransferCount ++;

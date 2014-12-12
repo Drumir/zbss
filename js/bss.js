@@ -35,6 +35,7 @@ var forceShow = true;     // ”казывает, что список нужно как можно быстрее обнов
 var highlightedTT = 0;    // ѕомнит последний щелкнутый тикет дл€ его подсветки.
 var TTOkTransferCount = 0; // ’ранит количество успешно переведенных тикетов
 var TTErTransferCount = 0; // ’ранит количество ошибок при переводе тикетов
+var dontCheckTransferPermissions = false;  // Ќе выполн€ет проверку правомочности перевода тикета
 
 window.onload = function() {          //
 
