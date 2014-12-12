@@ -12,7 +12,7 @@ var Tabs = {};             // Хранит список табов/закладок в формате id:{name:""
 
 var userName;              // Имя залогиненого пользователя Иванов И.И.
 var userId = -1;           // Идентификатор залогиненого пользователя
-var branchId = 100113;     // Код подразделения пользователя 100113 == "Технический департамент (МегаМакс) (13)" !!!!!!
+var branchId = 100184;     // Код подразделения пользователя 100184 == "Технический департамент (МегаМакс) (13)" !!!!!!
 var resp_id = [];          // Список всех ответственных лиц
 var organization_id = [];  // Список всех клиентов
 var tt_region = [];        // Список всех регион
@@ -42,8 +42,10 @@ window.onload = function() {          //
   document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
   document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
   document.getElementById('btResetFilter').onclick = onResetFilterClick;
+  document.getElementById('btnTransOnSelf').onclick = onBtnTransOnSelfClick;
   document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
   document.getElementById('buttonTransfer').disabled = false;
+  document.getElementById('popupTransfer').onclick = onPopupTransferClick;
   document.body.onresize = onBodyResize;
   document.getElementById('headChBox').onchange = onHeadChBoxClick;
   document.getElementById('buttonMove').onclick = onBtnMoveClick;

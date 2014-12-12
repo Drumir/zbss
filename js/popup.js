@@ -18,37 +18,7 @@ function filialToRegionId(filial){
   return region;
 }
 
-function GetCPList() {
-	var branchID = $("#branchLiist").val();
-	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) {
-			$("#resp_person_id").empty();
-			if (data.list) {
-				for (var i in data.list) {
-					$("#resp_person_id").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
-				}
-			}
-		}, "json");
-}
 
-function getSubClass() {
-	var sVal = $("#psClass").val();
-	$.ajax({
-		url: "https://oss.unitline.ru:995/adm/tt/ajax.asp",
-		type: "POST",
-		data: "type=3&id=" + sVal,
-		dataType : "json",
-		//error: function() { console.log("Произошла ошибка при соединении с сервером!") },
-		success: onGetSubClassSuccess
-	})
-}
-function onGetSubClassSuccess(data, textStatus) {   // Callback для соседней функции getSubClass()
-  $("#psSubClass").empty();
-  if (data.list) {
-    for (var i in data.list) {
-      $("#psSubClass").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
-    }
-  }
-}
 
 function disablePopup() {
   if (popupStatus > 0) {
@@ -143,6 +113,16 @@ function loadPopupLogin() {
     $("#popupLogin").fadeIn("fast");
     popupStatus++;
   }
+  chrome.storage.local.get(null, cbRememberPass);
+}
+
+function cbRememberPass(pairs) {
+  var a = pairs["user"];
+  var b = pairs["password"];
+  if(a != undefined) document.getElementById('sLogin').value = a;
+  if(b != undefined) document.getElementById('sPass').value = b;
+  if (b === undefined || b === "")  document.getElementById('savePass').checked = false;
+  else document.getElementById('savePass').checked = true;
 }
 
 function centerPopupLogin() {
@@ -166,6 +146,7 @@ function sPassKeyPress(e){     //Нажатие Ентер в окне ввода пароля
     onLoginClick();
   }
 }
+
 function onLoginClick() {
   setStatus("Авторизация  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Autorization' TITLE='Autorization'>");
   var par = {};
@@ -178,5 +159,14 @@ function onLoginClick() {
   $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
   document.getElementById('sLogin').value = "";           // Сотрем имя пользователя
   document.getElementById('sPass').value = "";            // Сотрем пароль
+  var pairs = {};
+  if(document.getElementById('savePass').checked == true){
+    pairs["user"] = par.user;
+    pairs["password"] = par.password;
+  }else{
+    pairs["user"] = "";
+    pairs["password"] = "";
+  }
+  chrome.storage.local.set(pairs);
   disablePopup();
 }

@@ -130,3 +130,36 @@ function transferTickets() {
     disablePopup();
   }
 }
+
+function onPopupTransferClick(e){
+  branchSelect = 0;
+  switch(e.target.id){
+    case "branchNN": {branchSelect = 100184; break;}
+    case "branchMSK": {branchSelect = 119; break;}
+    case "branchSPB": {branchSelect = 79; break;}
+    case "branchRnD": {branchSelect = 99; break;}
+    case "branchSMR": {branchSelect = 103; break;}
+    case "branchEKB": {branchSelect = 83; break;}
+    case "branchYAR": {branchSelect = 111; break;}
+    case "branchVLG": {branchSelect = 96; break;}
+    default: {return;}
+  }
+  document.getElementById('branchLiist').value = branchSelect;
+  GetCPList();
+}
+
+
+function onBtnTransOnSelfClick(e) {   // Функция только формирует очередь transQueue из выбраных тикетов
+}
+
+function GetCPList() {
+	var branchID = $("#branchLiist").val();
+	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) {
+			$("#resp_person_id").empty();
+			if (data.list) {
+				for (var i in data.list) {
+					$("#resp_person_id").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
+				}
+			}
+		}, "json");
+}

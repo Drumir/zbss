@@ -96,11 +96,21 @@
       <select id="branchLiist" style="width:300px">
         <option value="100184">Технический департамент (МегаМакс) (13)</option>
       </select>
+      <a id="branchNN" style="color:#1133AA">НН</a>&nbsp;
+      <a id="branchMSK" style="color:#1133AA">Мск</a>&nbsp;
+      <a id="branchSPB" style="color:#1133AA">СПб</a>&nbsp;
+      <a id="branchRnD" style="color:#1133AA">РнД</a>&nbsp;
+      <a id="branchSMR" style="color:#1133AA">Смр</a>&nbsp;
+      <a id="branchEKB" style="color:#1133AA">Екб</a>&nbsp;
+      <a id="branchYAR" style="color:#1133AA">Ярс</a>&nbsp;
+      <a id="branchVLG" style="color:#1133AA">Влг</a>&nbsp;
+      <p></p>
       <select id="resp_person_id" style="width:300px">
         <option value="0">- Все отв.лица -</option>
       </select>
     </p>
     <button id="buttonTransfer" disabled="true">Перевести</button>
+    <button id="btnTransOnSelf" hidden="true">На себя</button>
     <p id="btTransfNote"></p>
   </div>
 
@@ -214,6 +224,7 @@
       <br>
       <div><input id="sLogin" type="Text" maxlength="15" placeholder="Имя пользователя"></div>
       <div><input id="sPass" type="Password" maxlength="15" placeholder="Пароль"></div>
+      <input id="savePass" type="checkbox">запомнить
       <br>&nbsp;
       <button id="plLogin" style="width:110px">Войти</button>
       <br>&nbsp;

@@ -261,3 +261,23 @@ function setTimer(e){
     document.getElementById('timeLeft').innerHTML = str;
   }
 }
+
+function getSubClass() {
+	var sVal = $("#psClass").val();
+	$.ajax({
+		url: "https://oss.unitline.ru:995/adm/tt/ajax.asp",
+		type: "POST",
+		data: "type=3&id=" + sVal,
+		dataType : "json",
+		//error: function() { console.log("Произошла ошибка при соединении с сервером!") },
+		success: onGetSubClassSuccess
+	})
+}
+function onGetSubClassSuccess(data, textStatus) {   // Callback для соседней функции getSubClass()
+  $("#psSubClass").empty();
+  if (data.list) {
+    for (var i in data.list) {
+      $("#psSubClass").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
+    }
+  }
+}
