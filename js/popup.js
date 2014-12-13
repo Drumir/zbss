@@ -20,7 +20,7 @@ function filialToRegionId(filial){
 
 
 
-function disablePopup() {
+function disablePopups() {
   if (popupStatus > 0) {
     $("#backgroundPopup").fadeOut("fast");
     $("#popupTransfer").fadeOut("fast");
@@ -71,7 +71,7 @@ function loadPopupStatus() {
 
     document.getElementById('psLabel').hidden = true;
     if(actionCount == 0){                                   // Если нет ни одной доступной операции
-      document.getElementById('psLabel').hidden = false;    // Отобразим сообветствующую надпись
+      document.getElementById('psLabel').hidden = false;    // Отобразим соответствующую надпись
     }
 
     document.getElementById('psClass').selectedIndex = 0;
@@ -168,5 +168,5 @@ function onLoginClick() {
     pairs["password"] = "";
   }
   chrome.storage.local.set(pairs);
-  disablePopup();
+  disablePopups();
 }

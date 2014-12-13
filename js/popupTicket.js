@@ -47,9 +47,7 @@ function callbackGetTicket(data, textStatus) {
     }
 
     tid = tb.children[0].children[1].innerText;
-    if(Tickets[tid] != undefined) Tickets[tid].permissions = permissions;                                 // Выставим permissions для текущего тикета
     document.getElementById('popupTicket').iidd = tid
-
 
     ltb.children[0].children[1].innerText = tid;
     ltb.children[1].children[1].innerText = tb.children[1].children[1].innerText;   // Создан
@@ -71,14 +69,36 @@ function callbackGetTicket(data, textStatus) {
     delete tb;
     document.getElementById('tempDiv').innerHTML = "";
 
-    if(Tickets[tid] != undefined && Tickets[tid].timer === 0){
+    if(Tickets[tid] == undefined){
+      var tt = {};
+      tt.id = tid;                // 52956
+      tt.status = ltb.children[6].children[1].innerText;      // Service / Обслуживание"
+      tt.data_open = ltb.children[1].children[1].innerText;   // 05.09.2014 21:42
+      tt.region = ltb.children[7].children[1].innerText;      // RST
+      tt.author = ltb.children[3].children[1].innerText;      // Сорокин Е. Г.
+      tt.otv = ltb.children[4].children[1].innerText;         // Сорокин Е. Г.
+      tt.client = ltb.children[8].children[1].innerHTML;      // *M.VIDEO*
+      tt.name = ltb.children[2].children[1].innerText;        // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157
+      tt.clas = "Закрыт";                                     // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
+      tt.filial = ltb.children[7].children[1].innerText;      // Ростовская область
+      tt.branch = "";                                         // Технический департамент (МегаМакс).<br>МЕГАМАКС
+      tt.attention = false;                                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
+      tt.permissions = "";                                    // Названия всех доступных в тикете кнопок разделенные "***"
+      tt.timer = 0;                                           // Таймер-напоминалка отключен
+      Tickets[tt.id] = tt;
+      Tickets[tt.id].checked = false;
+      Tickets[tt.id].renewed = true;
+    }
+
+    Tickets[tid].permissions = permissions;                                 // Выставим permissions для текущего тикета
+    if(Tickets[tid].timer === 0){
       document.getElementById('timeLeft').style.fontWeight = "normal";
       document.getElementById('timeLeft').innerHTML = "&nbsp;&nbsp;&nbsp;отключен&nbsp;&nbsp;&nbsp;";
       document.getElementById('timeLeft').style.color = "#666666";
     }
     var now = new Date();
     now = now.getTime();
-    if(Tickets[tid] != undefined && Tickets[tid].timer > now){
+    if(Tickets[tid].timer > now){
       t = Math.floor((Tickets[tid].timer - now) / 60000);
       h = Math.floor(t/60);
       m = t - h*60;
@@ -93,7 +113,7 @@ function callbackGetTicket(data, textStatus) {
       document.getElementById('timeLeft').innerHTML = str;
     }
 
-    if(Tickets[tid] != undefined && Tickets[tid].attention === true) Tickets[tid].attention = false; //При открытии требующего внимания тикета, отметка сбрасывается
+    if(Tickets[tid].attention === true) Tickets[tid].attention = false; //При открытии требующего внимания тикета, отметка сбрасывается
     showIt();
 
     loadPopupTicket();
@@ -150,12 +170,12 @@ function onTPopupClick(e) {
 
   switch(e.target.id){
     case "otv":{     // Клик был по ответственному лицу.
-      if(Tickets[tid] != undefined && Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+      if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
         $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
         loadTickets();
         return;
       }
-      if(Tickets[tid] != undefined && Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
+      if(Tickets[tid].permissions.indexOf("Ответственное лицо") != -1){
         for (var key in Tickets) {
           Tickets[key].checked = false;
         }
@@ -181,7 +201,7 @@ function onTPopupClick(e) {
       }else{
         delete Tabs[tid];
       }
-      disablePopup();
+      disablePopups();
       showIt();
       break;
     }

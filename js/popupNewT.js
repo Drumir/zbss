@@ -68,7 +68,7 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
     contentType : "application/x-www-form-urlencoded; charset=windows-1251",
     success : onTtEditProcessSuccess
   });
-  disablePopup();
+  disablePopups();
 }
 function onTtEditProcessSuccess(data, textStatus) {  // Callback для соседней функции onBtnSaveTTClick(e)
   delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
@@ -150,13 +150,13 @@ function qSelectClientClick(e){
 }
 
 function onBtnNewToTabsClick(e){
-  for(var i = 0; Tabs["new"+i] != undefined ; i ++);  // Создадим временный id для этой закладки
+  for(var i = 0; Tabs["new "+i] != undefined ; i ++);  // Создадим временный id для этой закладки
   var tab = {};
   tab.name = document.getElementById('shortTTDescr').value;  // Запомним имя для отображения
   tab.text = document.getElementById('TTDescr').value;
   tab.region = document.getElementById('ppRegion').selectedIndex;
   tab.client = document.getElementById('ppClient').selectedIndex;
-  Tabs["new"+i] = tab;
-  disablePopup();
+  Tabs["new "+i] = tab;
+  disablePopups();
   showIt();
 }

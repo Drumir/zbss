@@ -66,34 +66,6 @@ function callbackLoadEnvironment(data, textStatus) {
   }
 }
 
-function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк используется для получения списка подразделений авторов. Вызывается при первой загрузуки попапа трансфер
-  resetTimeout();
-  if(data != null) {  // null ли?!
-    var div1 = document.createElement('div');
-    div1.insertAdjacentHTML( 'beforeend', data );                 // Создадим из data DOM дерево
-    div1.hidden = true;
-    document.body.appendChild(div1);
-                                      // Загрузим списки
-    if(document.getElementById('branchlist') != undefined){
-      branch_id = document.getElementById('branchlist').children;          // Ответственные лица
-//      document.getElementById('branchLiist').children = branch_id; // Загрузим список срузу в попап трансфер - список подразделений
-      $("#branchLiist").empty();                             // Загрузим список срузу в попап трансфер - список подразделений
-      for(var i = 0; i < branch_id.length; i ++) {
-        if(branch_id[i].value === "100184")
-          $("#branchLiist").append("<option value='" + branch_id[i].value + "' selected = 'true'>" + branch_id[i].text + "</option>");
-        else
-          $("#branchLiist").append("<option value='" + branch_id[i].value + "'>" + branch_id[i].text + "</option>");
-      }
-    }
-    else {
-      document.getElementById('buttonTransfer').hidden = true;
-      document.getElementById('btTransfNote').text = "Невозможно получить список подразделений";
-    }
-    document.body.removeChild(div1)    // Очистим временный div
-    div1.innerText = "";
-    }
-}
-
 function loadTickets() {
   mySetTimeout(12, "Ошибка загрузки списка тикетов");
   $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "8", id: "1", organization_id: "0", resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: "0", tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: "1000", page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
@@ -108,4 +80,3 @@ function callbackLoadTickets(data, textStatus) {
   }
   setStatus("Готово");
 }
-

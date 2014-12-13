@@ -86,12 +86,12 @@ window.onload = function() {          //
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
 
   $("#backgroundPopup").click(function() {
-    disablePopup();
+    disablePopups();
   });
   /*
   $(document).keydown(function(e) {
     if (e.keyCode == 27 && popupStatus > 0) {
-      disablePopup();
+      disablePopups();
     }
   });
   */
@@ -116,7 +116,7 @@ window.onload = function() {          //
   });
 
   $("#popupPictCloseTicket").click(function() {
-    disablePopup();
+    disablePopups();
   });
 
   hiddenText = document.getElementById('hiddenText');
@@ -131,7 +131,7 @@ window.onload = function() {          //
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
   if(jqXHR.status == 404 && textStatus == "error") {
-    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrom, или нет связи.");
+    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrome, или нет связи.");
   }
 }
 
@@ -271,11 +271,11 @@ function renewTickets(data) {
       Tickets[tt.id].renewed = true;
     }
   }
-
+/*
   for(var key in Tickets)               // Удалим из списка все тикеты, которые не обновились. (они, вероятно, уже закрыты)
     if(Tickets[key].renewed == false)
       delete Tickets[key];
-
+*/
   showIt();
   if(delayedData != "") {                   // Костыль к onBtnSaveTTClick чтобы при отображении свежесозданного тикета в Tickets{} УЖЕ была запись о нём
     callbackGetTicket(delayedData, "sucess");
@@ -389,6 +389,9 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
       break;
     }
     case "ps2Resolved": {
+      if(document.getElementById('psClass').value == "0") return;
+      if(document.getElementById('psSubClass').value == "0") return;
+      if(document.getElementById('psResolve').value == "0") return;
       par.trouble_type_closed = document.getElementById('psClass').value;
       par.trouble_subtype_closed = document.getElementById('psSubClass').value;
       par.trouble_type_name = document.getElementById('psType').value;
@@ -572,4 +575,3 @@ function prepareToAnsi(){
     return s;
   }
 }
-

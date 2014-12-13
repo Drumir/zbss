@@ -21,7 +21,7 @@ function loadPopupTransfer() {
     $("#backgroundPopup").fadeIn("fast");
     $("#popupTransfer").fadeIn("fast");
     document.getElementById('buttonTransfer').hidden = false;
-    document.getElementById('btTransfNote').text = "";
+    document.getElementById('btTransfNote').innerText = "";
 //    document.getElementById('popupTransfer').TTCount = 0;     // Количество переводимых тикетов
 //    document.getElementById('popupTransfer').TTOk = 0;        // Количество успешно переведенных тикетов
 //    document.getElementById('popupTransfer').TTError = 0;     // Количество ошибок
@@ -87,7 +87,7 @@ function checkAndTransfer() {
   }
   else {
     loadTickets();
-    setTimeout(disablePopup, 1000);
+    setTimeout(disablePopups, 1000);
     setStatus("ТТ переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount);
   }
 }
@@ -129,7 +129,7 @@ function transferTickets() {
   }
   else {
     loadTickets();
-    disablePopup();
+    disablePopups();
   }
 }
 
@@ -164,4 +164,32 @@ function GetCPList() {
 				}
 			}
 		}, "json");
+}
+
+function callbackLoadEnvironment2(data, textStatus) {    // Этот каллбэк используется для получения списка подразделений авторов. Вызывается при первой загрузуки попапа трансфер
+  resetTimeout();
+  if(data != null) {  // null ли?!
+    var div1 = document.createElement('div');
+    div1.insertAdjacentHTML( 'beforeend', data );                 // Создадим из data DOM дерево
+    div1.hidden = true;
+    document.body.appendChild(div1);
+                                      // Загрузим списки
+    if(document.getElementById('branchlist') != undefined){
+      branch_id = document.getElementById('branchlist').children;          // Ответственные лица
+//      document.getElementById('branchLiist').children = branch_id; // Загрузим список срузу в попап трансфер - список подразделений
+      $("#branchLiist").empty();                             // Загрузим список срузу в попап трансфер - список подразделений
+      for(var i = 0; i < branch_id.length; i ++) {
+        if(branch_id[i].value === "100184")
+          $("#branchLiist").append("<option value='" + branch_id[i].value + "' selected = 'true'>" + branch_id[i].text + "</option>");
+        else
+          $("#branchLiist").append("<option value='" + branch_id[i].value + "'>" + branch_id[i].text + "</option>");
+      }
+    }
+    else {
+      document.getElementById('buttonTransfer').hidden = true;
+      document.getElementById('btTransfNote').innerText = "Невозможно получить список подразделений";
+    }
+    document.body.removeChild(div1)    // Очистим временный div
+    div1.innerText = "";
+  }
 }
