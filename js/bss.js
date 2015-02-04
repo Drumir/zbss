@@ -200,6 +200,7 @@ function showIt() {         // Отображает таблицу тикетов
     if(filterName != "" && Tickets[key].name.toUpperCase().indexOf(filterName.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
     if(filterClient != "" && Tickets[key].client.toUpperCase().indexOf(filterClient.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
     if(filterStatus != "" && filterStatus.indexOf(Tickets[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
+    if(Tickets[key].status == "Closed / Закрыта" ) continue;  // Закрытые тикеты отображать не нужно
     var ttr = document.createElement('tr');
     ttr.filial = Tickets[key].filial;
     ttr.iidd = Tickets[key].id;
@@ -229,7 +230,7 @@ function showIt() {         // Отображает таблицу тикетов
   }
   document.getElementById('statusFieldRight').innerHTML = "";
   if(fNeedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
-  document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
+  document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold);
 }
 
 function renewTickets(data) {
@@ -271,7 +272,7 @@ function renewTickets(data) {
       Tickets[tt.id].renewed = true;
     }
   }
-/*
+/*       Мы не будем удалять из Tickets закрытые тикеты что бы с ними можно было работать как с обычными
   for(var key in Tickets)               // Удалим из списка все тикеты, которые не обновились. (они, вероятно, уже закрыты)
     if(Tickets[key].renewed == false)
       delete Tickets[key];
@@ -409,6 +410,7 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
     }
     case "ps2Close": {
       par.status_id = "7";     // Закрыта
+      if(Tickets[tid] != undefined) Tickets[tid].status = "Closed / Закрыта"; // Сразу установим статус. Если закрытие не сработает по какой-то неведомой причине, статус перезапишется актуальным при след обновлении списка.
       break;
     }
   }

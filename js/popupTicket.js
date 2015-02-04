@@ -90,6 +90,7 @@ function callbackGetTicket(data, textStatus) {
       Tickets[tt.id].renewed = true;
     }
 
+    if(ltb.children[6].children[1].innerText == "Closed / Закрыта") Tickets[tid].status = "Closed / Закрыта"; // На случай если тикет закрылся коряво, обновим его статус в Tickets
     Tickets[tid].permissions = permissions;                                 // Выставим permissions для текущего тикета
     if(Tickets[tid].timer === 0){
       document.getElementById('timeLeft').style.fontWeight = "normal";
