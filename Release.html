@@ -23,7 +23,7 @@
 
 <body>
   <table id="menuTable">
-    <td id="statusName" style='background-color:#FFA500'></td>
+    <td id="statusName" style='background-color:#90C08C'></td>
     <td>
       <button id="buttonMove"   disabled="true">Перевести</button>
       <button id="buttonRenew" disabled="true" style="width:120px">Обновить</button>
@@ -32,7 +32,7 @@
     <td valign = "baseline">
       <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
     </td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.4.21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.4.22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать все ТТ</button></td>
   </table>
 
@@ -114,8 +114,8 @@
     <p id="btTransfNote" style="color:#DD0000"></p>
   </div>
 
-  <div id="popupTicket" cellpadding="1">
-    <table border ="0" cellpadding="1">
+  <div id="popupTicket">
+    <table border="0" cellpadding="0" cellspacing="0">
       <tr>
         <td id="leftPopupTicket" valign="top">
           <table cellpadding="5" cellspacing="1" border="1">
@@ -144,15 +144,24 @@
         <td>
           <a id="toTabs" style="color:#6666FF">В закладки</a>
         </td>
-        <td id="PTtimer" style="color:#1133AA">
-          <img src=".\images\timer.png" width="12" height="13">
-          <span id="timeLeft" style="color:#666666; font-weight:normal">&nbsp;отключен&nbsp;</span>(
-          <a id="plus5m">+5м</a>&nbsp;
-          <a id="plus15m">+15м</a>&nbsp;
-          <a id="plus1h">+1ч</a>&nbsp;
-          <a id="plus3h">+3ч</a>&nbsp;
-          <a id="plus6h">+6ч</a>&nbsp;&nbsp;
-          <a id="plus0">0</a>)
+        <td>
+          <table width=100%>
+            <tr>
+              <td  id="PTtimer" style="color:#1133AA" align="left">
+                <img src=".\images\timer.png" width="12" height="13">
+                <span id="timeLeft" style="color:#666666; font-weight:normal">&nbsp;отключен&nbsp;</span>(
+                <a id="plus5m">+5м</a>&nbsp;
+                <a id="plus15m">+15м</a>&nbsp;
+                <a id="plus1h">+1ч</a>&nbsp;
+                <a id="plus3h">+3ч</a>&nbsp;
+                <a id="plus6h">+6ч</a>&nbsp;&nbsp;
+                <a id="plus0">0</a>)
+              </td>
+              <td align="right">
+                <button id="ptPost" style="width:165px">Отправить (Ctrl+Enter)</button>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>

@@ -48,6 +48,7 @@ window.onload = function() {          //
   document.getElementById('buttonTransfer').onclick = onButtonTransferClick;
   document.getElementById('buttonTransfer').disabled = false;
   document.getElementById('popupTransfer').onclick = onPopupTransferClick;
+  document.getElementById('ptPost').onclick = commentOnKey;
   document.body.onresize = onBodyResize;
   document.getElementById('headChBox').onchange = onHeadChBoxClick;
   document.getElementById('buttonMove').onclick = onBtnMoveClick;
@@ -206,7 +207,7 @@ function showIt() {         // Отображает таблицу тикетов
     ttr.filial = Tickets[key].filial;
     ttr.iidd = Tickets[key].id;
 
-    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td>' + Tickets[key].status;
+    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td style="color:'+ statusToColor(Tickets[key].status) + '; font-weight:600">' + Tickets[key].status;
     str += '</td><td>' + Tickets[key].data_open + '</td><td>' + Tickets[key].region + '</td><td>' + Tickets[key].author + '</td><td>' + Tickets[key].otv + '</td><td>' + Tickets[key].client + '</td><td>' + Tickets[key].name + '</td><td width = "100px">' + Tickets[key].clas + '</td></tr>';
     ttr.innerHTML = str;
     ttr.children[0].children[0].checked = Tickets[key].checked;
@@ -576,4 +577,16 @@ function prepareToAnsi(){
     }
     return s;
   }
+}
+
+function statusToColor(status){
+  switch(status){
+    case "Оформление": return "#663333";
+    case "Service / Обслуживание": return "#111177";
+    case "Resolved / Решена": return "#005000";
+    case "Investigating / Расследование": return "#808000";
+    case "Hold / Отложена": return "#408080";
+    case "Closed / Закрыта": return "#FFC0C0";
+  }
+  return "#000000";
 }

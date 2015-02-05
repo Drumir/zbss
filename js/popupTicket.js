@@ -62,9 +62,14 @@ function callbackGetTicket(data, textStatus) {
 
     document.getElementById('toTabs').innerText = "В закладки"; if(Tabs[tid] != undefined) document.getElementById('toTabs').innerText = "Из закладок";
 
+    ltb.children[4].children[1].style.backgroundColor = "#FFFFFF";
     if(permissions.indexOf("Подтвердить") != -1){ // Если принятие заявки не подтверждено - выделим цветом
       ltb.children[4].children[1].style.backgroundColor = "#FFA500";
     }
+
+    ltb.children[6].children[1].style.color = statusToColor(ltb.children[6].children[1].innerText);  // Расскрасим статус
+    ltb.children[6].children[1].style.fontWeight = "bold";
+
     document.getElementById('hTable').innerHTML = "";
     delete tb;
     document.getElementById('tempDiv').innerHTML = "";
@@ -146,8 +151,9 @@ function callbackGetHistory(data, textStatus) {
       else if(data.rows[i].action.indexOf("Оставлен комментарий") != -1){
         innerHTML += ':';
       }
-      else if(data.rows[i].action.indexOf("Переведено в статус") != -1){
-        innerHTML += '<span style="color:#118888">' + data.rows[i].action.substring(19) + '</span>';
+      else if(data.rows[i].action.indexOf("Переведено в статус ") != -1){
+        innerHTML += '<span style="color:' + statusToColor(data.rows[i].action.substring(20)) + '">'
+        innerHTML += data.rows[i].action.substring(20) + '</span>';
       }
       else {
         innerHTML += data.rows[i].action;
@@ -210,21 +216,23 @@ function onTPopupClick(e) {
 }
 
 function commentOnKey(e){     //$.ajax версия
-  if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){     // Нужна проверка на максимальную длинну
-    var iidd = document.getElementById('popupTicket').iidd;
-    var str = document.getElementById('comment').value;
-    document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
-    if(Tickets[iidd].unpostedComm != undefined) Tickets[iidd].unpostedComm = ""; // Сотрем запомненный в тикете текст
-    var converted_str = encodeURIComponent(str);
-    var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
-    $.ajax({
-      url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
-      type: "POST",
-      data: param,
-      dataType : "html",
-      contentType : "application/x-www-form-urlencoded; charset=windows-1251",
-    })
-  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+  if((e.keyCode == 10 && e.ctrlKey == true) || e.target.id === "ptPost"){     // Если Это Ctrl + Enter или клик по "комментарий"
+    if(document.getElementById('comment').value.length > 0 && document.getElementById('comment').value.length < 501){
+      var iidd = document.getElementById('popupTicket').iidd;
+      var str = document.getElementById('comment').value;
+      document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
+      if(Tickets[iidd].unpostedComm != undefined) Tickets[iidd].unpostedComm = ""; // Сотрем запомненный в тикете текст
+      var converted_str = encodeURIComponent(str);
+      var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
+      $.ajax({
+        url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
+        type: "POST",
+        data: param,
+        dataType : "html",
+        contentType : "application/x-www-form-urlencoded; charset=windows-1251",
+      })
+      $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+    }
   }
   if((userId == 1347 || userId == 1317) && document.getElementById('comment').value == "Я феечка и хочу озорничать") {
     document.getElementById('comment').value = "";
