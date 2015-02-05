@@ -2,7 +2,7 @@
 //    BSS Parser by drumir@mail.ru
 //
 //
-var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете", timer:"Сколько минут осталось до звонка"}}. Актуализируется раз в n секунд
+var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете", timer:"Сколько минут осталось до звонка", unpostedComm: "Набраный, но незапощеный комментарий"}}. Актуализируется раз в n секунд
 var transQueue = [];        // Очередь запросов на перевод тикета.
 var hiddenText;             // Переменная - TEXTAREA
 var a, b;
@@ -59,6 +59,7 @@ window.onload = function() {          //
   document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
   document.getElementById('statusName').onclick = onStatusNameClick;
   document.getElementById('comment').onkeypress = commentOnKey;
+  document.getElementById('comment').onblur = commentOnBlur;
   document.getElementById('sPass').onkeypress = sPassKeyPress;
   document.getElementById('popupTicket').onclick = onTPopupClick;
   document.getElementById('searchStr').oninput = onSearchInput;
@@ -272,11 +273,11 @@ function renewTickets(data) {
       Tickets[tt.id].renewed = true;
     }
   }
-/*       Мы не будем удалять из Tickets закрытые тикеты что бы с ними можно было работать как с обычными
-  for(var key in Tickets)               // Удалим из списка все тикеты, которые не обновились. (они, вероятно, уже закрыты)
+
+  for(var key in Tickets)               // Пометим все тикеты, информация о которых не обновилась как закрытые
     if(Tickets[key].renewed == false)
-      delete Tickets[key];
-*/
+      Tickets[key].status = "Closed / Закрыта";
+
   showIt();
   if(delayedData != "") {                   // Костыль к onBtnSaveTTClick чтобы при отображении свежесозданного тикета в Tickets{} УЖЕ была запись о нём
     callbackGetTicket(delayedData, "sucess");
@@ -525,7 +526,6 @@ function onTabsClick(e){
   if(e.target.id.indexOf("new") == -1){     // клик закладке на существующтй тикет
     document.getElementById('popupTicket').iidd = e.target.id; // Сразу передадим в popupTicket id отображаемого тикета
     highlightedTT = e.target.id;  // Запомним номер тикета для его подсветки в showIt()
-    document.getElementById('comment').value = Tabs[e.target.id].text;
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.id}, callbackGetTicket, "html");
   } else {                                  // клик по закладке на недосозданный тикет
     loadPopupNewTT();

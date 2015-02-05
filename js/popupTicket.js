@@ -117,6 +117,8 @@ function callbackGetTicket(data, textStatus) {
     if(Tickets[tid].attention === true) Tickets[tid].attention = false; //При открытии требующего внимания тикета, отметка сбрасывается
     showIt();
 
+    document.getElementById('comment').value = "";
+
     loadPopupTicket();
     centerPopupTicket();
     $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
@@ -125,14 +127,13 @@ function callbackGetTicket(data, textStatus) {
 
 function callbackGetHistory(data, textStatus) {
   if(data != null) {  // null ли?!
+    var tid = document.getElementById('popupTicket').iidd;
     var innerHTML = "";
     var ht = document.getElementById('hTable');
     ht.hidden = true;
     ht.innerHTML = "";
-    document.getElementById('comment').value = "";
-    if(Tabs[document.getElementById('popupTicket').iidd] != undefined) {  // Если этот тикет ест во вкладках, восстановим набранный в comment текст
-      document.getElementById('comment').value = Tabs[document.getElementById('popupTicket').iidd].text;
-    }
+    if(Tickets[tid].unpostedComm != undefined) document.getElementById('comment').value = Tickets[tid].unpostedComm; // Восстановим текст в поле воода.
+
     for(var i = 0; i < data.rows.length;  i ++) {
       var ttr = document.createElement('tr');
       arrFio = data.rows[i].fio.split(" ", 3);
@@ -197,7 +198,6 @@ function onTPopupClick(e) {
       if(Tabs[tid] === undefined){
         var tab = {};
         tab.name = Tickets[tid].name;  // Запомним имя для отображения
-        tab.text = document.getElementById('comment').value; // Запомним набираемый текст
         Tabs[tid] = tab;
       }else{
         delete Tabs[tid];
@@ -211,10 +211,11 @@ function onTPopupClick(e) {
 
 function commentOnKey(e){     //$.ajax версия
   if(e.keyCode == 10 && e.ctrlKey == true && document.getElementById('comment').value.length > 0){     // Нужна проверка на максимальную длинну
+    var iidd = document.getElementById('popupTicket').iidd;
     var str = document.getElementById('comment').value;
     document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
+    if(Tickets[iidd].unpostedComm != undefined) Tickets[iidd].unpostedComm = ""; // Сотрем запомненный в тикете текст
     var converted_str = encodeURIComponent(str);
-    var iidd = document.getElementById('popupTicket').iidd;
     var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
     $.ajax({
       url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
@@ -230,6 +231,10 @@ function commentOnKey(e){     //$.ajax версия
     Tickets[document.getElementById('popupTicket').iidd].permissions = "Ответственное лицо***Service / Обслуживание***Resolved / Решена***Hold / Отложена***Investigating / Расследование***Closed / Закрыта";
     dontCheckTransferPermissions = true;   // Разрешить однократный перевод тикета без проверки
   }
+}
+function commentOnBlur(e){     // При потере окном воода коментария фокуса ввода, запомним набраный текст
+  var iidd = document.getElementById('popupTicket').iidd;
+  Tickets[iidd].unpostedComm = document.getElementById('comment').value;
 }
 
 function setTimer(e){
