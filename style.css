@@ -136,6 +136,19 @@ hr {
   padding: 12px;
 }
 
+#popupEditTT {
+  background-color: #C0C0C0;
+  color: #0A0A0A;
+  display: none;
+  _position: absolute;
+  width: 600px;
+  background: #FFFFFF;
+  border: 2px solid #cecece;
+  z-index: 3;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 12px;
+}
+
 #popupLogin {
   background-color: #EEEEEE;
   color: #0A0A0A;

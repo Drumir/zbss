@@ -2,7 +2,7 @@
   "name": "BSS Parser",
   "description": "Parser for Bss by Drumir",
   "manifest_version": 2,
-  "version": "0.4.22",
+  "version": "0.4.23",
   "minimum_chrome_version": "23",
   "app": {
     "background": {

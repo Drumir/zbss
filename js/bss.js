@@ -41,6 +41,7 @@ window.onload = function() {          //
 
   document.getElementById('buttonNew').onclick = onBtnNewTTClick;
   document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
+  document.getElementById('peBtnCreate').onclick = onBtnSaveEditTTClick;
   document.getElementById('ppBtnAlert').onclick = onBtnAlertClick;
   document.getElementById('ppBtnToTabs').onclick = onBtnNewToTabsClick;
   document.getElementById('btResetFilter').onclick = onResetFilterClick;
@@ -74,6 +75,7 @@ window.onload = function() {          //
   document.getElementById('ps2Hold').onclick          = onPsActionClick;
   document.getElementById('ps2Investigating').onclick = onPsActionClick;
   document.getElementById('ps2Close').onclick         = onPsActionClick;
+  document.getElementById('ps2Edit').onclick          = onPsActionClick;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
   document.getElementById('thsStatus').onmouseup = onThsStatusMouseUp;
   document.getElementById('wikiLink').onclick = openWikiLink;
@@ -267,10 +269,11 @@ function renewTickets(data) {
         Tickets[tt.id].attention = true;
         // тут должна быть проверка подтверждения пользователем смен отв. лица
       }
-      Tickets[tt.id].status = tt.status;
+      Tickets[tt.id].status = tt.status;        // Скопируем параметры, которые могли измениться
       Tickets[tt.id].otv = tt.otv;
       Tickets[tt.id].clas = tt.clas;
       Tickets[tt.id].branch = tt.branch;
+      Tickets[tt.id].name = tt.name;
       Tickets[tt.id].renewed = true;
     }
   }
@@ -374,6 +377,7 @@ function onMTBmouseDown(e) {             // Функция отлавливает и обрабатывает щ
 function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в попап Status (Обслуживание, решена, закрыта и т.д)
   var tid = document.getElementById('popupTicket').iidd;
   var par = {};
+  var i;
   par.branch_id = "100113";      // Подразделение автора по умолчанию
   par.resp_person_id = "931";    // id пользователя по умолчанию
   par.trouble_root_tt = "0";
@@ -414,6 +418,23 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
       par.status_id = "7";     // Закрыта
       if(Tickets[tid] != undefined) Tickets[tid].status = "Closed / Закрыта"; // Сразу установим статус. Если закрытие не сработает по какой-то неведомой причине, статус перезапишется актуальным при след обновлении списка.
       break;
+    }
+    case "ps2Edit": {         // Редактировать ТТ
+      disablePopups();        // Закроем все попапы
+      loadPopupEditTT();
+      centerPopupEditTT();    // Откроем попап EditTT
+      document.getElementById('popupEditTT').iidd = tid;  // Передадим в попап Edit номер тикета
+      document.getElementById('peShortTTDescr').value = Tickets[tid].name;  // Передадим в попап Edit заголовок
+      document.getElementById('peTTDescr').value = document.getElementById('leftPopupTicketDescription').innerText // Передадим в попап Edit текст
+      for( i = 0; i < organization_id.length && organization_id[i].text != Tickets[tid].client; i ++){}  // Найдем в списке клиентов номер нужного
+        if(i != organization_id.length) {
+          document.getElementById('peClient').selectedIndex = i;       // и передадим в попап Edit клиента
+        }
+      for(i = 0; i < tt_region.length && tt_region[i].text != Tickets[tid].filial; i ++){}  // Найдем в списке регионов номер нужного
+        if(i != tt_region.length) {
+          document.getElementById('peRegion').selectedIndex = i;       // и передадим в попап Edit
+        }
+      return;
     }
   }
 

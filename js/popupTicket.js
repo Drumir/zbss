@@ -236,7 +236,7 @@ function commentOnKey(e){     //$.ajax версия
   }
   if((userId == 1347 || userId == 1317) && document.getElementById('comment').value == "Я феечка и хочу озорничать") {
     document.getElementById('comment').value = "";
-    Tickets[document.getElementById('popupTicket').iidd].permissions = "Ответственное лицо***Service / Обслуживание***Resolved / Решена***Hold / Отложена***Investigating / Расследование***Closed / Закрыта";
+    Tickets[document.getElementById('popupTicket').iidd].permissions = "Ответственное лицо***Service / Обслуживание***Resolved / Решена***Hold / Отложена***Investigating / Расследование***Closed / Закрыта***Редактировать";
     dontCheckTransferPermissions = true;   // Разрешить однократный перевод тикета без проверки
   }
 }

@@ -32,7 +32,7 @@
     <td valign = "baseline">
       <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
     </td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.4.22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.4.23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать все ТТ</button></td>
   </table>
 
@@ -191,6 +191,26 @@
     <button id="ppBtnToTabs">В закладки</button>
   </div>
 
+  <div id="popupEditTT">
+    <table border ="0" >
+      <tr><td>Краткое описание</td><td><input type="text" id="peShortTTDescr" size="67"></td></tr>
+      <tr>
+        <td>Регион</td>
+        <td>
+          <select id="peRegion" style="width:200px"></select>
+        </td>
+      </tr>
+      <tr>
+        <td>Клиент</td>
+        <td>
+          <select id="peClient" style="width:200px"></select>&nbsp;&nbsp;
+        </td>
+      </tr>
+      <tr><td>Описание</td><td><textarea id="peTTDescr" style="width:500px; height:150px"></textarea></td></tr>
+    </table>
+    <button id="peBtnCreate">Сохранить</button>
+  </div>
+
 
   <div id="popupStatus">
     <a id="popupPictCloseStatus"><img src=".\images\quit.png" width="8" height="7"></a>
@@ -226,6 +246,7 @@
     <button id="ps2Hold">Отложена</button>
     <button id="ps2Investigating" style="width:120px">Расследование</button>
     <button id="ps2Close">Закрыть</button>
+    <button id="ps2Edit" style="width:120px">Редактировать</button>
     <p id="psLabel">Нет доступных операций</p>
   </div>
 

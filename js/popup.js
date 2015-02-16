@@ -27,6 +27,7 @@ function disablePopups() {
     $("#popupStatus").fadeOut("fast");
     $("#popupTicket").fadeOut("fast");
     $("#popupNewTT").fadeOut("fast");
+    $("#popupEditTT").fadeOut("fast");
     $("#popupLogin").fadeOut("fast");
     popupStatus = 0;
   }
@@ -66,6 +67,11 @@ function loadPopupStatus() {
     document.getElementById('ps2Close').hidden = true;
     if(Tickets[tid].permissions.indexOf("Closed / Закрыта") != -1){
       document.getElementById('ps2Close').hidden = false;
+      actionCount++;
+    }
+    document.getElementById('ps2Edit').hidden = true;
+    if(Tickets[tid].permissions.indexOf("Редактировать") != -1){
+      document.getElementById('ps2Edit').hidden = false;
       actionCount++;
     }
 

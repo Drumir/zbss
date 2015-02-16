@@ -1,5 +1,5 @@
 //
-//       Файл хранит функции так или иначе связаные с popup NewTT
+//       Файл хранит функции так или иначе связаные с popup NewTT и EditTT
 //
 
 function loadPopupNewTT() {
@@ -44,6 +44,47 @@ function centerPopupNewTT() {
   });
 }
 
+function loadPopupEditTT() {
+  if (popupStatus == 0) {
+    $("#peShortTTDescr")[0].value = "";
+    $("#peTTDescr")[0].value = "";
+    $("#peClient")[0].selectedIndex = 0;
+    $("#peRegion")[0].selectedIndex = 0;
+
+    var reg =  $("#peRegion");
+    if(reg != undefined && reg[0].length === 0) {
+      for(var i = 0; i < tt_region.length; i ++){
+        reg.append("<option value='" + tt_region[i].value + "'>" + tt_region[i].text + "</option>");
+      }
+    }
+    reg =  $("#peClient");
+    if(reg != undefined && reg[0].length === 0) {
+      for(i = 0; i < organization_id.length; i ++){
+        reg.append("<option value='" + organization_id[i].value + "'>" + organization_id[i].text + "</option>");
+      }
+    }
+    $("#backgroundPopup").css({
+      "opacity": "0.7"
+    });
+    $("#backgroundPopup").fadeIn("fast");
+    $("#popupEditTT").fadeIn("fast");
+    popupStatus++;
+  }
+}
+
+function centerPopupEditTT() {
+  var windowWidth = document.documentElement.clientWidth;
+  var windowHeight = document.documentElement.clientHeight;
+  var popupHeight = $("#popupEditTT").height();
+  var popupWidth = $("#popupEditTT").width();
+
+  $("#popupEditTT").css({
+    "position": "absolute",
+    "top": windowHeight / 2 - popupHeight / 2,
+    "left": windowWidth / 2 - popupWidth / 2
+  });
+}
+
 function onBtnNewTTClick (e) {
   loadPopupNewTT();
   centerPopupNewTT();
@@ -70,6 +111,32 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
   });
   disablePopups();
 }
+
+function onBtnSaveEditTTClick (e) {      // $.ajax версия       //Попап Редактировать тикет -> Сохранить
+  if($("#peShortTTDescr")[0].value.length < 10) return;
+  if($("#peTTDescr")[0].value.length < 10) return;
+  if($("#peClient")[0].selectedIndex === 0) return;
+  if($("#peRegion")[0].selectedIndex === 0) return;
+  var id = document.getElementById('peRegion');
+  var rid = id[id.selectedIndex].value;
+  id = document.getElementById('peClient');
+  var cid = id[id.selectedIndex].value;
+  id = document.getElementById('popupEditTT').iidd;
+  if(id === undefined || id === 0) return;
+  var param = "id=" + id + "&ip=&name=" + encodeURIComponent($("#peShortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
+  param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#peTTDescr")[0].value);
+  $.ajax({
+    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp",
+    type: "POST",
+    data: param,
+    dataType : "html",
+    contentType : "application/x-www-form-urlencoded; charset=windows-1251",
+    success : onTtEditProcessSuccess
+  });
+  document.getElementById('popupEditTT').iidd = 0;  // На всякий случай сотрем id отредактированного TT
+  disablePopups();
+}
+
 function onTtEditProcessSuccess(data, textStatus) {  // Callback для соседней функции onBtnSaveTTClick(e)
   delayedData = data;  // Костыль чтобы loadTickets() сразу после актуализации Tickets{}, открыл попап со свежесозданным тикетом. Непосредственный вызов callbackGetTicket(data); не может обновить Tickets[id].permissions
   loadTickets();
