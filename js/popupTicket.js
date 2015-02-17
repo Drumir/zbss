@@ -85,7 +85,7 @@ function callbackGetTicket(data, textStatus) {
       tt.client = ltb.children[8].children[1].innerHTML;      // *M.VIDEO*
       tt.name = ltb.children[2].children[1].innerText;        // Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157
       tt.clas = "Закрыт";                                     // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
-      tt.filial = ltb.children[7].children[1].innerText;      // Ростовская область
+      tt.filial = ltb.children[7].children[1].innerText;      // RST (А должно быть "Ростовская область")
       tt.branch = "";                                         // Технический департамент (МегаМакс).<br>МЕГАМАКС
       tt.attention = false;                                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
       tt.permissions = "";                                    // Названия всех доступных в тикете кнопок разделенные "***"

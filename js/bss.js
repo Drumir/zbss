@@ -23,10 +23,13 @@ var mtb;                   // Main Table Body
 var refreshTime = -1;      // Сколько секунд осталось до обновления.
 var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - идет отсчёт. ==0 - операция провалилась. <0 - отключено
 var strTimeout = "";
-var filterUser = "";
+/*var filterUser = "";
 var filterName = "";
 var filterStatus = "";
 var filterClient = "";
+var filterRegion = "";*/
+var filter = {user:"", name:"", status:"", client:"", region:"", regionFull:""};
+
 
 var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
 var newSelectedIndex = 0;  // Переменная для onchange и onmouseup выпадающего списка фильтра по статусу
@@ -36,6 +39,7 @@ var highlightedTT = 0;    // Помнит последний щелкнутый тикет для его подсветки.
 var TTOkTransferCount = 0; // Хранит количество успешно переведенных тикетов
 var TTErTransferCount = 0; // Хранит количество ошибок при переводе тикетов
 var dontCheckTransferPermissions = false;  // Не выполняет проверку правомочности перевода тикета
+var closedTTduration =  7; // Хранит длительность периода выборки закрытых заявок в днях
 
 window.onload = function() {          //
 
@@ -141,7 +145,8 @@ function onLoadError(jqXHR, textStatus){      // callback для соседней авторизац
 
 /******************************************************************************/
 function oneMoreSecond(){
-  if(refreshTime > 0){
+  if(refreshTime > 0 && filter.status != "Closed / Закрыта")  // Если работаем в "закрытом" режиме, ничего обновлять не надо
+  {
     refreshTime --;
     document.getElementById('buttonRenew').innerText = "Обновить (" + refreshTime + ")";
   }
@@ -196,15 +201,16 @@ function showIt() {         // Отображает таблицу тикетов
 
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
-  if(filterUser + filterName + filterClient + filterStatus != "") {
+  if(filter.user + filter.name + filter.client + filter.status + filter.region != "") {
     document.getElementById('btResetFilter').hidden = false;
   }
   for(var key in Tickets) {
-    if(filterUser != "" && Tickets[key].otv != filterUser) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
-    if(filterName != "" && Tickets[key].name.toUpperCase().indexOf(filterName.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filterClient != "" && Tickets[key].client.toUpperCase().indexOf(filterClient.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filterStatus != "" && filterStatus.indexOf(Tickets[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
-    if(Tickets[key].status == "Closed / Закрыта" ) continue;  // Закрытые тикеты отображать не нужно
+    if(filter.user != "" && Tickets[key].otv != filter.user) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
+    if(filter.name != "" && Tickets[key].name.toUpperCase().indexOf(filter.name.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.client != "" && Tickets[key].client.toUpperCase().indexOf(filter.client.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.region != "" && Tickets[key].region != filter.region) continue;  // Если filterRegion не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.status != "" && filter.status.indexOf(Tickets[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
+    if(Tickets[key].renewed === false ) continue;  // Необновленные тикеты отображать не нужно
     var ttr = document.createElement('tr');
     ttr.filial = Tickets[key].filial;
     ttr.iidd = Tickets[key].id;
@@ -234,7 +240,7 @@ function showIt() {         // Отображает таблицу тикетов
   }
   document.getElementById('statusFieldRight').innerHTML = "";
   if(fNeedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
-  document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold);
+  document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
 function renewTickets(data) {
@@ -278,10 +284,10 @@ function renewTickets(data) {
     }
   }
 
-  for(var key in Tickets)               // Пометим все тикеты, информация о которых не обновилась как закрытые
+/*  for(var key in Tickets)               // Пометим все тикеты, информация о которых не обновилась как закрытые
     if(Tickets[key].renewed == false)
       Tickets[key].status = "Closed / Закрыта";
-
+*/
   showIt();
   if(delayedData != "") {                   // Костыль к onBtnSaveTTClick чтобы при отображении свежесозданного тикета в Tickets{} УЖЕ была запись о нём
     callbackGetTicket(delayedData, "sucess");
@@ -293,28 +299,29 @@ function renewTickets(data) {
 /******************************************************************************/
 
 function onRespIdChange(){
-  filterUser = $("#resp_id_s")[0][$("#resp_id_s")[0].selectedIndex].innerText;
+  filter.user = $("#resp_id_s")[0][$("#resp_id_s")[0].selectedIndex].innerText;
   if($("#resp_id_s")[0].selectedIndex === 0)
-    filterUser = "";
+    filter.user = "";
   showIt();
 }
 
 function onThsStatusChange(){   // Т.к. в событии onchange нельзя узнать нажат ли шифт, просто сохраним новый статус в newSelectedIndex
   newSelectedIndex = document.getElementById('thsStatus').selectedIndex;
   if(newSelectedIndex == 0)
-    filterStatus = "";
+    filter.status = "";
   showIt();
 }
 
 function onThsStatusMouseUp(e){  // После onchange будет onmouseup из которого мы узнает статус шифта и создадим соответствующий фильтр
   if(newSelectedIndex > 0){
     if(e.shiftKey == true){
-      filterStatus += $("#thsStatus")[0][newSelectedIndex].innerText;
+      filter.status += $("#thsStatus")[0][newSelectedIndex].innerText;
     }else {
-      filterStatus = $("#thsStatus")[0][newSelectedIndex].innerText;
+      filter.status = $("#thsStatus")[0][newSelectedIndex].innerText;
     }
-  newSelectedIndex = 0;
-  showIt();
+    newSelectedIndex = 0;
+    if(filter.status != "Closed / Закрыта") showIt();
+    else loadTickets();
   }
 }
 
@@ -339,7 +346,7 @@ function onMainTBodyClick(e) {
       }
     }
   }
-  if(e.target.nodeName === "TD" && e.target.cellIndex === 6 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 6 && e.ctrlKey == true){    // Если щелкнули по отв.лиц
     var select = document.getElementById('resp_id_s');
     for( var i = 1; i < select.length; i ++){
       if(select[i].innerText === e.target.innerText){
@@ -349,9 +356,17 @@ function onMainTBodyClick(e) {
       }
     }
   }
-  if(e.target.nodeName === "TD" && e.target.cellIndex === 7 && e.ctrlKey == true){    // Если щелкнули не по галочке c ctrl
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 4 && e.ctrlKey == true){    // Если щелкнули по  региону
+    filter.region = Tickets[e.target.parentNode.iidd].region;
+    filter.regionFull = Tickets[e.target.parentNode.iidd].filial;
+    filter.status === "Closed / Закрыта" ? loadTickets() : showIt();
+  }
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 7 && e.ctrlKey == true){    // Если щелкнули по клиенту
     document.getElementById('searchClient').value = e.target.innerText;
     document.getElementById('searchClient').oninput();
+
+    filter.client = e.target.innerText;
+    filter.status === "Closed / Закрыта" ? loadTickets() : showIt();
   }
 }
 
@@ -466,7 +481,7 @@ function onStatusNameClick(e) {   // По клику на имени залогиненого пользователя
     return;
   }
   if(userId != -1){
-    filterUser = userName;
+    filter.user = userName;
     showIt();
   }
   for(i = 0; i < resp_id.length; i ++) {     // И выберем его в выпадающем списке
@@ -509,11 +524,11 @@ function fullName2FIO(fullName) {
 }
 
 function onSearchInput() {
-  filterName = this.value;
+  filter.name = this.value;
   showIt();
 }
 function onSearchClientInput() {
-  filterClient = this.value;
+  filter.client = this.value;
   showIt();
 }
 function onTTKeyPress(e) {       // Ввод номера тикета
@@ -527,14 +542,20 @@ function onTTKeyPress(e) {       // Ввод номера тикета
 
 function onResetFilterClick() {   // Сброс всех фильтров
   document.getElementById('searchClient').value = "";
-  filterClient = "";
+  filter.client = "";
   document.getElementById('searchStr').value = "";
-  filterName = "";
+  filter.name = "";
   document.getElementById('resp_id_s').value = "0";
-  filterUser = "";
-  document.getElementById('thsStatus').value = "0";
-  filterStatus = "";
+  filter.user = "";
+  filter.region = "";
 
+  document.getElementById('thsStatus').value = "0";
+  if(filter.status == "Closed / Закрыта"){
+    filter.status = "";
+    loadTickets();
+    return;
+  }
+  filter.status = "";
   showIt();
 }
 

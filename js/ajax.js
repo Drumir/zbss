@@ -67,16 +67,38 @@ function callbackLoadEnvironment(data, textStatus) {
 }
 
 function loadTickets() {
+  var i, dateTo = "", dateFrom = "", status_id = "1000", region = "0", client = "0";
+  if(filter.status === "Closed / Закрыта"){          // Если  работа в "закрытом" режиме
+    status_id = "7";
+    var now = new Date();
+    dateTo = now.getDate() + "." + (now.getMonth() + 1) + "." + now.getFullYear();
+    now.setTime(now.getTime() - closedTTduration*1000*60*60*24);
+    dateFrom = now.getDate() + "." + (now.getMonth() + 1) + "." + now.getFullYear();
+    if(filter.region != ""){
+      for(i = 1; i < tt_region.length && tt_region[i].text != filter.regionFull; i ++);
+      if(i != tt_region.length) region = tt_region[i].value;
+    }
+    if(filter.client != ""){
+      for(i = 0; i < organization_id.length && organization_id[i].text != filter.client; i ++);  // Найдем в списке организаций мвидео
+      if(i != organization_id.length) client = organization_id[i].value;
+    }
+  }
+
   mySetTimeout(12, "Ошибка загрузки списка тикетов");
-  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "8", id: "1", organization_id: "0", resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: "0", tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: "1000", page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
+  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "8", id: "1", organization_id: client, resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: region, tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: status_id, DateFrom: dateFrom, DateTo: dateTo, page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
                                                       //                     Организация        , Отв. Лицо   , Группов. авария ,  Приоритет         ,все кроме шлюза, Регион        , тип сети             , класс аварии       , подкласс аварии       , Все кроме закрытых  ,
   setStatus("Загрузка списка тикетов  <IMG SRC='/images/wait.gif' alignment='vertical' alt='Renew'>");
 }
 
 function callbackLoadTickets(data, textStatus) {
+  if(data == null) return;
   resetTimeout();
-  if(data != null) {
-    renewTickets(data);
+  if(filter.status === "Closed / Закрыта" && data.rows.length < 300 && closedTTduration < 365){  // Если  работа в "закрытом" режиме, и в data меньше 300 тикетов
+    data.rows.length === 0 ? closedTTduration = 183 : closedTTduration = closedTTduration*450 / data.rows.length;
+    if(closedTTduration > 365) closedTTduration = 365;          // Выберем новую длительность
+    loadTickets();    // Загрузим список еще раз
   }
+  closedTTduration = 7;
+  renewTickets(data);
   setStatus("Готово");
 }
