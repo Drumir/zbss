@@ -5,7 +5,7 @@
 <head>
   <meta  http-equiv="Content-Type" content="text/html; charset=windows-1251">
 
-  <title>BSS Parser o_O</title>
+  <title>ZBSS</title>
 
   <link rel="stylesheet" type="text/css" href="style.css"/>
 
@@ -17,6 +17,7 @@
   <script type="text/javascript" src=".\js\popupTransfer.js"></script>
   <script type="text/javascript" src=".\js\ajax.js"></script>
   <script type="text/javascript" src=".\js\md5.js"></script>
+  <script type="text/javascript" src=".\js\jqzabbix.js"></script>
 
 
 </head>
@@ -32,7 +33,7 @@
     <td valign = "baseline">
       <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
     </td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bss Parser v0.4.25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.5.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать все ТТ</button></td>
   </table>
 
@@ -129,6 +130,15 @@
               <tr><td id="stat">Статус</td><td id="stat"></td></tr>
               <tr><td>Регион</td><td></td></tr>
               <tr><td>Клиент</td><td></td></tr>
+              <tr>
+                <td>Zabbix</td>
+                <td>
+                  <span id="ptZping" style="color:#666666">ping</span>&nbsp;&nbsp;
+                  <a id="ptZgraph" href="" target="_blank">график</a>&nbsp;&nbsp;
+                  <span id="ptHostidText">указать hostid:</span>&nbsp;
+                  <input type="text" id="ptHostId" size="6">
+                </td>
+              </tr>
               <tr><td>Описание</td><td><div id="leftPopupTicketDescription"></div></td></tr>
             </tbody>
           </table>
@@ -185,6 +195,7 @@
         </td>
       </tr>
       <tr><td>Описание</td><td><textarea id="TTDescr" style="width:500px; height:150px"></textarea></td></tr>
+      <tr><td>Zabbix hostid</td><td><input type="text" id="ppHostId" size="6"></td></tr>
     </table>
     <button id="ppBtnCreate">Сохранить</button>
     <button id="ppBtnAlert">AlertDown</button>

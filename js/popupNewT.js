@@ -109,6 +109,12 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
     contentType : "application/x-www-form-urlencoded; charset=windows-1251",
     success : onTtEditProcessSuccess
   });
+
+  if(!isNaN(parseInt($("#ppHostId")[0].value, 10))){
+    newbornTT.name = $("#shortTTDescr")[0].value;
+    newbornTT.zhostid = $("#ppHostId")[0].value;
+  }
+
   disablePopups();
 }
 

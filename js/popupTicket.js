@@ -58,7 +58,7 @@ function callbackGetTicket(data, textStatus) {
     ltb.children[6].children[1].innerText = tb.children[7].children[1].innerText;   // Статус
     ltb.children[7].children[1].innerText = tb.children[8].children[1].innerText;   // Регион
     ltb.children[8].children[1].innerHTML = tb.children[9].children[1].innerHTML;   // Клиент
-    ltb.children[9].children[1].children[0].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
+    ltb.children[10].children[1].children[0].innerText = tb.children[10].children[1].innerText;   // Текст. Замени на innerText и появится перенос строк!
 
     document.getElementById('toTabs').innerText = "В закладки"; if(Tabs[tid] != undefined) document.getElementById('toTabs').innerText = "Из закладок";
 
@@ -74,7 +74,7 @@ function callbackGetTicket(data, textStatus) {
     delete tb;
     document.getElementById('tempDiv').innerHTML = "";
 
-    if(Tickets[tid] == undefined){
+    if(Tickets[tid] == undefined){                            // Создает запись в Tickets если пользователь рткрыл тикет, которого там нет
       var tt = {};
       tt.id = tid;                // 52956
       tt.status = ltb.children[6].children[1].innerText;      // Service / Обслуживание"
@@ -123,6 +123,23 @@ function callbackGetTicket(data, textStatus) {
     showIt();
 
     document.getElementById('comment').value = "";
+
+    document.getElementById('ptZping').hidden = true;    // Спрячем элементы забикса: пинг и график
+    document.getElementById('ptZgraph').hidden = true;
+    document.getElementById('ptHostidText').innerText = "Укажите hostid:";
+    document.getElementById('ptHostId').value = "";
+//    if(tid == "61418") {Tickets[tid].zhostid = "12929";}      // Тест
+    if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){
+      document.getElementById('ptZping').hidden = false;              // покажем элементы строку пинг
+      document.getElementById('ptZping').style.color = "#666666";     // пока пинг не известен, покрасим его серым
+      document.getElementById('ptZgraph').hidden = false;             // покажем строку график
+      document.getElementById('ptZgraph').style.color = "#666666";    // пока itemid графика не известен, покрасим ссылку серым
+      document.getElementById('ptZgraph').href = "";                  // пока itemid графика не известен, заглушим ссылку
+      document.getElementById('ptHostidText').innerText = "hostid:";  // Отобразим hostid
+      document.getElementById('ptHostId').value = Tickets[tid].zhostid;
+      askZabbix(Tickets[tid].zhostid);
+    }
+
 
     loadPopupTicket();
     centerPopupTicket();
@@ -312,11 +329,62 @@ function getSubClass() {
 		success: onGetSubClassSuccess
 	})
 }
+
 function onGetSubClassSuccess(data, textStatus) {   // Callback для соседней функции getSubClass()
   $("#psSubClass").empty();
   if (data.list) {
     for (var i in data.list) {
       $("#psSubClass").append("<option value='" + data.list[i].id + "'>" + data.list[i].name + "</option>")
     }
+  }
+}
+
+function askZabbix(zhostid) {
+    // method
+  var method;
+  // parameter
+  var params = {};
+
+  method = "host.get";
+  params.hostids = zhostid;
+  params.output = "extend";
+  zserver.sendAjaxRequest(method, params, cbSuccessZ1, null); // Запросим доступность, имя, IP узла
+
+  method = "item.get";
+  params.hostids = zhostid;
+  params.output = "extend";
+  zserver.sendAjaxRequest(method, params, cbSuccessZ2, null); // Запросим доступность, имя, IP узла
+}
+
+function cbSuccessZ1(response, status) {
+  if (typeof(response.result) === 'object' && response.result.length == 1) {
+    document.getElementById('ptZping').style.color = "#FF2222";     // пока пинг не известен, покрасим его серым
+    if(response.result[0].available == "1"){
+      document.getElementById('ptZping').style.color = "#226622";     // пока пинг не известен, покрасим его серым
+    }
+  }
+}
+
+function cbSuccessZ2(response, status) {
+  if (typeof(response.result) === 'object') {
+    if(response.result[0].name == "Ping {HOST.NAME}"){
+      document.getElementById('ptZgraph').style.color = "#0000AA";    // покрасим ссылку синим
+      document.getElementById('ptZgraph').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[0].itemid;  // создадим ссылку
+    }
+  }
+}
+
+function onHostidEnter(e) {       // Ввод hostid
+  if(e.keyIdentifier === "Enter"){
+    if(!isNaN(parseInt(this.value, 10)))       // Если ввели число
+    {
+      var iidd = document.getElementById('popupTicket').iidd;       // Получим id открытого тикета
+      if(Tickets[iidd] != undefined){
+        Tickets[iidd].zhostid = this.value;                         // Запомним zhostid тикета
+        disablePopups();                                            // Переоткроем попап с тикетом
+        $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+      }
+    }
+    else this.value = "";
   }
 }

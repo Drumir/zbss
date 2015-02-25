@@ -23,16 +23,12 @@ var mtb;                   // Main Table Body
 var refreshTime = -1;      // —колько секунд осталось до обновлени€.
 var netTimeout = -1;       // ƒл€ определени€ зависани€ сетевых операций. >0 - идет отсчЄт. ==0 - операци€ провалилась. <0 - отключено
 var strTimeout = "";
-/*var filterUser = "";
-var filterName = "";
-var filterStatus = "";
-var filterClient = "";
-var filterRegion = "";*/
 var filter = {user:"", name:"", status:"", client:"", region:"", regionFull:""};
 
 
 var delayedData = "";      // «десь хранитс€ html код страницы свежесозданного тикета (¬ формате подход€щем дл€ callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
 var newSelectedIndex = 0;  // ѕеременна€ дл€ onchange и onmouseup выпадающего списка фильтра по статусу
+var newbornTT = {};        // «десь хранитс€ введенный пользовтелем zhostid и name еще несозданного тикета с тем чтобы renewTickets могла подставить hostid в один из вновь полученных тикетов
 
 var forceShow = true;     // ”казывает, что список нужно как можно быстрее обновить
 var highlightedTT = 0;    // ѕомнит последний щелкнутый тикет дл€ его подсветки.
@@ -40,6 +36,10 @@ var TTOkTransferCount = 0; // ’ранит количество успешно переведенных тикетов
 var TTErTransferCount = 0; // ’ранит количество ошибок при переводе тикетов
 var dontCheckTransferPermissions = false;  // Ќе выполн€ет проверку правомочности перевода тикета
 var closedTTduration =  7; // ’ранит длительность периода выборки закрытых за€вок в дн€х
+
+var zoptions = {};         // ƒл€ запросов в заббикс
+zoptions.url = 'https://zabbix.msk.unitline.ru/zabbix/api_jsonrpc.php';
+var zApiVersion = "";
 
 window.onload = function() {          //
 
@@ -71,6 +71,7 @@ window.onload = function() {          //
   document.getElementById('searchStr').oninput = onSearchInput;
   document.getElementById('searchClient').oninput = onSearchClientInput;
   document.getElementById('searchTT').onkeydown = onTTKeyPress;
+  document.getElementById('ptHostId').onkeydown = onHostidEnter;
   document.getElementById('psClass').onchange = getSubClass;
   document.getElementById('branchLiist').onchange = GetCPList;
   document.getElementById('ps2Confirm').onclick = onPs2Confirm;
@@ -135,6 +136,15 @@ window.onload = function() {          //
 
     // ѕопытка авторизоватьс€
   $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
+
+  zserver = new $.jqzabbix(zoptions);
+  zserver.getApiVersion(null, function(response){
+      zApiVersion = response.result;
+      zoptions.username = "monitoring";
+      zoptions.password = "monitoring";
+      zserver.setOptions(zoptions);
+      zserver.userLogin(null, function(){ zApiVersion += " Auth Ok";}, function() {zApiVersion += " Auth Fail";});
+  });
 
 }
 function onLoadError(jqXHR, textStatus){      // callback дл€ соседней авторизации
@@ -269,6 +279,11 @@ function renewTickets(data) {
       Tickets[tt.id] = tt;
       Tickets[tt.id].checked = false;
       Tickets[tt.id].renewed = true;
+      if(newbornTT.name != undefined && newbornTT.zhostid != undefined && Tickets[tt.id].name === newbornTT.name){
+        Tickets[tt.id].zhostid = newbornTT.zhostid;   // ƒл€этого свежесозданного тикета уже определен zhostid
+        delete newbornTT.zhostid;
+        delete newbornTT.name;
+      }
     }
     else {
       if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // ≈сли отв. лицо изменилось на нас
