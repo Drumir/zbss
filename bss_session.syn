@@ -1,6 +1,6 @@
 [Ini]
 Files=11
-Page=5
+Page=0
 Page2=0
 PageCount=11
 PageActive=0
@@ -19,12 +19,12 @@ SplitPos=50
 9=.\ToDo.txt
 10=C:\Users\Sorokin\Documents\Icinga Parser v0.5.3\nagios.js
 [Top]
-0=0
+0=248
 1=232
-2=0
+2=81
 3=0
 4=0
-5=216
+5=169
 6=0
 7=0
 8=0
@@ -43,9 +43,9 @@ SplitPos=50
 9=0
 10=0
 [Cur]
-0=11353
+0=12314
 1=14122
-2=0
+2=5210
 3=1
 4=1
 5=8313

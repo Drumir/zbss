@@ -97,6 +97,7 @@ function callbackLoadTickets(data, textStatus) {
     data.rows.length === 0 ? closedTTduration = 183 : closedTTduration = closedTTduration*450 / data.rows.length;
     if(closedTTduration > 365) closedTTduration = 365;          // Выберем новую длительность
     loadTickets();    // Загрузим список еще раз
+    return;
   }
   closedTTduration = 7;
   renewTickets(data);
