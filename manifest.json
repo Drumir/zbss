@@ -14,5 +14,5 @@
     "64": "/images/icon.png",
     "128": "/images/icon.png"
   },
-  "permissions": ["clipboardRead", "clipboardWrite", "<all_urls>", "storage", "webview" ]
+  "permissions": ["clipboardRead", "clipboardWrite", "<all_urls>", "storage"]
 }

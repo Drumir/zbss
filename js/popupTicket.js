@@ -359,7 +359,7 @@ function askZabbix(zhostid) {
 function cbSuccessZ1(response, status) {
   if (typeof(response.result) === 'object' && response.result.length == 1) {
     document.getElementById('ptZping').style.color = "#FF2222";     // пока пинг не известен, покрасим его серым
-    if(response.result[0].available == "1"){
+    if(response.result[0].snmp_available == "1"){
       document.getElementById('ptZping').style.color = "#226622";     // пока пинг не известен, покрасим его серым
     }
   }
@@ -367,9 +367,12 @@ function cbSuccessZ1(response, status) {
 
 function cbSuccessZ2(response, status) {
   if (typeof(response.result) === 'object') {
-    if(response.result[0].name == "Ping {HOST.NAME}"){
+    if(response.result[0].name.indexOf("Ping {HOST.NAME") === 0){
       document.getElementById('ptZgraph').style.color = "#0000AA";    // покрасим ссылку синим
       document.getElementById('ptZgraph').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[0].itemid;  // создадим ссылку
+//      document.getElementById('ptZgraph').href = "http://95.172.42.2/icinga/cgi-bin/statusmap.cgi?host=pr-t_oktyabrya_2a";  // создадим ссылку
+//                      innerHtml += '<TD><a href="http://95.172.42.2/icinga/cgi-bin/statusmap.cgi?host=' + list[i].name + '" target="_blank">карта</a></TD>';
+
     }
   }
 }
