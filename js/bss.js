@@ -20,7 +20,7 @@ var tt_status_id = [];     // Список статусов тикета
 var branch_id = [];        // Список подразделений авторов
 var zGroups = [];          // Список (массив) групп (читай клиентов) в забиксе
 var zGroupsObj = {};       // Список групп в забиксе в формате groupid:name
-
+var zResponse = {};        // Результат поиска Заббиксом хостов, входящих в группы (для функции ShowZList())
 var mtb;                   // Main Table Body
 var refreshTime = -1;      // Сколько секунд осталось до обновления.
 var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - идет отсчёт. ==0 - операция провалилась. <0 - отключено
@@ -63,6 +63,7 @@ window.onload = function() {          //
   document.getElementById('buttonRenew').onclick = onBtnRenewClick;
   document.getElementById('buttonRenew').disabled = false;
   document.getElementById('mainTBody').onclick = onMainTBodyClick;
+  document.getElementById('pzFound').onclick = onPzFoundTBodyClick;
   document.getElementById('mainTBody').onmousedown = onMTBmouseDown;
   document.getElementById('mainTBody').onkeydown = onMainTBodyKeyPress;
   document.getElementById('statusName').onclick = onStatusNameClick;
@@ -72,6 +73,7 @@ window.onload = function() {          //
   document.getElementById('popupTicket').onclick = onTPopupClick;
   document.getElementById('searchStr').oninput = onSearchInput;
   document.getElementById('searchClient').oninput = onSearchClientInput;
+  document.getElementById('pzLocation').oninput = onzLocationEdit;
   document.getElementById('searchTT').onkeydown = onTTKeyPress;
   document.getElementById('ptHostId').onkeydown = onHostidEnter;
   document.getElementById('psClass').onchange = getSubClass;
@@ -92,7 +94,9 @@ window.onload = function() {          //
   document.getElementById('tabsTable').onmousedown = onTabsMouseDown;
   document.getElementById('PTtimer').onclick = setTimer;
   document.getElementById('ptFindHostId').onclick = onPtFindHostIdClick;
+  document.getElementById('pnFindHostId').onclick = onPnFindHostIdClick;
   document.getElementById('pzBtnCancel').onclick = onPzBtnCancelClick;
+  document.getElementById('pzBtnOk').onclick = onPzBtnOkClick;
 
   mtb = document.getElementById('mainTBody');
 

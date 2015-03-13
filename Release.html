@@ -181,8 +181,7 @@
 
   <div id="popupZabix">
     <table border ="0" >
-      <tr><td>Zabbix hostid</td><td><input type="text" id="ppHostId" size="5"></td></tr>
-      <tr><td>Строка поиска</td><td><input type="text" id="shortTTDescr" size="15"></td></tr>
+      <tr><td>Zabbix hostid</td><td><input type="text" id="pzHostId" size="5"></td></tr>
       <tr>
         <td>Клиент</td>
         <td id="pzSelectClient">
@@ -197,7 +196,7 @@
               <td>hostid</td>
               <td>IP</td>
               <td>Доступен</td>
-              <td>Расположение</td>
+              <td><input type="text" id="pzLocation" placeholder="Расположение"></td>
               <td>Группы</td>
             </tr>
       </thead>
@@ -205,7 +204,8 @@
       </table></td>
     </tr>
     </table>
-    <button id="pzBtnOk">OK</button><button id="pzBtnCancel">Отмена</button>
+    <hr>
+    <button id="pzBtnOk">OK</button>&nbsp;&nbsp;<button id="pzBtnCancel">Отмена</button>
   </div>
 
   <div id="popupNewTT">
@@ -226,7 +226,13 @@
         </td>
       </tr>
       <tr><td>Описание</td><td><textarea id="TTDescr" style="width:500px; height:150px"></textarea></td></tr>
-      <tr><td>Zabbix hostid</td><td><input type="text" id="ppHostId" size="6"></td></tr>
+      <tr>
+        <td>Zabbix hostid:</td>
+        <td>
+          <input type="text" id="ppHostId" size="6" placeholder="Ввести">&nbsp;&nbsp;или&nbsp;
+          <a id="pnFindHostId" style="color:#0000AA">выбрать</a>
+        </td>
+      </tr>
     </table>
     <button id="ppBtnCreate">Сохранить</button>
     <button id="ppBtnAlert">AlertDown</button>

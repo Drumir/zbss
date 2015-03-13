@@ -141,11 +141,10 @@ hr {
   color: #0A0A0A;
   display: none;
   _position: absolute;
-  width: 85%;
-  height: 70%;
+  width: 75%;
   background: #FFFFFF;
   border: 2px solid #cecece;
-  z-index: 3;
+  z-index: 4;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   padding: 12px;
   max-height: 750px;

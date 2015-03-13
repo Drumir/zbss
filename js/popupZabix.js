@@ -4,12 +4,10 @@
 
 function loadPopupZabix() {
   if (popupStatus < 2) {
-    $("#pzFound").empty();                                          // Очистим список найденых хостов
-    var tid = document.getElementById('popupTicket').iidd;
     var zClient = "";
     var select = document.getElementById('pzClient');
     select.selectedIndex = 0;
-    switch(Tickets[tid].client){   // Попытаемся определить zabbix groupid по BSS Client Name
+    switch(document.getElementById('popupZabix').BssClient){   // Попытаемся определить zabbix groupid по BSS Client Name
       case "*Adidas*":{ zClient = "Адидас"; break;}
       case "*Alfa group*":{ zClient = "Альфа-банк"; break;}
       case "*ALFA-BANK*":{ zClient = "Альфа-банк"; break;}
@@ -117,7 +115,15 @@ function centerPopupZabix() {
   });
 }
 
-function onPtFindHostIdClick() {
+function onPtFindHostIdClick() {      // Вызов из popupTicket (данные берем из Tickets)
+  document.getElementById('popupZabix').BssClient = Tickets[document.getElementById('popupTicket').iidd].client;
+  document.getElementById('popupZabix').Caption = Tickets[document.getElementById('popupTicket').iidd].name;
+  loadPopupZabix();
+}
+
+function onPnFindHostIdClick() {        // Вызов из popupNewTT (данные берем из popupNewTT)
+  document.getElementById('popupZabix').BssClient = document.getElementById('ppClient')[document.getElementById('ppClient').selectedIndex].text;
+  document.getElementById('popupZabix').Caption = document.getElementById('shortTTDescr').value;
   loadPopupZabix();
 }
 
@@ -144,26 +150,34 @@ function cbSuccessZgg(response, status) {         // Получим список всех групп
 
 function cbSuccessZgetHostsOfGroups(response, status) {  // Получим список хостов, входящих в заданные группы
   if (typeof(response.result) === 'object') {
-    var str = "";
-    for(var key in response.result) {
-      var ttr = document.createElement('tr');
-      ttr.hostid = response.result[key].hostid;
+    zResponse = response.result;
+    ShowZList();
+  }
+  centerPopupZabix();
+}
 
-      str = '<tr><td><a style="color:#1133AA">Выбрать</a></td>';
-      str += '<td><a href="https://zabbix.msk.unitline.ru/zabbix/latest.php?open=1&apps[0]=7374&hostid=' + response.result[key].hostid + '&fullscreen=0" target="_blank">' +  response.result[key].hostid + '</a></td>';
-      str += '<td>' + response.result[key].host + '</td>';
-      str += '<td>' + response.result[key].available + '</td>';
-      str += '<td>' + response.result[key].name + '</td>';
-      str += '<td>';
-      for(var gr in response.result[key].groups){
-        var grid = response.result[key].groups[gr].groupid;
-        str += zGroupsObj[grid] + " ";
-      }
-      str += '</td></tr>';
-      ttr.innerHTML = str;
-      document.getElementById('pzFound').insertBefore(ttr, document.getElementById('pzFound').children[0]);
+function ShowZList() {
+  $("#pzFound").empty();                                          // Очистим список найденых хостов
+  var str = "";
+  var filterZLocation = document.getElementById('pzLocation').value;
+  for(var key in zResponse) {
+    if(zResponse[key].name.indexOf(filterZLocation) == -1) continue;
+    var ttr = document.createElement('tr');
+    ttr.hostid = zResponse[key].hostid;
+
+    str = '<tr><td><a style="color:#1133AA">Выбрать</a></td>';
+    str += '<td><a href="https://zabbix.msk.unitline.ru/zabbix/latest.php?open=1&apps[0]=7374&hostid=' + zResponse[key].hostid + '&fullscreen=0" target="_blank">' +  zResponse[key].hostid + '</a></td>';
+    str += '<td>' + zResponse[key].host + '</td>';
+    str += '<td>' + zResponse[key].available + '</td>';
+    str += '<td>' + zResponse[key].name + '</td>';
+    str += '<td>';
+    for(var gr in zResponse[key].groups){
+      var grid = zResponse[key].groups[gr].groupid;
+      str += zGroupsObj[grid] + " ";
     }
-
+    str += '</td></tr>';
+    ttr.innerHTML = str;
+    document.getElementById('pzFound').insertBefore(ttr, document.getElementById('pzFound').children[0]);
   }
   centerPopupZabix();
 }
@@ -175,5 +189,28 @@ function onPzBtnCancelClick(){
   }
   if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
     $("#backgroundPopup").fadeOut("fast");
+  }
+}
+function onPzBtnOkClick(){     ppHostId
+  if(!isNaN(parseInt(document.getElementById('pzHostId').value, 10))){
+
+    if(popupStatus > 0) {            // Сразу закроем popup Zabix
+      $("#popupZabix").fadeOut("fast");
+      popupStatus--;
+    }
+    if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
+      $("#backgroundPopup").fadeOut("fast");
+    }
+  }
+}
+
+function onzLocationEdit() {
+  filterZLocation = this.value;
+  ShowZList();
+}
+
+function onPzFoundTBodyClick(e) {
+  if(e.target.tagName == "A" && e.target.parentNode.cellIndex == 0) {
+    document.getElementById('pzHostId').value = e.target.parentNode.parentNode.hostid;
   }
 }
