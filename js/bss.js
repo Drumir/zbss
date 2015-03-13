@@ -18,6 +18,8 @@ var organization_id = [];  // Список всех клиентов
 var tt_region = [];        // Список всех регион
 var tt_status_id = [];     // Список статусов тикета
 var branch_id = [];        // Список подразделений авторов
+var zGroups = [];          // Список (массив) групп (читай клиентов) в забиксе
+var zGroupsObj = {};       // Список групп в забиксе в формате groupid:name
 
 var mtb;                   // Main Table Body
 var refreshTime = -1;      // Сколько секунд осталось до обновления.
@@ -89,6 +91,8 @@ window.onload = function() {          //
   document.getElementById('tabsTable').onclick = onTabsClick;
   document.getElementById('tabsTable').onmousedown = onTabsMouseDown;
   document.getElementById('PTtimer').onclick = setTimer;
+  document.getElementById('ptFindHostId').onclick = onPtFindHostIdClick;
+  document.getElementById('pzBtnCancel').onclick = onPzBtnCancelClick;
 
   mtb = document.getElementById('mainTBody');
 
@@ -143,7 +147,7 @@ window.onload = function() {          //
       zoptions.username = "monitoring";
       zoptions.password = "monitoring";
       zserver.setOptions(zoptions);
-      zserver.userLogin(null, function(){ zApiVersion += " Auth Ok";}, function() {zApiVersion += " Auth Fail";});
+      zserver.userLogin(null, cbZAuth, cbZAuth, zGetGroups);
   });
 
 }
@@ -153,6 +157,8 @@ function onLoadError(jqXHR, textStatus){      // callback для соседней авторизац
   }
 }
 
+function cbZAuth(a,b,c) {
+}
 /******************************************************************************/
 function oneMoreSecond(){
   if(refreshTime > 0 && filter.status != "Closed / Закрыта")  // Если работаем в "закрытом" режиме, ничего обновлять не надо

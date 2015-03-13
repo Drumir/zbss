@@ -27,6 +27,7 @@ function disablePopups() {
     $("#popupStatus").fadeOut("fast");
     $("#popupTicket").fadeOut("fast");
     $("#popupNewTT").fadeOut("fast");
+    $("#popupZabix").fadeOut("fast");
     $("#popupEditTT").fadeOut("fast");
     $("#popupLogin").fadeOut("fast");
     popupStatus = 0;

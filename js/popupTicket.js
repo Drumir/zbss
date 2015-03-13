@@ -128,7 +128,8 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('ptZgraph').hidden = true;
     document.getElementById('ptHostidText').innerText = "Укажите hostid:";
     document.getElementById('ptHostId').value = "";
-//    if(tid == "61418") {Tickets[tid].zhostid = "12929";}      // Тест
+    document.getElementById('ptFindHostId').innerText = "Найти";
+
     if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){
       document.getElementById('ptZping').hidden = false;              // покажем элементы строку пинг
       document.getElementById('ptZping').style.color = "#666666";     // пока пинг не известен, покрасим его серым
@@ -137,6 +138,7 @@ function callbackGetTicket(data, textStatus) {
       document.getElementById('ptZgraph').href = "";                  // пока itemid графика не известен, заглушим ссылку
       document.getElementById('ptHostidText').innerText = "hostid:";  // Отобразим hostid
       document.getElementById('ptHostId').value = Tickets[tid].zhostid;
+      document.getElementById('ptFindHostId').innerText = "Изменить";
       askZabbix(Tickets[tid].zhostid);
     }
 
@@ -344,12 +346,12 @@ function askZabbix(zhostid) {
   var method;
   // parameter
   var params = {};
-
+/*
   method = "host.get";
   params.hostids = zhostid;
   params.output = "extend";
   zserver.sendAjaxRequest(method, params, cbSuccessZ1, null); // Запросим доступность, имя, IP узла
-
+*/
   method = "item.get";
   params.hostids = zhostid;
   params.output = "extend";
@@ -367,13 +369,14 @@ function cbSuccessZ1(response, status) {
 
 function cbSuccessZ2(response, status) {
   if (typeof(response.result) === 'object') {
-    if(response.result[0].name.indexOf("Ping {HOST.NAME") === 0){
+    if(response.result[0].name.indexOf("Ping {HOST.NAME") == 0){
       document.getElementById('ptZgraph').style.color = "#0000AA";    // покрасим ссылку синим
       document.getElementById('ptZgraph').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[0].itemid;  // создадим ссылку
-//      document.getElementById('ptZgraph').href = "http://95.172.42.2/icinga/cgi-bin/statusmap.cgi?host=pr-t_oktyabrya_2a";  // создадим ссылку
-//                      innerHtml += '<TD><a href="http://95.172.42.2/icinga/cgi-bin/statusmap.cgi?host=' + list[i].name + '" target="_blank">карта</a></TD>';
-
     }
+    if(response.result[0].lastvalue == 1)
+      document.getElementById('ptZping').style.color = "#226622";     // пинг есть
+    else
+      document.getElementById('ptZping').style.color = "#FF2222";     // пинг кончился
   }
 }
 

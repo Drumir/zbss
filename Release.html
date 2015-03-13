@@ -15,6 +15,7 @@
   <script type="text/javascript" src=".\js\popupTicket.js"></script>
   <script type="text/javascript" src=".\js\popupNewT.js"></script>
   <script type="text/javascript" src=".\js\popupTransfer.js"></script>
+  <script type="text/javascript" src=".\js\popupZabix.js"></script>
   <script type="text/javascript" src=".\js\ajax.js"></script>
   <script type="text/javascript" src=".\js\md5.js"></script>
   <script type="text/javascript" src=".\js\jqzabbix.js"></script>
@@ -135,8 +136,9 @@
                 <td>
                   <span id="ptZping" style="color:#666666; font-weight:bold">ping</span>&nbsp;&nbsp;
                   <a id="ptZgraph" href="https://zabbix.msk.unitline.ru/zabbix/dashboard.php" target="_blank">график</a>&nbsp;&nbsp;
-                  <span id="ptHostidText">указать hostid:</span>&nbsp;
-                  <input type="text" id="ptHostId" size="6">
+                  <span id="ptHostidText">указать hostid:</span>
+                  <input type="text" id="ptHostId" size="3"> &nbsp;&nbsp;
+                  <a id="ptFindHostId" style="color:#0000AA">найти</a>
                 </td>
               </tr>
               <tr><td>Описание</td><td><div id="leftPopupTicketDescription"></div></td></tr>
@@ -175,6 +177,35 @@
         </td>
       </tr>
     </table>
+  </div>
+
+  <div id="popupZabix">
+    <table border ="0" >
+      <tr><td>Zabbix hostid</td><td><input type="text" id="ppHostId" size="5"></td></tr>
+      <tr><td>Строка поиска</td><td><input type="text" id="shortTTDescr" size="15"></td></tr>
+      <tr>
+        <td>Клиент</td>
+        <td id="pzSelectClient">
+          <select id="pzClient" style="width:400px"></select>&nbsp;&nbsp;
+        </td>
+      </tr>
+      <tr><td>Описание</td>
+        <td><table>
+          <thead>
+            <tr style="background-color:#77AAFF">
+              <td>Выбрать</td>
+              <td>hostid</td>
+              <td>IP</td>
+              <td>Доступен</td>
+              <td>Расположение</td>
+              <td>Группы</td>
+            </tr>
+      </thead>
+      <tbody id="pzFound"></tbody>
+      </table></td>
+    </tr>
+    </table>
+    <button id="pzBtnOk">OK</button><button id="pzBtnCancel">Отмена</button>
   </div>
 
   <div id="popupNewTT">
