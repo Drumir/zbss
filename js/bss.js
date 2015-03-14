@@ -21,6 +21,7 @@ var branch_id = [];        // Список подразделений авторов
 var zGroups = [];          // Список (массив) групп (читай клиентов) в забиксе
 var zGroupsObj = {};       // Список групп в забиксе в формате groupid:name
 var zResponse = {};        // Результат поиска Заббиксом хостов, входящих в группы (для функции ShowZList())
+var watchPingArr = [];     // Здесь будут тикеты, у которых необходимо проверить ping
 var mtb;                   // Main Table Body
 var refreshTime = -1;      // Сколько секунд осталось до обновления.
 var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - идет отсчёт. ==0 - операция провалилась. <0 - отключено
@@ -58,6 +59,7 @@ window.onload = function() {          //
   document.getElementById('ptPost').onclick = commentOnKey;
   document.body.onresize = onBodyResize;
   document.getElementById('headChBox').onchange = onHeadChBoxClick;
+  document.getElementById('ptPingCBox').onchange = onPingCBoxClick;
   document.getElementById('buttonMove').onclick = onBtnMoveClick;
   document.getElementById('buttonMove').disabled = false;
   document.getElementById('buttonRenew').onclick = onBtnRenewClick;
@@ -174,6 +176,9 @@ function oneMoreSecond(){
     loadTickets();
     refreshTime = 60;
   }
+  if(refreshTime == 30 && netTimeout <= 0 && watchPingArr.length == 0){ // Раз в 30 секунд, если нет никакого таймаута и предыдущий опрос завершен, запускаем пинг хостов
+    checkPing();
+  }
   if(netTimeout > 0){        // Если netTimeout > 0, значит идет какая-то сетевая операция
     netTimeout --;
   }
@@ -183,20 +188,13 @@ function oneMoreSecond(){
     netTimeout = 0;        // остановим отсчет.
   }
   var fNeedRepaint = false;
-  var now = new Date();
+  var now = new Date();           // Раз в секунду проверяем все тикеты на будильник. Не часто ли?!
   now = now.getTime();
   for(var key in Tickets) {
     if(Tickets[key].timer != 0 && Tickets[key].timer < now){
       Tickets[key].timer = 0;          // Отключим таймер
-      Tickets[key].attention = true;   // Пометим тикет как требующий внимания
+      Tickets[key].redAttention = true;   // Пометим тикет как требующий внимания
       fNeedRepaint = true;
- /*     if(Tabs[key] == undefined){    // Добавим тикет в закладки
-        var tab = {};
-        tab.name = Tickets[key].name;
-        tab.text = "";
-        Tabs[key] = tab;
-      }    */
-
     }
   }
   if(fNeedRepaint) {showIt();}
@@ -205,13 +203,14 @@ function oneMoreSecond(){
 function showIt() {         // Отображает таблицу тикетов
   var str = "";
   var stat = {begin:0, service:0, resolved:0, investigating:0, hold:0, closed:0};
-  var fNeedAttention = false;    // Флаг, что у какого-то тикета вышел таймер и он требует внимания
+  var fNeedRedAttention = false;    // Флаг, что у какого-то тикета вышел таймер и он требует внимания
+  var fNeedGreenAttention = false;    // Флаг, что у какого-то тикета радость и он хочет ей поделиться.
 
   document.getElementById('tabsTable').hidden = true;      // Спрячем панель закладок
   if(Object.keys(Tabs).length > 0){                          // Если есть закладки - отобразим их
     str = "";
     for(var key in Tabs) {                                   // Сформируем HTML код панели закладок
-      if(Tickets[key] != undefined && Tickets[key].attention === true){ str += '<td id="' + key + '" style="background-color:#F87777">';}
+      if(Tickets[key] != undefined && Tickets[key].redAttention === true){ str += '<td id="' + key + '" style="background-color:#F87777">';}
       else {str += '<td id="' + key + '">';}
       str += key + ' ' + Tabs[key].name + '</td>';
     }
@@ -252,14 +251,19 @@ function showIt() {         // Отображает таблицу тикетов
     if(key == highlightedTT){
       ttr.style.backgroundColor = "#FFFFCC"; // Выделеный тикет
     }
-    if(Tickets[key].attention === true){
+    if(Tickets[key].redAttention === true){
       ttr.style.backgroundColor = "#F87777"; // Тикет требующий внимания
-      fNeedAttention = true;
+      fNeedRedAttention = true;
+    }
+    if(Tickets[key].greenAttention === true){
+      ttr.style.backgroundColor = "#77F877"; // Тикет требующий внимания
+      fNeedGreenAttention = true;
     }
     mtb.insertBefore(ttr, mtb.children[0]);
   }
   document.getElementById('statusFieldRight').innerHTML = "";
-  if(fNeedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
+  if(fNeedRedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
+  if(fNeedGreenAttention) document.getElementById('statusFieldRight').innerHTML += '<span style="color:#008800; font-weight:bold">Внимание&nbsp;&nbsp;&nbsp;</span>';
   document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
@@ -281,7 +285,7 @@ function renewTickets(data) {
     tt.filial = data.rows[i].filial;        // Ростовская область
     tt.branch = data.rows[i].branch;        // Технический департамент (МегаМакс).<br>МЕГАМАКС
                                             // 	{ "id":"52956", "status":"Service / Обслуживание", "data_open":"05.09.2014 21:42", "data_res":"", "data_close":"", "region":"RST", "author":"Сорокин Е. Г.", "otv":"Сорокин Е. Г.", "client":"*M.VIDEO*", "name":"Wi-Fi SZ №101 г. Ростов-на-Дону, ул. Красноармейская, 157", "clas":"", "filial":"Ростовская область", "is_group":"-", "branch":"Технический департамент (МегаМакс).<br>МЕГАМАКС" }
-    tt.attention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
+    tt.redAttention = false;                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
     tt.permissions = "";                    // Названия всех доступных в тикете кнопок разделенные "***"
     tt.timer = 0;                          // Таймер-напоминалка отключен
 
@@ -297,7 +301,7 @@ function renewTickets(data) {
     }
     else {
       if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // Если отв. лицо изменилось на нас
-        Tickets[tt.id].attention = true;
+        Tickets[tt.id].redAttention = true;
         // тут должна быть проверка подтверждения пользователем смен отв. лица
       }
       Tickets[tt.id].status = tt.status;        // Скопируем параметры, которые могли измениться
@@ -656,4 +660,35 @@ function statusToColor(status){
     case "Closed / Закрыта": return "#FFC0C0";
   }
   return "#000000";
+}
+
+function checkPing(){
+  watchPingArr.length = 0;    // На всякий случай очистим массив
+  for(var key in Tickets)     // Сформируем массив тикетов, у которых нужно проверить пинг (т.е. всех, где указан zhostid)
+    if(Tickets[key].zhostid != undefined)
+      watchPingArr.push(Tickets[key]);
+  if(watchPingArr.length > 0) lookOnTicketPing();
+}
+
+function lookOnTicketPing(response, status) {
+  if (response != undefined && typeof(response.result) === 'object') {
+    Tickets[watchPingArr[0].id].ping = -1;      // Пинг не определен
+    Tickets[watchPingArr[0].id].greenAttention = false;
+    var i;
+    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
+    if(i != response.result.length){  // Если строка с пингом найдена
+      Tickets[watchPingArr[0].id].ping = response.result[i].lastvalue;
+      if(Tickets[watchPingArr[0].id].watchPing == true && Tickets[watchPingArr[0].id].ping == 1)    // Если пользователь поставил галку следить за пингом для этого тикета, и пинг есть
+        Tickets[watchPingArr[0].id].greenAttention = true; //  активируем флаг greenAttention
+    }
+    watchPingArr.shift();  // Удалим начальный элемент массива
+  }
+
+  if(watchPingArr.length > 0 && watchPingArr[0].zhostid != undefined){
+    var params = {};
+    var method = "item.get";
+    params.hostids = watchPingArr[0].zhostid;
+    params.output = "extend";
+    zserver.sendAjaxRequest(method, params, lookOnTicketPing, null); // Запросим доступность, имя, IP узла
+  }
 }

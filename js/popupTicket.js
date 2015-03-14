@@ -87,7 +87,7 @@ function callbackGetTicket(data, textStatus) {
       tt.clas = "Закрыт";                                     // 6. Аварии вне зоны ответственности технической службы VC. Проблемы на сети взаимодействующего оператора связи
       tt.filial = ltb.children[7].children[1].innerText;      // RST (А должно быть "Ростовская область")
       tt.branch = "";                                         // Технический департамент (МегаМакс).<br>МЕГАМАКС
-      tt.attention = false;                                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
+      tt.redAttention = false;                                   // Флаг, что у тикета поменялось отв. лицо на нас. Надо проверить подтвердил ли это пользователь.
       tt.permissions = "";                                    // Названия всех доступных в тикете кнопок разделенные "***"
       tt.timer = 0;                                           // Таймер-напоминалка отключен
       Tickets[tt.id] = tt;
@@ -119,23 +119,30 @@ function callbackGetTicket(data, textStatus) {
       document.getElementById('timeLeft').innerHTML = str;
     }
 
-    if(Tickets[tid].attention === true) Tickets[tid].attention = false; //При открытии требующего внимания тикета, отметка сбрасывается
+    if(Tickets[tid].redAttention === true) Tickets[tid].redAttention = false; //При открытии требующего внимания тикета, отметка сбрасывается
+    if(Tickets[tid].greenAttention === true) {
+      Tickets[tid].greenAttention = false; // При открытии зеленого тикета, отметка сбрасывается
+      Tickets[tid].watchPing = false;      // Слежение прекращается.
+    }
     showIt();
 
     document.getElementById('comment').value = "";
 
-    document.getElementById('ptZping').hidden = true;    // Спрячем элементы забикса: пинг и график
-    document.getElementById('ptZgraph').hidden = true;
+    document.getElementById('ptZping').hidden = true;       // Спрячем элементы пинг
+    document.getElementById('ptPingCBox').hidden = true;    // Спрячем элементы пинг
+    document.getElementById('ptPingCBox').checked = false;    // Спрячем элементы пинг
+    if(Tickets[tid].watchPing != undefined)
+      document.getElementById('ptPingCBox').checked = Tickets[tid].watchPing;
     document.getElementById('ptHostidText').innerText = "hostid:";
     document.getElementById('ptHostId').value = "";
     document.getElementById('ptFindHostId').innerText = "найти";
 
-    if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){
-      document.getElementById('ptZping').hidden = false;              // покажем элементы строку пинг
+    if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){   // Если этому тикету сопоставлен hostid
+      document.getElementById('ptZping').hidden = false;              // покажем строку пинг
+      document.getElementById('ptPingCBox').hidden = false;              // покажем  чекбокс пинг
+      document.getElementById('ptPingCBox').disabled = true;              // покажем элементы строку пинг
       document.getElementById('ptZping').style.color = "#666666";     // пока пинг не известен, покрасим его серым
-      document.getElementById('ptZgraph').hidden = false;             // покажем строку график
-      document.getElementById('ptZgraph').style.color = "#666666";    // пока itemid графика не известен, покрасим ссылку серым
-      document.getElementById('ptZgraph').href = "";                  // пока itemid графика не известен, заглушим ссылку
+      document.getElementById('ptZping').href = "";                  // пока itemid графика не известен, заглушим ссылку
       document.getElementById('ptHostidText').innerText = "hostid:";  // Отобразим hostid
       document.getElementById('ptHostId').value = Tickets[tid].zhostid;
       document.getElementById('ptFindHostId').innerText = "изм";
@@ -294,7 +301,7 @@ function setTimer(e){
     }
     case "plus0": {
       Tickets[tid].timer = 0;
-      Tickets[tid].attention = false;
+      Tickets[tid].redAttention = false;
       showIt();
       break;
     }
@@ -346,37 +353,29 @@ function askZabbix(zhostid) {
   var method;
   // parameter
   var params = {};
-/*
-  method = "host.get";
-  params.hostids = zhostid;
-  params.output = "extend";
-  zserver.sendAjaxRequest(method, params, cbSuccessZ1, null); // Запросим доступность, имя, IP узла
-*/
+
   method = "item.get";
   params.hostids = zhostid;
   params.output = "extend";
   zserver.sendAjaxRequest(method, params, cbSuccessZ2, null); // Запросим доступность, имя, IP узла
 }
 
-function cbSuccessZ1(response, status) {
-  if (typeof(response.result) === 'object' && response.result.length == 1) {
-    document.getElementById('ptZping').style.color = "#FF2222";     // пока пинг не известен, покрасим его серым
-    if(response.result[0].snmp_available == "1"){
-      document.getElementById('ptZping').style.color = "#226622";     // пока пинг не известен, покрасим его серым
-    }
-  }
-}
-
 function cbSuccessZ2(response, status) {
   if (typeof(response.result) === 'object') {
-    if(response.result[0].name.indexOf("Ping {HOST.NAME") == 0){
-      document.getElementById('ptZgraph').style.color = "#0000AA";    // покрасим ссылку синим
-      document.getElementById('ptZgraph').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[0].itemid;  // создадим ссылку
+    var i;
+    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
+    if(i != response.result.length){  // Если строка с пингом найдена
+      if(response.result[i].name.indexOf("Ping {HOST.NAME") == 0){
+        document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[0].itemid;  // создадим ссылку
+      }
+      if(response.result[i].lastvalue == 1){
+        document.getElementById('ptZping').style.color = "#226622";     // пинг есть
+        document.getElementById('ptPingCBox').disabled = true;          // Запретим следить за хостом (он и так пингуется)
+      }
+      else
+        document.getElementById('ptZping').style.color = "#FF2222";     // пинг кончился
+        document.getElementById('ptPingCBox').disabled = false;         // Разрешим ставить галку следить за хостом
     }
-    if(response.result[0].lastvalue == 1)
-      document.getElementById('ptZping').style.color = "#226622";     // пинг есть
-    else
-      document.getElementById('ptZping').style.color = "#FF2222";     // пинг кончился
   }
 }
 
@@ -393,4 +392,9 @@ function onHostidEnter(e) {       // Ввод hostid
     }
     else this.value = "";
   }
+}
+
+function onPingCBoxClick() {
+  var iidd = document.getElementById('popupTicket').iidd;       // Получим id открытого тикета
+  Tickets[iidd].watchPing = document.getElementById('ptPingCBox').checked;
 }

@@ -163,7 +163,7 @@ function onBtnAlertClick (e) {
   var adr2 = str.indexOf("Адрес: ");
   var adr3 = str.indexOf("Канал: ");
   if(adr1 === -1 || adr2 === -1 || adr2 === -1) return;
-  $("#shortTTDescr")[0].value = str.substring(adr1 + 7, adr2-1) + ", " + str.substring(adr2 + 7, adr3-1);
+  $("#shortTTDescr")[0].value = str.substring(adr1+7, adr2-1) + ", " + str.substring(adr2+7, adr3-1) + ', № ' + str.substring(26, adr1-1);
   for(var i = 0; i < organization_id.length && organization_id[i].text != "*M.VIDEO*"; i ++){}  // Найдем в списке организаций мвидео
   if(i != organization_id.length) {
     document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
