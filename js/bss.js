@@ -9,7 +9,6 @@ var a, b;
 var transAnsiAjaxSys = [];
 var Tabs = {};             // Хранит список табов/закладок в формате id:{name:"", text:"Незапощенный комент"}
 
-
 var userName;              // Имя залогиненого пользователя Иванов И.И.
 var userId = -1;           // Идентификатор залогиненого пользователя
 var branchId = 100184;     // Код подразделения пользователя 100184 == "Технический департамент (МегаМакс) (13)" !!!!!!
@@ -43,6 +42,7 @@ var closedTTduration =  7; // Хранит длительность периода выборки закрытых заяво
 var zoptions = {};         // Для запросов в заббикс
 zoptions.url = 'https://zabbix.msk.unitline.ru/zabbix/api_jsonrpc.php';
 var zApiVersion = "";
+var zEnabled = false;     // false если заббикс недоступен или запрещен.
 
 window.onload = function() {          //
 
@@ -88,6 +88,7 @@ window.onload = function() {          //
   document.getElementById('ps2Close').onclick         = onPsActionClick;
   document.getElementById('ps2Edit').onclick          = onPsActionClick;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
+  document.getElementById('pzClient').onchange = onPzClientChange;
   document.getElementById('thsStatus').onmouseup = onThsStatusMouseUp;
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
@@ -99,6 +100,7 @@ window.onload = function() {          //
 //  document.getElementById('pnFindHostId').onclick = onPnFindHostIdClick;
   document.getElementById('pzBtnCancel').onclick = onPzBtnCancelClick;
   document.getElementById('pzBtnOk').onclick = onPzBtnOkClick;
+  document.getElementById('about').onclick = onAboutClick;
 
   mtb = document.getElementById('mainTBody');
 
@@ -144,26 +146,36 @@ window.onload = function() {          //
   setInterval(oneMoreSecond, 1000);
   onBodyResize();
 
-    // Попытка авторизоваться
-  $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
-
+     // Авторизация в Zabbix
   zserver = new $.jqzabbix(zoptions);
   zserver.getApiVersion(null, function(response){
       zApiVersion = response.result;
       zoptions.username = "monitoring";
       zoptions.password = "monitoring";
       zserver.setOptions(zoptions);
-      zserver.userLogin(null, cbZAuth, cbZAuth, zGetGroups);
-  });
+      zserver.userLogin(null, null, cbZAuthErr, zGetGroups);
+  }, cbZgetApiErr, null);
+
+    // Авторизация в BSS
+  $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
   if(jqXHR.status == 404 && textStatus == "error") {
-    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Chrome, или нет связи.");
+    setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Хроме, или нет связи.");
   }
 }
+function onAboutClick(){
+}
 
-function cbZAuth(a,b,c) {
+function cbZgetApiErr() {
+  zEnabled = false;
+  setStatus("Не могу открыть Zabbix. Возможно страница еще не открыта в Хроме, или нет связи.");
+}
+
+function cbZAuthErr() {
+  zEnabled = false;
+  setStatus("Ошибка авторизации в Zabbix");
 }
 /******************************************************************************/
 function oneMoreSecond(){

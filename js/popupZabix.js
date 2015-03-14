@@ -10,7 +10,8 @@ function loadPopupZabix() {
     $("#pzFound").empty();                                          // Очистим список найденых хостов
     document.getElementById('pzHostId').value = "";
     document.getElementById('pzLocation').value = "";
-    document.getElementById('pzClient').selectIndex = 0;
+    document.getElementById('pzCaption').innerText = "Узел для " + document.getElementById('popupZabix').Caption + " " + document.getElementById('popupZabix').BssClient;
+
 
     switch(document.getElementById('popupZabix').BssClient){   // Попытаемся определить zabbix groupid по BSS Client Name
       case "*Adidas*":{ zClient = "Адидас"; break;}
@@ -47,6 +48,7 @@ function loadPopupZabix() {
       case "*M.VIDEO*":{ zClient = "М.видео Менеджмент"; break;}
       case "*MacDonald*":{ zClient = "Макдональдс"; break;}
       case "*MakDak*":{ zClient = "Макдональдс"; break;}
+      case "*MChS Russia*":{ zClient = "Специальное управление ФПС № 3 МЧС России"; break;}
       case "*MEGAFON*":{ zClient = "Мегафон"; break;}
       case "*MIRATORG*":{ zClient = "Мираторг"; break;}
       case "*Next Commerce*":{ zClient = "Некст Коммерс"; break;}
@@ -87,7 +89,6 @@ function loadPopupZabix() {
       for(var i = 0; i < zGroups.length; i ++) {
         if(zGroups[i].name.indexOf(zClient) == 0){
           gids.push(zGroups[i].groupid);   // Добавим в массив id подходящей группы
-          if(select.selectedIndex == 0) select.selectedIndex = i;  // Выберем в селекте pzClient первую подходящую группу
         }
       }
       if(gids.length > 0) {  // Если найдена хоть одна подходящая группа
@@ -143,9 +144,11 @@ function zGetGroups() {   // Вызывается однократно после авторизации для получен
 }
 
 function cbzGetGroups(response, status) {         // Получим список всех групп
-  if (typeof(response.result) === 'object') {
+  if(typeof(response.result) === 'object') {
+    zEnabled = true;
     zGroups = response.result;
     $("#pzClient").empty();          // Заполним список клиентов в popupZabix
+    $("#pzClient").append("<option value='0'>Выбрать группу</option>")
     for(var i = 0; i < zGroups.length; i ++) {
       $("#pzClient").append("<option value='" + zGroups[i].groupid + "'>" + zGroups[i].name + "</option>")
       zGroupsObj[zGroups[i].groupid] = zGroups[i].name;     // Заодно сформируем объект-список груп в формате groupid:groupname
@@ -231,4 +234,14 @@ function onPzFoundTBodyClick(e) {
   if(e.target.tagName == "A" && e.target.parentNode.cellIndex == 0) {
     document.getElementById('pzHostId').value = e.target.parentNode.parentNode.hostid;
   }
+}
+
+function onPzClientChange() {
+  var select = document.getElementById('pzClient');
+  if(select.selectedIndex == 0) return;
+  var method = "host.get";
+  var params = {};
+  params.output = "extend";
+  params.groupids = select[select.selectedIndex].value;
+  zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
 }
