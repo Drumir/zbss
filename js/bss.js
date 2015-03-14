@@ -94,7 +94,7 @@ window.onload = function() {          //
   document.getElementById('tabsTable').onmousedown = onTabsMouseDown;
   document.getElementById('PTtimer').onclick = setTimer;
   document.getElementById('ptFindHostId').onclick = onPtFindHostIdClick;
-  document.getElementById('pnFindHostId').onclick = onPnFindHostIdClick;
+//  document.getElementById('pnFindHostId').onclick = onPnFindHostIdClick;
   document.getElementById('pzBtnCancel').onclick = onPzBtnCancelClick;
   document.getElementById('pzBtnOk').onclick = onPzBtnOkClick;
 

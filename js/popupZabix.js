@@ -7,6 +7,11 @@ function loadPopupZabix() {
     var zClient = "";
     var select = document.getElementById('pzClient');
     select.selectedIndex = 0;
+    $("#pzFound").empty();                                          // Очистим список найденых хостов
+    document.getElementById('pzHostId').value = "";
+    document.getElementById('pzLocation').value = "";
+    document.getElementById('pzClient').selectIndex = 0;
+
     switch(document.getElementById('popupZabix').BssClient){   // Попытаемся определить zabbix groupid по BSS Client Name
       case "*Adidas*":{ zClient = "Адидас"; break;}
       case "*Alfa group*":{ zClient = "Альфа-банк"; break;}
@@ -120,24 +125,24 @@ function onPtFindHostIdClick() {      // Вызов из popupTicket (данные берем из T
   document.getElementById('popupZabix').Caption = Tickets[document.getElementById('popupTicket').iidd].name;
   loadPopupZabix();
 }
-
+/*
 function onPnFindHostIdClick() {        // Вызов из popupNewTT (данные берем из popupNewTT)
   document.getElementById('popupZabix').BssClient = document.getElementById('ppClient')[document.getElementById('ppClient').selectedIndex].text;
   document.getElementById('popupZabix').Caption = document.getElementById('shortTTDescr').value;
   loadPopupZabix();
 }
-
-function zGetGroups() {
+*/
+function zGetGroups() {   // Вызывается однократно после авторизации для получения списка групп в zabbix
     // method
   var method = "hostgroup.get";
   // parameter
   var params = {};
   params.output = "extend";
   params.sortfield = "name";
-  zserver.sendAjaxRequest(method, params, cbSuccessZgg, null); // Запросим список групп (читай клиентов)
+  zserver.sendAjaxRequest(method, params, cbzGetGroups, null); // Запросим список групп (читай клиентов)
 }
 
-function cbSuccessZgg(response, status) {         // Получим список всех групп
+function cbzGetGroups(response, status) {         // Получим список всех групп
   if (typeof(response.result) === 'object') {
     zGroups = response.result;
     $("#pzClient").empty();          // Заполним список клиентов в popupZabix
@@ -159,9 +164,17 @@ function cbSuccessZgetHostsOfGroups(response, status) {  // Получим список хосто
 function ShowZList() {
   $("#pzFound").empty();                                          // Очистим список найденых хостов
   var str = "";
-  var filterZLocation = document.getElementById('pzLocation').value;
-  for(var key in zResponse) {
-    if(zResponse[key].name.indexOf(filterZLocation) == -1) continue;
+  var filterFlag;
+  var filterZLocation = [];                                      // Массив слов для поиска
+  filterZLocation = document.getElementById('pzLocation').value.toLowerCase().split(' ');
+  for(var key in zResponse) {      // Цикл по всем найденым хостам
+    filterFlag = false;
+    for(var i in filterZLocation)  // Проверка наличия в имени хоста всех слов из массива_слов_для_поиска
+      if(zResponse[key].name.toLowerCase().indexOf(filterZLocation[i]) == -1){
+        filterFlag = true;
+        continue;
+      }
+    if(filterFlag) continue;       // Если в имени хоста не оказалось хотя бы 1 слова из массива_слов_для_поиска, пропускаем этот хост
     var ttr = document.createElement('tr');
     ttr.hostid = zResponse[key].hostid;
 
@@ -191,7 +204,7 @@ function onPzBtnCancelClick(){
     $("#backgroundPopup").fadeOut("fast");
   }
 }
-function onPzBtnOkClick(){     ppHostId
+function onPzBtnOkClick(){
   if(!isNaN(parseInt(document.getElementById('pzHostId').value, 10))){
 
     if(popupStatus > 0) {            // Сразу закроем popup Zabix
@@ -201,11 +214,16 @@ function onPzBtnOkClick(){     ppHostId
     if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
       $("#backgroundPopup").fadeOut("fast");
     }
+    var iidd = document.getElementById('popupTicket').iidd;               // Получим id открытого тикета
+    if(Tickets[iidd] != undefined){
+      Tickets[iidd].zhostid = document.getElementById('pzHostId').value;  // Запомним zhostid тикета
+      disablePopups();                                                    // Переоткроем попап с тикетом
+      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+    }
   }
 }
 
 function onzLocationEdit() {
-  filterZLocation = this.value;
   ShowZList();
 }
 

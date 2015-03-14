@@ -126,9 +126,9 @@ function callbackGetTicket(data, textStatus) {
 
     document.getElementById('ptZping').hidden = true;    // Спрячем элементы забикса: пинг и график
     document.getElementById('ptZgraph').hidden = true;
-    document.getElementById('ptHostidText').innerText = "Укажите hostid:";
+    document.getElementById('ptHostidText').innerText = "hostid:";
     document.getElementById('ptHostId').value = "";
-    document.getElementById('ptFindHostId').innerText = "Найти";
+    document.getElementById('ptFindHostId').innerText = "найти";
 
     if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){
       document.getElementById('ptZping').hidden = false;              // покажем элементы строку пинг
@@ -138,7 +138,7 @@ function callbackGetTicket(data, textStatus) {
       document.getElementById('ptZgraph').href = "";                  // пока itemid графика не известен, заглушим ссылку
       document.getElementById('ptHostidText').innerText = "hostid:";  // Отобразим hostid
       document.getElementById('ptHostId').value = Tickets[tid].zhostid;
-      document.getElementById('ptFindHostId').innerText = "Изменить";
+      document.getElementById('ptFindHostId').innerText = "изм";
       askZabbix(Tickets[tid].zhostid);
     }
 

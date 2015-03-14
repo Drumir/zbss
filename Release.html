@@ -136,8 +136,8 @@
                 <td>
                   <span id="ptZping" style="color:#666666; font-weight:bold">ping</span>&nbsp;&nbsp;
                   <a id="ptZgraph" href="https://zabbix.msk.unitline.ru/zabbix/dashboard.php" target="_blank">график</a>&nbsp;&nbsp;
-                  <span id="ptHostidText">указать hostid:</span>
-                  <input type="text" id="ptHostId" size="3"> &nbsp;&nbsp;
+                  <span id="ptHostidText">hostid:</span>
+                  <input type="text" id="ptHostId" size="3" placeholder="ввести">&nbsp;&nbsp;или&nbsp;
                   <a id="ptFindHostId" style="color:#0000AA">найти</a>
                 </td>
               </tr>
@@ -180,16 +180,20 @@
   </div>
 
   <div id="popupZabix">
-    <table border ="0" >
-      <tr><td>Zabbix hostid</td><td><input type="text" id="pzHostId" size="5"></td></tr>
+    <table border ="0" style="width:100%;background-color:#11AAAA" >
       <tr>
-        <td>Клиент</td>
+        <td>
+          <input type="text" id="pzHostId" size="5" placeholder="hostid">&nbsp;
+          <span id="psHostInfo">Узел, IP, Группы, UpTime, Ping, Примечания</span>
+        </td>
+      </tr>
+      <tr>
         <td id="pzSelectClient">
           <select id="pzClient" style="width:400px"></select>&nbsp;&nbsp;
         </td>
       </tr>
-      <tr><td>Описание</td>
-        <td><table>
+      <tr style="background-color:#AAFF77">
+        <td style="background-color:#AA77FF"><div id="pzFoundTable"><table>
           <thead>
             <tr style="background-color:#77AAFF">
               <td>Выбрать</td>
@@ -201,7 +205,7 @@
             </tr>
       </thead>
       <tbody id="pzFound"></tbody>
-      </table></td>
+      </table></div></td>
     </tr>
     </table>
     <hr>
@@ -226,13 +230,13 @@
         </td>
       </tr>
       <tr><td>Описание</td><td><textarea id="TTDescr" style="width:500px; height:150px"></textarea></td></tr>
-      <tr>
+<!--      <tr>
         <td>Zabbix hostid:</td>
         <td>
-          <input type="text" id="ppHostId" size="6" placeholder="Ввести">&nbsp;&nbsp;или&nbsp;
-          <a id="pnFindHostId" style="color:#0000AA">выбрать</a>
+          <input type="text" id="ppHostId" size="6" placeholder="ввести">&nbsp;&nbsp;или&nbsp;
+          <a id="pnFindHostId" style="color:#0000AA">найти</a>
         </td>
-      </tr>
+      </tr> -->
     </table>
     <button id="ppBtnCreate">Сохранить</button>
     <button id="ppBtnAlert">AlertDown</button>
