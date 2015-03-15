@@ -27,7 +27,7 @@ options = $.extend({
     busername: '',
     bpassword: '',
     timeout: 5000,
-    limit: 1000,
+    limit: 0,
 }, options);
 
 // initialize variables
