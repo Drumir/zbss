@@ -1,20 +1,23 @@
 //
 //       Файл хранит функции так или иначе связаные с popupZabix
 //
-var highlightedZH;      // HostId щелкнутого узла
+var highlightedZH;          // HostId щелкнутого узла
+var resolvedHostIds = {};   // {hostid:{hostid, name, available, groups[], invent, uptime},... }    Набор объектов с данными о уже опрошенных узлах
+var hostToResearch = {};    // {hostid, name, available, groups[{groupid,hosts[],internal,name},..], invent, uptime}  // Исследуемый в данный момент хост. Если undefined, значит ничего не исслкдуется
 
 function loadPopupZabix() {
   if (popupStatus < 2) {
     var zClient = "";
     var select = document.getElementById('pzClient');
     select.selectedIndex = 0;
-    $("#pzFound").empty();                                          // Очистим список найденых хостов
+    var tid = document.getElementById('popupTicket').iidd;
+    $("#pzFound").empty();
     document.getElementById('pzHostId').value = "";
     document.getElementById('pzLocation').value = "";
-    document.getElementById('pzCaption').innerText = "Узел для " + Tickets[document.getElementById('popupTicket').iidd].name; + " " + Tickets[document.getElementById('popupTicket').iidd].client;
+    document.getElementById('pzCaption').innerText = "Узел для " + Tickets[tid].name + " " + Tickets[tid].client;
 
 
-    switch(Tickets[document.getElementById('popupTicket').iidd].client){   // Попытаемся определить zabbix groupid по BSS Client Name
+    switch(Tickets[tid].client){   // Попытаемся определить zabbix groupid по BSS Client Name
       case "*Adidas*":{ zClient = "Адидас"; break;}
       case "*Alfa group*":{ zClient = "Альфа-банк"; break;}
       case "*ALFA-BANK*":{ zClient = "Альфа-банк"; break;}
@@ -158,6 +161,7 @@ function cbSuccessZgetHostsOfGroups(response, status) {  // Получим список хосто
   if (typeof(response.result) === 'object') {
     zResponse = response.result;
     ShowZList();
+    // Теперь, когда получен список хостов, можно отправить десяток запросов
   }
   centerPopupZabix();
 }
@@ -234,10 +238,103 @@ function onzLocationEdit() {
 function onPzFoundTBodyClick(e) {
   document.getElementById('pzHostId').value = e.target.parentNode.hostid;
   highlightedZH = e.target.parentNode.hostid;
+
+  if(hostToResearch.hostid == undefined)                // Если в данный момент никакой хост не исследуется,
+    zResearchHost(e.target.parentNode.hostid);          // Запросим всю инфу о щелкнутом хосте
+
   ShowZList();
 }
 
-function onPzClientChange() {
+function zResearchHost(hostid) {
+  hostToResearch.hostid = hostid;
+  var method = "hostgroup.get";
+  // parameter
+  var params = {};
+  params.output = "extend";
+  params.hostids = hostToResearch.hostid;
+  zserver.sendAjaxRequest(method, params, cbzResearch0, null); // Запросим список групп в которые входит щелкнутый hostid
+}
+
+
+
+function cbzResearch0(response, status){
+  if(typeof(response.result) != 'object') {   // Исследование закончено неудачей
+    delete hostToResearch;
+    return;
+  }
+  hostToResearch.groups = response.result;
+  var method = "host.get";
+  // parameter
+  var params = {};
+  params.output = "extend";
+  params.hostids = hostToResearch.hostid;
+  zserver.sendAjaxRequest(method, params, cbzResearch1, null); // Запросим статус хоста
+}
+
+function cbzResearch1(response, status){
+  if(typeof(response.result) != 'object'){ShowHostStat(); return;}    // Исследование закончено неудачей
+
+//  hostToResearch = response.result[0];
+  hostToResearch.name = response.result[0].name;
+  hostToResearch.available = response.result[0].snmp_available;
+  var method = "application.get";
+  // parameter
+  var params = {};
+  params.output = "extend";
+  params.hostids = hostToResearch.hostid;
+  zserver.sendAjaxRequest(method, params, cbzResearch2, null); // Запросим список application's для хоста
+}
+
+function cbzResearch2(response, status){
+  if(typeof(response.result) != 'object'){ShowHostStat(); return;}    // Исследование закончено неудачей
+
+  for(var key in response.result) {
+    if(response.result[key].name == "General"){   // Найдем в полученом списке строку с name General
+      var method = "item.get";
+      var params = {};
+      params.output = "extend";
+      params.applicationids = response.result[key].applicationid;  // Запросим items для applicationid строки с именем General
+      zserver.sendAjaxRequest(method, params, cbzResearch3, null); // Запросим items
+      break;
+    }
+  }
+}
+
+function cbzResearch3(response, status){
+  if(typeof(response.result) != 'object'){ShowHostStat(); return;}    // Исследование закончено неудачей
+
+  for(var key in response.result) {
+    if(response.result[key].name == "Device uptime"){   // Найдем в полученом списке строку с name General
+      hostToResearch.upTime = response.result[key].lastvalue;
+      hostToResearch.upTimeLc = response.result[key].lastclock;
+      break;
+    }
+  }           // Когда-нибудь я спрошу у Левченко как эти данные получает hostinventories.php и наступит благодать
+  $.get("https://zabbix.msk.unitline.ru/zabbix/hostinventories.php?hostid=" + hostToResearch.hostid, null, cbzResearch4, "html");
+}
+
+function cbzResearch4(data, textStatus){
+  var adr0 = data.indexOf('>Примечания</td>');
+  data = data.substring(adr0);
+  adr0 = data.indexOf('<span class=');
+  var adr1 = data.indexOf('</span>');
+  hostToResearch.invent = "";
+  if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(adr0+18, adr1);
+  ShowHostStat();
+}
+
+function ShowHostStat() {
+  var str = "ping=" + hostToResearch.available + " ,Группы: ";
+  for(var key in hostToResearch.groups)
+    str += hostToResearch.groups[key].name + " ";
+  str += "name=" + hostToResearch.name;
+  str += "uptime=" + hostToResearch.upTime / 3600 + "часов ";
+  str += "lastCh=" + hostToResearch.upTimeLc;
+  document.getElementById('pzHostInfo').innerText = str;
+  delete hostToResearch;
+}
+
+function onPzClientChange() {         // Вызывается при выборе группы в <select>
   var select = document.getElementById('pzClient');
   if(select.selectedIndex == 0) return;
   var method = "host.get";
