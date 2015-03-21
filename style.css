@@ -147,7 +147,7 @@ hr {
   z-index: 4;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   padding: 6px;
-  max-height: 750px;
+  max-height: 585px;
   overflow-y: auto;
 }
 
@@ -192,8 +192,13 @@ hr {
 }
 #pzFoundTable {
   background-color: #CCCCCC;
-  max-height: 350px;
-  height: 350px;
+  max-height: 240px;
+  height: 240px;
+  /*max-width: 330px;*/
+  overflow-y: auto;
+}
+#pzHostInfo {
+  max-height: 180px;
   /*max-width: 330px;*/
   overflow-y: auto;
 }

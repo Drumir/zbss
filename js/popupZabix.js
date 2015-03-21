@@ -14,8 +14,9 @@ function loadPopupZabix() {
     $("#pzFound").empty();
     document.getElementById('pzHostId').value = "";
     document.getElementById('pzLocation').value = "";
-    document.getElementById('pzCaption').innerText = "Узел для " + Tickets[tid].name + " " + Tickets[tid].client;
-
+//    var expr = new RegExp('&quot;', 'gm');
+    document.getElementById('pzCaption').innerText = "Поиск узла для: " + Tickets[tid].name.replace(new RegExp('&quot;', 'gm'), '"') + ".  Клиент: " + Tickets[tid].client;
+    ShowHostStat();   // Очистим таблицу с рписанием "найденного" хоста
 
     switch(Tickets[tid].client){   // Попытаемся определить zabbix groupid по BSS Client Name
       case "*Adidas*":{ zClient = "Адидас"; break;}
@@ -118,7 +119,7 @@ function centerPopupZabix() {
 
   $("#popupZabix").css({
     "position": "absolute",
-    "top": windowHeight / 2 - popupHeight / 2,
+    "top": windowHeight / 2 - popupHeight / 2 - 60,
     "left": windowWidth / 2 - popupWidth / 2
   });
 }
@@ -186,7 +187,7 @@ function ShowZList() {
     str = '<tr>';
     str += '<td><a href="https://zabbix.msk.unitline.ru/zabbix/latest.php?open=1&apps[0]=7374&hostid=' + zResponse[key].hostid + '&fullscreen=0" target="_blank">' +  zResponse[key].hostid + '</a></td>';
     str += '<td>' + zResponse[key].host + '</td>';
-    str += '<td>' + zResponse[key].available + '</td>';
+    str += '<td></td>';
     str += '<td>' + zResponse[key].name + '</td>';
     str += '<td>';
     for(var gr in zResponse[key].groups){
@@ -213,7 +214,7 @@ function onPzBtnCancelClick(){
   }
 }
 function onPzBtnOkClick(){
-  if(!isNaN(parseInt(document.getElementById('pzHostId').value, 10))){
+  if(!isNaN(parseInt(document.getElementById('pzHostId').innerText, 10))){
 
     if(popupStatus > 0) {            // Сразу закроем popup Zabix
       $("#popupZabix").fadeOut("fast");
@@ -224,8 +225,8 @@ function onPzBtnOkClick(){
     }
     var iidd = document.getElementById('popupTicket').iidd;               // Получим id открытого тикета
     if(Tickets[iidd] != undefined){
-      Tickets[iidd].zhostid = document.getElementById('pzHostId').value;  // Запомним zhostid тикета
-      disablePopups();                                                    // Переоткроем попап с тикетом
+      Tickets[iidd].zhostid = document.getElementById('pzHostId').innerText;  // Запомним zhostid тикета
+      disablePopups();                                                        // Переоткроем попап с тикетом
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
     }
   }
@@ -236,13 +237,15 @@ function onzLocationEdit() {
 }
 
 function onPzFoundTBodyClick(e) {
-  document.getElementById('pzHostId').value = e.target.parentNode.hostid;
+  document.getElementById('pzHostId').innerText = e.target.parentNode.hostid;
+  document.getElementById('pzPing').style.fontWeight = "bold";
   highlightedZH = e.target.parentNode.hostid;
 
-  if(hostToResearch.hostid == undefined)                // Если в данный момент никакой хост не исследуется,
+  if(hostToResearch.hostid == undefined){                // Если в данный момент никакой хост не исследуется,
+    ShowHostStat();                                     // Сотрем инфу о предудцщем найденном хосте
     zResearchHost(e.target.parentNode.hostid);          // Запросим всю инфу о щелкнутом хосте
-
-  ShowZList();
+  }
+//  ShowZList();
 }
 
 function zResearchHost(hostid) {
@@ -277,6 +280,7 @@ function cbzResearch1(response, status){
 //  hostToResearch = response.result[0];
   hostToResearch.name = response.result[0].name;
   hostToResearch.available = response.result[0].snmp_available;
+  hostToResearch.ip = response.result[0].host;
   var method = "application.get";
   // parameter
   var params = {};
@@ -314,24 +318,61 @@ function cbzResearch3(response, status){
 }
 
 function cbzResearch4(data, textStatus){
+  hostToResearch.invent = "Данные не найдены";
   var adr0 = data.indexOf('>Примечания</td>');
-  data = data.substring(adr0);
-  adr0 = data.indexOf('<span class=');
-  var adr1 = data.indexOf('</span>');
-  hostToResearch.invent = "";
-  if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(adr0+18, adr1);
+  if(adr0 != -1){
+    data = data.substring(adr0);
+    adr0 = data.indexOf('<span class=');
+    var adr1 = data.indexOf('</span>');
+    if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(adr0+18, adr1);
+  }
   ShowHostStat();
 }
 
 function ShowHostStat() {
-  var str = "ping=" + hostToResearch.available + " ,Группы: ";
-  for(var key in hostToResearch.groups)
-    str += hostToResearch.groups[key].name + " ";
-  str += "name=" + hostToResearch.name;
-  str += "uptime=" + hostToResearch.upTime / 3600 + "часов ";
-  str += "lastCh=" + hostToResearch.upTimeLc;
-  document.getElementById('pzHostInfo').innerText = str;
-  delete hostToResearch;
+  var str = "";
+  if(hostToResearch.available == undefined)document.getElementById('pzPing').style.color = "#000000";
+  if(hostToResearch.available == 1) document.getElementById('pzPing').style.color = "#226622";
+  if(hostToResearch.available == 2) document.getElementById('pzPing').style.color = "#FF2222";
+
+  str = "Группы: ";
+  if(hostToResearch.groups != undefined)
+    for(var key in hostToResearch.groups) str += hostToResearch.groups[key].name + "; ";
+  document.getElementById('pzGroups').innerText = str;
+
+  str = "Device Uptime ---";
+  if(hostToResearch.upTime != undefined){
+    str = "Device Uptime&nbsp;&nbsp;<b>";
+    if(hostToResearch.upTime > 3600*24) {
+      str += Math.floor(hostToResearch.upTime / (3600*24)) + " дня, ";
+      hostToResearch.upTime %= 3600*24;
+    }
+    str += Math.floor(hostToResearch.upTime / 3600) + ":";
+    hostToResearch.upTime %= 3600;
+    str += Math.floor(hostToResearch.upTime / 60) + ":";
+    hostToResearch.upTime %= 60;
+    str += hostToResearch.upTime;
+  }
+  if(hostToResearch.upTimeLc != undefined){
+    var d = new Date(1000*hostToResearch.upTimeLc);
+    str += "</b>&nbsp;&nbsp;&nbsp;&nbsp;(Обновлено&nbsp;&nbsp;<b>" + d.toLocaleString() + "</b>&nbsp;&nbsp;)";
+  }
+  document.getElementById('pzUpTime').innerHTML = str;
+
+  document.getElementById('pzIp').innerText = "";
+  if(hostToResearch.ip != undefined)
+    document.getElementById('pzIp').innerText = hostToResearch.ip;
+
+  var expr = new RegExp('&quot;', 'gm');
+  document.getElementById('pzHostName').innerText = "";
+  if(hostToResearch.name != undefined)
+    document.getElementById('pzHostName').innerText = hostToResearch.name.replace(expr, '"');
+
+  document.getElementById('pzHostInfo').innerText = "";
+  if(hostToResearch.invent != undefined)
+    document.getElementById('pzHostInfo').innerText = hostToResearch.invent.replace(expr, '"');
+
+  for(var key in hostToResearch) delete hostToResearch[key];  // Удалим собранные данные о хосте, чтобы они не подменили результат следующего исследования
 }
 
 function onPzClientChange() {         // Вызывается при выборе группы в <select>

@@ -146,7 +146,7 @@ window.onload = function() {          //
   setInterval(oneMoreSecond, 1000);
   onBodyResize();
 
-     // Авторизация в Zabbix
+     // Авторизация в Zabbix API
   zserver = new $.jqzabbix(zoptions);
   zserver.getApiVersion(null, function(response){
       zApiVersion = response.result;
@@ -156,8 +156,11 @@ window.onload = function() {          //
       zserver.userLogin(null, null, cbZAuthErr, zGetGroups);
   }, cbZgetApiErr, null);
 
+    // Авторизация в Zabbiz      Не все данные доступны в JSON формате через API. Приходится дополнительно авторизовываться чтобы иметь доступ к html страницам
+  $.ajax({url: "https://zabbix.msk.unitline.ru/zabbix/index.php", data:"request=&name=monitoring&password=monitoring&autologin=1&enter=Sign+in", dataType:"html", error: cbZgetApiErr, success: null});
+
     // Авторизация в BSS
-  $.ajax({url: "https://oss.unitline.ru:995/adm/", data: null, dataType : "html", contentType : "application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
+  $.ajax({url: "https://oss.unitline.ru:995/adm/", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
@@ -173,7 +176,7 @@ function cbZgetApiErr() {
   setStatus("Не могу открыть Zabbix. Возможно страница еще не открыта в Хроме, или нет связи.");
 }
 
-function cbZAuthErr() {
+function cbZAuthErr(data, status) {
   zEnabled = false;
   setStatus("Ошибка авторизации в Zabbix");
 }

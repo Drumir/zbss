@@ -34,7 +34,7 @@
     <td valign = "baseline">
       <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
     </td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.5.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать все ТТ</button></td>
   </table>
 
@@ -180,29 +180,40 @@
   </div>
 
   <div id="popupZabix" style="background-color:#C0C0f0">
-    <span id="pzCaption">Выберите узел для ТТ </span>
+    <span id="pzCaption">Поиск узла для ТТ "</span>
     <hr>
-    <table border ="0" style="width:100%" >
-      <tr>
-        <td>
-          <input type="text" id="pzHostId" size="3" placeholder="hostid">&nbsp;
-          <span id="pzHostInfo">Узел, IP, Группы, UpTime, Ping, Примечания</span>
-        </td>
+    <div id="pzFoundTable">
+      <table>
+        <thead>
+          <tr style="background-color:#77AAFF">
+            <td>hostid</td>
+            <td>IP</td>
+            <td width="40"></td>
+            <td><input type="text" id="pzLocation" style="width:300px" placeholder="Расположение"></td>
+            <td><select id="pzClient" style="width:200px;color:#A0A0A0"></select></td>
+          </tr>
+        </thead>
+        <tbody id="pzFound">
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <table border ="1" style="width:100%" contenteditable="true">
+      <tr align="center">
+        <td id="pzHostId" style="width:37px"></td>
+        <td id="pzIp" style="width:80px"></td>
+        <td id="pzPing" style="width:40px">ping</td>
+        <td id="pzHostName" align="left"></td>
       </tr>
       <tr>
-        <td><div id="pzFoundTable"><table>
-          <thead>
-            <tr style="background-color:#77AAFF">
-              <td>hostid</td>
-              <td>IP</td>
-              <td>Доступен</td>
-              <td><input type="text" id="pzLocation" style="width:300px" placeholder="Расположение"></td>
-              <td><select id="pzClient" style="width:200px;color:#A0A0A0"></select></td>
-            </tr>
-      </thead>
-      <tbody id="pzFound"></tbody>
-      </table></div></td>
-    </tr>
+        <td id="pzGroups"  colspan="4"></td>
+      </tr>
+      <tr>
+        <td id="pzUpTime"  colspan="4"></td>
+      </tr>
+      <tr>
+        <td colspan="4"><div id="pzHostInfo"></div></td>
+      </tr>
     </table>
     <hr>
     <button id="pzBtnOk">OK</button>&nbsp;&nbsp;<button id="pzBtnCancel">Отмена</button>
@@ -240,7 +251,7 @@
   </div>
 
   <div id="popupEditTT">
-    <table border ="0" >
+    <table border ="0">
       <tr><td>Краткое описание</td><td><input type="text" id="peShortTTDescr" size="67"></td></tr>
       <tr>
         <td>Регион</td>
