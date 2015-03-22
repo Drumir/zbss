@@ -77,6 +77,7 @@ window.onload = function() {          //
   document.getElementById('searchClient').oninput = onSearchClientInput;
   document.getElementById('pzLocation').oninput = onzLocationEdit;
   document.getElementById('searchTT').onkeydown = onTTKeyPress;
+  document.getElementById('LsSearchTT').onkeydown = onLsTTKeyPress;
   document.getElementById('ptHostId').onkeydown = onHostidEnter;
   document.getElementById('psClass').onchange = getSubClass;
   document.getElementById('branchLiist').onchange = GetCPList;
@@ -575,10 +576,21 @@ function onSearchClientInput() {
   filter.client = this.value;
   showIt();
 }
+
 function onTTKeyPress(e) {       // Ввод номера тикета
   if(e.keyIdentifier === "Enter"){
     if(!isNaN(parseInt(this.value, 10))){
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: this.value}, callbackGetTicket, "html");
+      this.value = "";
+    }
+  }
+}
+
+function onLsTTKeyPress(e) {       // Ввод номера тикета Линейных продаж
+  if(e.keyIdentifier === "Enter"){
+    if(!isNaN(parseInt(this.value, 10))){
+//      $.get("https://oss.unitline.ru:995/adm/ttls/trouble_ticket_edt.asp", {id: this.value}, callbackGetLsTicket, "html");
+      window.open("https://oss.unitline.ru:995/adm/ttls/trouble_ticket_edt.asp?id=" + this.value, this.value, null);
       this.value = "";
     }
   }
@@ -707,3 +719,26 @@ function lookOnTicketPing(response, status) {
     zserver.sendAjaxRequest(method, params, lookOnTicketPing, null); // Запросим доступность, имя, IP узла
   }
 }
+
+/*
+function callbackGetLsTicket(data, textStatus) {
+  var st, str = "Коншина Елена Леонидовна";
+  var arr1 = [];
+  var arr2 = [];
+  if(data) {
+    var adr0, adr1 = 1;
+    if(adr1 != -1){
+      adr1 = data.indexOf('<td class="text">Ответственное лицо:</td>'); data = data.substring(adr1);
+      adr1 = data.indexOf('<td class="textb">'); data = data.substring(adr1);
+      adr0 = data.indexOf('</td>');
+      data = data.substring(18, adr0);
+      st = window.encodeURIComponent(data);
+      for(var i = 0; i < str.length; i ++)
+        arr1[i] = str.charCodeAt(i);
+      for(var i = 0; i < data.length; i ++)
+        arr2[i] = data.charCodeAt(i);
+    }
+  }
+  document.getElementById('LsSearchTT').placeholder = str;
+}
+*/

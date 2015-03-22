@@ -71,7 +71,7 @@ function callbackGetTicket(data, textStatus) {
     ltb.children[6].children[1].style.fontWeight = "bold";
 
     document.getElementById('hTable').innerHTML = "";
-    delete tb;
+    delete tb;                  // Нельзя удалить объект! Можно только его свойства. Объекту можно присвоить undefined
     document.getElementById('tempDiv').innerHTML = "";
 
     if(Tickets[tid] == undefined){                            // Создает запись в Tickets если пользователь рткрыл тикет, которого там нет

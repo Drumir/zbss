@@ -9,85 +9,17 @@ function loadPopupZabix() {
   if (popupStatus < 2) {
     var zClient = "";
     var select = document.getElementById('pzClient');
-    select.selectedIndex = 0;
     var tid = document.getElementById('popupTicket').iidd;
+    select.selectedIndex = 0;
     $("#pzFound").empty();
-    document.getElementById('pzHostId').value = "";
+    document.getElementById('pzHostId').innerText = "";
     document.getElementById('pzLocation').value = "";
 //    var expr = new RegExp('&quot;', 'gm');
     document.getElementById('pzCaption').innerText = "Поиск узла для: " + Tickets[tid].name.replace(new RegExp('&quot;', 'gm'), '"') + ".  Клиент: " + Tickets[tid].client;
-    ShowHostStat();   // Очистим таблицу с рписанием "найденного" хоста
+    ShowHostStat();   // Очистим таблицу с описанием "найденного" хоста
 
-    switch(Tickets[tid].client){   // Попытаемся определить zabbix groupid по BSS Client Name
-      case "*Adidas*":{ zClient = "Адидас"; break;}
-      case "*Alfa group*":{ zClient = "Альфа-банк"; break;}
-      case "*ALFA-BANK*":{ zClient = "Альфа-банк"; break;}
-      case "*Apteka A5*":{ zClient = "Аптека А5"; break;}
-      case "*BestPrice*":{ zClient = "БЭСТ ПРАЙС"; break;}
-      case "*BILLA*":{ zClient = "Билла"; break;}
-      case "*BIOCAD*":{ zClient = "Биокад"; break;}
-      case "*CentrObuv*":{ zClient = "Центр Обувь"; break;}
-      case "*CROSSMEDIA*":{ zClient = "Кроссмедиа"; break;}
-      case "*DELOVIE LINII*":{ zClient = "Деловые линии"; break;}
-      case "*Delovie Linii*":{ zClient = "Деловые линии"; break;}
-      case "*Deti*":{ zClient = "Дети"; break;}
-      case "*DETMIR*":{ zClient = "Детский Мир"; break;}
-      case "*ELDORADO*":{ zClient = "Эльдорадо"; break;}
-      case "*ENTER*":{ zClient = "Энтер"; break;}
-      case "*ER-Telecom*":{ zClient = "Эр-Телеком Холдинг"; break;}
-      case "*EUROPLAST*":{ zClient = "Европласт"; break;}
-      case "*EUROSET*":{ zClient = "Евросеть"; break;}
-      case "*Fandy*":{ zClient = "Фандей"; break;}
-      case "*GarsTelecom*":{ zClient = "Гарстелеком"; break;}
-      case "*GAZPROMBANK*":{ zClient = "Газпромбанк"; break;}
-      case "*GOLDTELECOM*":{ zClient = "Голд Телеком"; break;}
-      case "*HOMECREDIT*":{ zClient = "Хоум-Кредит"; break;}
-      case "*ID Logistic Rus*":{ zClient = "ИД Логистикс Рус"; break;}
-      case "*IDEA BANK*":{ zClient = "ИДЕА БАНК"; break;}
-      case "*INCITY*":{ zClient = "Инсити"; break;}
-      case "*INVESTBANK*":{ zClient = "Инвест-банк"; break;}
-      case "*KB Transportniy*":{ zClient = "Транспортный"; break;}
-      case "*Leroy Merlin*":{ zClient = "Леруа Мерлен"; break;}
-      case "*LETOBANK*":{ zClient = "Лето-банк"; break;}
-      case "*Lombard Blago*":{ zClient = "Ломбард Благо"; break;}
-      case "*M.VIDEO*":{ zClient = "М.видео Менеджмент"; break;}
-      case "*MacDonald*":{ zClient = "Макдональдс"; break;}
-      case "*MakDak*":{ zClient = "Макдональдс"; break;}
-      case "*MChS Russia*":{ zClient = "Специальное управление ФПС № 3 МЧС России"; break;}
-      case "*MEGAFON*":{ zClient = "Мегафон"; break;}
-      case "*MIRATORG*":{ zClient = "Мираторг"; break;}
-      case "*Next Commerce*":{ zClient = "Некст Коммерс"; break;}
-      case "*Obrazovanie*":{ zClient = "Образование (банк)"; break;}
-      case "*OSTIN*":{ zClient = "Остин"; break;}
-      case "*OTP-Bank*":{ zClient = "ОТП-банк"; break;}
-      case "*PARIBA*":{ zClient = "БНП Париба"; break;}
-      case "*PLANET*":{ zClient = "Планета"; break;}
-      case "*Quiclymoney*":{ zClient = "Быстроденьги"; break;}
-      case "*RENCAP*":{ zClient = "Ренессанс Капитал"; break;}
-      case "*Rivgosh*":{ zClient = "Рив Гош"; break;}
-      case "*ROSTELECOM-MSK*":{ zClient = "Ростелеком"; break;}
-      case "*ROSTELECOM-SPB*":{ zClient = "Ростелеком"; break;}
-      case "*RusTelCompany*":{ zClient = "Русская Телефонная Компания"; break;}
-      case "*SAMOTLOR*":{ zClient = "Самотлор"; break;}
-      case "*SBERBANK*":{ zClient = "Сбербанк"; break;}
-      case "*SPORTMASTER*":{ zClient = "Спортмастер"; break;}
-      case "*SrochnoDengi*":{ zClient = "Быстроденьги"; break;}
-      case "*STEC.COM*":{ zClient = "Стэк ком"; break;}
-      case "*SVYAZNOY*":{ zClient = "Связной"; break;}
-      case "*Svyaznoy*":{ zClient = "Синтерра"; break;}
-      case "*SYNTERRA*":{ zClient = "Синтерра"; break;}
-      case "*TASCOM*":{ zClient = "ТАСКОМ"; break;}
-      case "*TechnoSila*":{ zClient = "Техносила"; break;}
-      case "*Telsikom*":{ zClient = "Телсиком"; break;}
-      case "*Ulibka Radugi*":{ zClient = "Улыбка радуги"; break;}
-      case "*UNISTREAM*":{ zClient = "Юнистрим"; break;}
-      case "*Vertical*":{ zClient = "Вертикаль"; break;}
-      case "*VladPromBank*":{ zClient = "Владпромбанк"; break;}
-      case "*VTB24*":{ zClient = "Мультикарта"; break;}
-      case "*WHITE WIND*":{ zClient = "Белый Ветер"; break;}
-      case "*X5*":{ zClient = "Х-5"; break;}
-      default: zClient = "GA";
-    }
+    zClient = bssClient2zGroup(Tickets[tid].client);  // Попытаемся определить zabbix groupid по BSS Client Name
+
     var gids = [];          // Массив для хранения ids подходящих zгрупп
     for(var i = 0; i < zGroups.length; i ++) {
       if(zGroups[i].name.indexOf(zClient) == 0){
@@ -101,13 +33,13 @@ function loadPopupZabix() {
       params.groupids = gids;
       zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
     }
-
     $("#backgroundPopup").css({
       "opacity": "0.7"
     });
     $("#backgroundPopup").fadeIn("fast");
     $("#popupZabix").fadeIn("fast");
     popupStatus++;
+    document.getElementById('pzLocation').focus();
   }
 }
 
@@ -128,13 +60,7 @@ function onPtFindHostIdClick() {      // Вызов из popupTicket (данные берем из T
   loadPopupZabix();
   centerPopupZabix();
 }
-/*
-function onPnFindHostIdClick() {        // Вызов из popupNewTT (данные берем из popupNewTT)
-  document.getElementById('popupZabix').BssClient = document.getElementById('ppClient')[document.getElementById('ppClient').selectedIndex].text;
-  document.getElementById('popupZabix').Caption = document.getElementById('shortTTDescr').value;
-  loadPopupZabix();
-}
-*/
+
 function zGetGroups() {   // Вызывается однократно после авторизации для получения списка групп в zabbix
     // method
   var method = "hostgroup.get";
@@ -162,9 +88,7 @@ function cbSuccessZgetHostsOfGroups(response, status) {  // Получим список хосто
   if (typeof(response.result) === 'object') {
     zResponse = response.result;
     ShowZList();
-    // Теперь, когда получен список хостов, можно отправить десяток запросов
   }
-  centerPopupZabix();
 }
 
 function ShowZList() {
@@ -183,9 +107,9 @@ function ShowZList() {
     if(filterFlag) continue;       // Если в имени хоста не оказалось хотя бы 1 слова из массива_слов_для_поиска, пропускаем этот хост
     var ttr = document.createElement('tr');
     ttr.hostid = zResponse[key].hostid;
+    ttr.id = "hostid=" + zResponse[key].hostid;
 
-    str = '<tr>';
-    str += '<td><a href="https://zabbix.msk.unitline.ru/zabbix/latest.php?open=1&apps[0]=7374&hostid=' + zResponse[key].hostid + '&fullscreen=0" target="_blank">' +  zResponse[key].hostid + '</a></td>';
+    str = '<td><a href="https://zabbix.msk.unitline.ru/zabbix/latest.php?open=1&apps[0]=7374&hostid=' + zResponse[key].hostid + '&fullscreen=0" target="_blank">' +  zResponse[key].hostid + '</a></td>';
     str += '<td>' + zResponse[key].host + '</td>';
     str += '<td></td>';
     str += '<td>' + zResponse[key].name + '</td>';
@@ -194,40 +118,21 @@ function ShowZList() {
       var grid = zResponse[key].groups[gr].groupid;
       str += zGroupsObj[grid] + " ";
     }
-    str += '</td></tr>';
+    str += '</td>';
     ttr.innerHTML = str;
+//    ttr.id = "hostid=" +
     if(ttr.hostid == highlightedZH){
       ttr.style.backgroundColor = "#FFFFCC"; // Выделеный тикет
     }
     document.getElementById('pzFound').insertBefore(ttr, document.getElementById('pzFound').children[0]);
   }
   centerPopupZabix();
-}
-
-function onPzBtnCancelClick(){
-  if (popupStatus > 0) {            // Сразу закроем popup Zabix
-    $("#popupZabix").fadeOut("fast");
-    popupStatus--;
-  }
-  if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
-    $("#backgroundPopup").fadeOut("fast");
-  }
-}
-function onPzBtnOkClick(){
-  if(!isNaN(parseInt(document.getElementById('pzHostId').innerText, 10))){
-
-    if(popupStatus > 0) {            // Сразу закроем popup Zabix
-      $("#popupZabix").fadeOut("fast");
-      popupStatus--;
-    }
-    if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
-      $("#backgroundPopup").fadeOut("fast");
-    }
-    var iidd = document.getElementById('popupTicket').iidd;               // Получим id открытого тикета
-    if(Tickets[iidd] != undefined){
-      Tickets[iidd].zhostid = document.getElementById('pzHostId').innerText;  // Запомним zhostid тикета
-      disablePopups();                                                        // Переоткроем попап с тикетом
-      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+          // Если щелкнули не по "найти", а по "изменить", то нужно сразу отобразить инфу об известном хосте
+  var tid = document.getElementById('popupTicket').iidd;
+  if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != 0){           // Если к текущему тикету уже привязан hostid
+    if(document.getElementById('pzHostId').innerText != Tickets[tid].zhostid){  // Если параметры нужного узла еще не отображены
+      var e = {target:{parentNode:{hostid:Tickets[tid].zhostid},nodeName:"TD"}};// Подделаем  e.target.parentNode.hostid
+      onPzFoundTBodyClick(e);                                                   // Симитируем клик по строке в найденых хостах
     }
   }
 }
@@ -237,10 +142,11 @@ function onzLocationEdit() {
 }
 
 function onPzFoundTBodyClick(e) {
+  document.getElementById('pzLocation').focus(); // Вернем фокус строке ввода
+  if(e.target.nodeName == "A") return;            // Кликнули по ссылке, обрабатывать не нужно
   document.getElementById('pzHostId').innerText = e.target.parentNode.hostid;
   document.getElementById('pzPing').style.fontWeight = "bold";
   highlightedZH = e.target.parentNode.hostid;
-
   if(hostToResearch.hostid == undefined){                // Если в данный момент никакой хост не исследуется,
     ShowHostStat();                                     // Сотрем инфу о предудцщем найденном хосте
     zResearchHost(e.target.parentNode.hostid);          // Запросим всю инфу о щелкнутом хосте
@@ -313,7 +219,7 @@ function cbzResearch3(response, status){
       hostToResearch.upTimeLc = response.result[key].lastclock;
       break;
     }
-  }           // Когда-нибудь я спрошу у Левченко как эти данные получает hostinventories.php и наступит благодать
+  }           // Когда-нибудь я узнаю у Левченко как эти данные получает hostinventories.php и наступит благодать
   $.get("https://zabbix.msk.unitline.ru/zabbix/hostinventories.php?hostid=" + hostToResearch.hostid, null, cbzResearch4, "html");
 }
 
@@ -383,4 +289,108 @@ function onPzClientChange() {         // Вызывается при выборе группы в <select>
   params.output = "extend";
   params.groupids = select[select.selectedIndex].value;
   zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
+}
+
+function onPzBtnCancelClick(){
+  if (popupStatus > 0) {            // Сразу закроем popup Zabix
+    $("#popupZabix").fadeOut("fast");
+    popupStatus--;
+  }
+  if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
+    $("#backgroundPopup").fadeOut("fast");
+  }
+}
+
+function onPzBtnOkClick(){
+  if(!isNaN(parseInt(document.getElementById('pzHostId').innerText, 10))){
+
+    if(popupStatus > 0) {            // Сразу закроем popup Zabix
+      $("#popupZabix").fadeOut("fast");
+      popupStatus--;
+    }
+    if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
+      $("#backgroundPopup").fadeOut("fast");
+    }
+    var iidd = document.getElementById('popupTicket').iidd;               // Получим id открытого тикета
+    if(Tickets[iidd] != undefined){
+      Tickets[iidd].zhostid = document.getElementById('pzHostId').innerText;  // Запомним zhostid тикета
+      disablePopups();                                                        // Переоткроем попап с тикетом
+      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+    }
+  }
+}
+
+function bssClient2zGroup(client) {
+  var zClient;
+  switch(client){   // Попытаемся определить zabbix groupid по BSS Client Name
+    case "*Adidas*":{ zClient = "Адидас"; break;}
+    case "*Alfa group*":{ zClient = "Альфа-банк"; break;}
+    case "*ALFA-BANK*":{ zClient = "Альфа-банк"; break;}
+    case "*Apteka A5*":{ zClient = "Аптека А5"; break;}
+    case "*BestPrice*":{ zClient = "БЭСТ ПРАЙС"; break;}
+    case "*BILLA*":{ zClient = "Билла"; break;}
+    case "*BIOCAD*":{ zClient = "Биокад"; break;}
+    case "*CentrObuv*":{ zClient = "Центр Обувь"; break;}
+    case "*CROSSMEDIA*":{ zClient = "Кроссмедиа"; break;}
+    case "*DELOVIE LINII*":{ zClient = "Деловые линии"; break;}
+    case "*Delovie Linii*":{ zClient = "Деловые линии"; break;}
+    case "*Deti*":{ zClient = "Дети"; break;}
+    case "*DETMIR*":{ zClient = "Детский Мир"; break;}
+    case "*ELDORADO*":{ zClient = "Эльдорадо"; break;}
+    case "*ENTER*":{ zClient = "Энтер"; break;}
+    case "*ER-Telecom*":{ zClient = "Эр-Телеком Холдинг"; break;}
+    case "*EUROPLAST*":{ zClient = "Европласт"; break;}
+    case "*EUROSET*":{ zClient = "Евросеть"; break;}
+    case "*Fandy*":{ zClient = "Фандей"; break;}
+    case "*GarsTelecom*":{ zClient = "Гарстелеком"; break;}
+    case "*GAZPROMBANK*":{ zClient = "Газпромбанк"; break;}
+    case "*GOLDTELECOM*":{ zClient = "Голд Телеком"; break;}
+    case "*HOMECREDIT*":{ zClient = "Хоум-Кредит"; break;}
+    case "*ID Logistic Rus*":{ zClient = "ИД Логистикс Рус"; break;}
+    case "*IDEA BANK*":{ zClient = "ИДЕА БАНК"; break;}
+    case "*INCITY*":{ zClient = "Инсити"; break;}
+    case "*INVESTBANK*":{ zClient = "Инвест-банк"; break;}
+    case "*KB Transportniy*":{ zClient = "Транспортный"; break;}
+    case "*Leroy Merlin*":{ zClient = "Леруа Мерлен"; break;}
+    case "*LETOBANK*":{ zClient = "Лето-банк"; break;}
+    case "*Lombard Blago*":{ zClient = "Ломбард Благо"; break;}
+    case "*M.VIDEO*":{ zClient = "М.видео Менеджмент"; break;}
+    case "*MacDonald*":{ zClient = "Макдональдс"; break;}
+    case "*MakDak*":{ zClient = "Макдональдс"; break;}
+    case "*MChS Russia*":{ zClient = "Специальное управление ФПС № 3 МЧС России"; break;}
+    case "*MEGAFON*":{ zClient = "Мегафон"; break;}
+    case "*MIRATORG*":{ zClient = "Мираторг"; break;}
+    case "*Next Commerce*":{ zClient = "Некст Коммерс"; break;}
+    case "*Obrazovanie*":{ zClient = "Образование (банк)"; break;}
+    case "*OSTIN*":{ zClient = "Остин"; break;}
+    case "*OTP-Bank*":{ zClient = "ОТП-банк"; break;}
+    case "*PARIBA*":{ zClient = "БНП Париба"; break;}
+    case "*PLANET*":{ zClient = "Планета"; break;}
+    case "*Quiclymoney*":{ zClient = "Быстроденьги"; break;}
+    case "*RENCAP*":{ zClient = "Ренессанс Капитал"; break;}
+    case "*Rivgosh*":{ zClient = "Рив Гош"; break;}
+    case "*ROSTELECOM-MSK*":{ zClient = "Ростелеком"; break;}
+    case "*ROSTELECOM-SPB*":{ zClient = "Ростелеком"; break;}
+    case "*RusTelCompany*":{ zClient = "Русская Телефонная Компания"; break;}
+    case "*SAMOTLOR*":{ zClient = "Самотлор"; break;}
+    case "*SBERBANK*":{ zClient = "Сбербанк"; break;}
+    case "*SPORTMASTER*":{ zClient = "Спортмастер"; break;}
+    case "*SrochnoDengi*":{ zClient = "Быстроденьги"; break;}
+    case "*STEC.COM*":{ zClient = "Стэк ком"; break;}
+    case "*SVYAZNOY*":{ zClient = "Связной"; break;}
+    case "*Svyaznoy*":{ zClient = "Синтерра"; break;}
+    case "*SYNTERRA*":{ zClient = "Синтерра"; break;}
+    case "*TASCOM*":{ zClient = "ТАСКОМ"; break;}
+    case "*TechnoSila*":{ zClient = "Техносила"; break;}
+    case "*Telsikom*":{ zClient = "Телсиком"; break;}
+    case "*Ulibka Radugi*":{ zClient = "Улыбка радуги"; break;}
+    case "*UNISTREAM*":{ zClient = "Юнистрим"; break;}
+    case "*Vertical*":{ zClient = "Вертикаль"; break;}
+    case "*VladPromBank*":{ zClient = "Владпромбанк"; break;}
+    case "*VTB24*":{ zClient = "Мультикарта"; break;}
+    case "*WHITE WIND*":{ zClient = "Белый Ветер"; break;}
+    case "*X5*":{ zClient = "Х-5"; break;}
+    default: zClient = "GA";
+  }
+  return zClient;
 }

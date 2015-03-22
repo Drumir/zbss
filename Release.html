@@ -24,18 +24,18 @@
 </head>
 
 <body>
-  <table id="menuTable">
+  <table id="menuTable" align="left" width=100%>
     <td id="statusName" style='background-color:#90C08C'></td>
     <td>
       <button id="buttonMove"   disabled="true">Перевести</button>
       <button id="buttonRenew" disabled="true" style="width:120px">Обновить</button>
       <button id="buttonNew" >Новый ТТ</button>
     </td>
-    <td valign = "baseline">
-      <input type="text" id="searchTT" size="10" placeholder="№ ТТ">
-    </td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-    <td><button id="btResetFilter" style="width:170px;color:#119911" hidden="true">Показать все ТТ</button></td>
+    <td valign = "baseline"><input type="text" id="searchTT" size="7" placeholder="№ ТТ"></td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
+    <td valign = "baseline" align="right">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
+
   </table>
 
   <textarea id="hiddenText" hidden="true">This text invisible</textarea>
@@ -90,6 +90,8 @@
     </table>
   </div>
 
+	<!-- popup Transfer -->	
+
   <div id="popupTransfer">
     <a id="popupPictCloseTransfer"><img src=".\images\quit.png" width="8" height="7"></a>
     <h4>Перевести отмеченые ТТ:</h4>
@@ -115,6 +117,8 @@
     <button id="btnTransOnSelf" hidden="true">На себя</button>
     <p id="btTransfNote" style="color:#DD0000"></p>
   </div>
+
+	<!-- popup Ticket -->	
 
   <div id="popupTicket">
     <table border="0" cellpadding="0" cellspacing="0">
@@ -179,6 +183,8 @@
     </table>
   </div>
 
+	<!-- popup Zabix -->	
+
   <div id="popupZabix" style="background-color:#C0C0f0">
     <span id="pzCaption">Поиск узла для ТТ "</span>
     <hr>
@@ -219,6 +225,8 @@
     <button id="pzBtnOk">OK</button>&nbsp;&nbsp;<button id="pzBtnCancel">Отмена</button>
   </div>
 
+	<!-- popup NewTT -->	
+
   <div id="popupNewTT">
     <table border ="0" >
       <tr><td>Краткое описание</td><td><input type="text" id="shortTTDescr" size="67"></td></tr>
@@ -250,6 +258,8 @@
     <button id="ppBtnToTabs">В закладки</button>
   </div>
 
+	<!-- popup EditTT -->	
+
   <div id="popupEditTT">
     <table border ="0">
       <tr><td>Краткое описание</td><td><input type="text" id="peShortTTDescr" size="67"></td></tr>
@@ -270,6 +280,7 @@
     <button id="peBtnCreate">Сохранить</button>
   </div>
 
+	<!-- popup Status -->	
 
   <div id="popupStatus">
     <a id="popupPictCloseStatus"><img src=".\images\quit.png" width="8" height="7"></a>
@@ -308,6 +319,8 @@
     <button id="ps2Edit" style="width:120px">Редактировать</button>
     <p id="psLabel">Нет доступных операций</p>
   </div>
+
+	<!-- popup Login -->	
 
   <div id="popupLogin" align="center">
     <div id="divLoginInput" style="background-color:#ED1C24;width:250px">
