@@ -103,3 +103,16 @@ function callbackLoadTickets(data, textStatus) {
   renewTickets(data);
   setStatus("Готово");
 }
+
+function cbSqlMultiSuccess(data, textStatus) {      // Обновим привязки TT -> hostid в Tickets{}
+  if(data.status == "success"){
+    mySqlLastRenew = data.timestamp;
+    for(var i = 0; i < data.result.length; i ++){
+      if(Tickets[data.result[i].ttid] != undefined)
+        Tickets[data.result[i].ttid].zhostid = data.result[i].hostid;
+    }
+  }
+}
+
+function cbSqlWriteSuccess(data, textStatus) {      // cb Операции записи в базу. Надо бы проверять успешна ли...
+}

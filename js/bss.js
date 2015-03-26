@@ -45,6 +45,8 @@ var zApiVersion = "";
 var zEnabled = false;     // false если заббикс недоступен или запрещен.
 var zSessionId;
 
+var mySqlLastRenew = "";  // timestamp последнего обновления привязок TT -> hostId
+
 window.onload = function() {          //
 
   document.getElementById('buttonNew').onclick = onBtnNewTTClick;
@@ -110,9 +112,7 @@ window.onload = function() {          //
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
 
-  $("#backgroundPopup").click(function() {
-    disablePopups();
-  });
+  $("#backgroundPopup").click(function() { disablePopups(); });
   /*
   $(document).keydown(function(e) {
     if (e.keyCode == 27 && popupStatus > 0) {
@@ -140,9 +140,7 @@ window.onload = function() {          //
     }
   });
 
-  $("#popupPictCloseTicket").click(function() {
-    disablePopups();
-  });
+  $("#popupPictCloseTicket").click(function() { disablePopups(); });
 
   hiddenText = document.getElementById('hiddenText');
   hiddenText.hidden = true;
@@ -342,10 +340,17 @@ function renewTickets(data) {
     }
   }
 
-/*  for(var key in Tickets)               // Пометим все тикеты, информация о которых не обновилась как закрытые
-    if(Tickets[key].renewed == false)
-      Tickets[key].status = "Closed / Закрыта";
-*/
+  var params = {action:"readLater", timestamp:mySqlLastRenew };     // Готовимся обновить привязки
+  if(mySqlLastRenew == "")   // Если привязки TT->hostId еще не загружались
+    params = {action:"readFrom", ttid:tt.id};   // Запросим привязки на все тикеты начиная с самого старого незакрытого
+  $.ajax({
+    url: "http://drumir.zz.vc/ajax.php",
+    type: 'post',
+    dataType: 'json',
+    data: params,
+    success: cbSqlMultiSuccess
+  });
+
   showIt();
   if(delayedData != "") {                   // Костыль к onBtnSaveTTClick чтобы при отображении свежесозданного тикета в Tickets{} УЖЕ была запись о нём
     callbackGetTicket(delayedData, "sucess");

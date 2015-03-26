@@ -353,6 +353,15 @@ function onPzBtnOkClick(){
       Tickets[iidd].zhostid = document.getElementById('pzHostId').innerText;  // Запомним zhostid тикета
       disablePopups();                                                        // Переоткроем попап с тикетом
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+
+      params = {action:"write", ttid:iidd, hostid:Tickets[iidd].zhostid};   // Запишем свежую привязку в базу
+      $.ajax({
+        url: "http://drumir.zz.vc/ajax.php",
+        type: 'post',
+        dataType: 'json',
+        data: params,
+        success: cbSqlWriteSuccess
+      });
     }
   }
 }
