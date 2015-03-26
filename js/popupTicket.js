@@ -38,6 +38,10 @@ function callbackGetTicket(data, textStatus) {
   var tid, permissions, t, h, m, str;
   if(data != null) {  // null ли?!
     document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
+    if(document.getElementById('PrintArea') == undefined) {    // Если загрузилось не то
+      setStatus("Сбой получения тикета");
+      return;
+    }
     var tb = document.getElementById('PrintArea').children[1].children[0];    // исходная таблица
     var ltb = document.getElementById('leftPTtBody');                         // Моя таблица
     var buttons = document.getElementsByClassName('inpButton');  // Получим список доступных кнопок
@@ -148,7 +152,6 @@ function callbackGetTicket(data, textStatus) {
       document.getElementById('ptFindHostId').innerText = "изм";
       askZabbix(Tickets[tid].zhostid);
     }
-
 
     loadPopupTicket();
     centerPopupTicket();
@@ -366,7 +369,7 @@ function cbSuccessZ2(response, status) {
     for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
     if(i != response.result.length){  // Если строка с пингом найдена
       if(response.result[i].name.indexOf("Ping {HOST.NAME") == 0){
-        document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[0].itemid;  // создадим ссылку
+        document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
       }
       if(response.result[i].lastvalue == 1){
         document.getElementById('ptZping').style.color = "#226622";     // пинг есть

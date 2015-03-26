@@ -281,6 +281,43 @@ function ShowHostStat() {
   for(var key in hostToResearch) delete hostToResearch[key];  // Удалим собранные данные о хосте, чтобы они не подменили результат следующего исследования
 }
 
+
+// ARP:         https://zabbix.msk.unitline.ru/zabbix/scripts_exec.php?execute=1&hostid=12914&scriptid=5&sid=e99e99bd382fd777
+// Des of Inter https://zabbix.msk.unitline.ru/zabbix/scripts_exec.php?execute=1&hostid=12914&scriptid=6&sid=e99e99bd382fd777
+// ping         https://zabbix.msk.unitline.ru/zabbix/scripts_exec.php?execute=1&hostid=12914&scriptid=1&sid=e99e99bd382fd777
+// Traceroute   https://zabbix.msk.unitline.ru/zabbix/scripts_exec.php?execute=1&hostid=12914&scriptid=2&sid=e99e99bd382fd777
+
+
+function onPzRunScriptsClick(e){
+  var tid = document.getElementById('popupTicket').iidd;
+  var scriptId = 1;
+  if(document.getElementById('pzHostId').innerText != ""){           // Если hostid уже выбран
+    switch(e.target.id){
+      case "pzARP":       {scriptId = 5; break;}
+      case "pzDesOfInt":  {scriptId = 6; break;}
+      case "pzRunPing":   {scriptId = 1; break;}
+      case "pzTracert":   {scriptId = 2; break;}
+      default: return;
+    }
+  $.get("https://zabbix.msk.unitline.ru/zabbix/scripts_exec.php?execute=1&hostid=" + document.getElementById('pzHostId').innerText + "&scriptid=" + scriptId + "&sid=" + zSessionId, null, cbRunScripts, "html");
+  loadPopupRunScripts();
+//  centerPopupRunScripts();
+
+  }
+}
+
+function cbRunScripts(data, status){
+  document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
+  if(document.getElementsByClassName("pre fixedfont") == undefined) {    // Если загрузилось не то
+    document.getElementById('popupInRunScripts').innerText = "Не удалось получить информацию";
+    return;
+  }
+  document.getElementById('prsCaption').innerText = document.getElementById("tab_scriptTab").innerText;
+  document.getElementById('popupInRunScripts').innerText = document.getElementsByClassName("pre fixedfont")[0].innerText;
+  document.getElementById('tempDiv').innerHTML = "";
+  centerPopupRunScripts();
+}
+
 function onPzClientChange() {         // Вызывается при выборе группы в <select>
   var select = document.getElementById('pzClient');
   if(select.selectedIndex == 0) return;

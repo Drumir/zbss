@@ -178,6 +178,22 @@ hr {
   padding: 12px;
 }
 
+#popupRunScripts {
+  background-color: #EEEEEE;
+  color: #0A0A0A;
+  display: none;
+  _position: absolute;
+  width: 600px;
+/*  height: auto;*/
+  max-height: 550px;
+  overflow-y: auto;
+  background: #BBBBBB;
+  border: 2px solid #ceceFF;
+  z-index: 5;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 12px;
+}
+
 #historyDiv {
   max-height: 490px;
   max-width: 712px;

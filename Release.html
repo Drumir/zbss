@@ -24,7 +24,7 @@
 </head>
 
 <body>
-  <table id="menuTable" align="left" width=100%>
+  <table id="menuTable" align="left">
     <td id="statusName" style='background-color:#90C08C'></td>
     <td>
       <button id="buttonMove"   disabled="true">Перевести</button>
@@ -32,9 +32,9 @@
       <button id="buttonNew" >Новый ТТ</button>
     </td>
     <td valign = "baseline"><input type="text" id="searchTT" size="7" placeholder="№ ТТ"></td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
-    <td valign = "baseline" align="right">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
+    <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
 
   </table>
 
@@ -209,16 +209,22 @@
         <td id="pzHostId" style="width:37px"></td>
         <td id="pzIp" style="width:80px"></td>
         <td id="pzPing" style="width:40px">ping</td>
-        <td id="pzHostName" align="left"></td>
+        <td id="pzHostName" colspan="2" align="left"></td>
       </tr>
       <tr>
-        <td id="pzGroups"  colspan="4"></td>
+        <td id="pzGroups"  colspan="5"></td>
+      </tr>
+      <tr id="pzRunScripts">
+        <td id="pzUpTime" colspan="4"></td>
+        <td align="center" width="350">
+          <u id="pzARP">&nbsp;ARP&nbsp;&nbsp;</u>
+          <u id="pzTracert">&nbsp;Traceroute&nbsp;&nbsp;</u>
+          <u id="pzDesOfInt">&nbsp;Description of interface&nbsp;&nbsp;</u>
+          <u id="pzRunPing">&nbsp;RunPing&nbsp;</u>
+        </td>
       </tr>
       <tr>
-        <td id="pzUpTime"  colspan="4"></td>
-      </tr>
-      <tr>
-        <td colspan="4"><div id="pzHostInfo"></div></td>
+        <td colspan="5"><div id="pzHostInfo"></div></td>
       </tr>
     </table>
     <hr>
@@ -334,6 +340,14 @@
     </div>
   </div>
 
+	<!-- popup RunScripts -->	
+
+  <div id="popupRunScripts" align="right">
+    <span id="prsCaption"></span>
+    <div id="popupInRunScripts" align="left" style="background-color:#F0F0F0"></div>
+    <p>
+    <button id="prsCloseBtn" style="width:110px">Закрыть</button>
+  </div>
   <div id="tempDiv" hidden="true">
   </div>
   <div id="backgroundPopup"></div>

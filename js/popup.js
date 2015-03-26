@@ -30,6 +30,7 @@ function disablePopups() {
     $("#popupZabix").fadeOut("fast");
     $("#popupEditTT").fadeOut("fast");
     $("#popupLogin").fadeOut("fast");
+    $("#popupRunScripts").fadeOut("fast");
     popupStatus = 0;
   }
 }
@@ -123,6 +124,34 @@ function loadPopupLogin() {
   chrome.storage.local.get(null, cbRememberPass);
 }
 
+function loadPopupRunScripts() {
+  if (popupStatus < 3) {
+    $("#backgroundPopup").css({
+      "opacity": "0.7"
+    });
+    $("#backgroundPopup").fadeIn("fast");
+    $("#popupRunScripts").fadeIn("fast");
+    popupStatus++;
+    document.getElementById('popupInRunScripts').innerHTML = "";
+    document.getElementById('prsCaption').innerText = "";
+  }
+}
+
+function centerPopupRunScripts() {
+  var windowWidth = document.documentElement.clientWidth;
+  var windowHeight = document.documentElement.clientHeight;
+  var popupHeight = $("#popupRunScripts").height();
+  var popupWidth = $("#popupRunScripts").width();
+
+  $("#popupRunScripts").css({
+    "position": "absolute",
+//    "height": popupHeight,
+    "top": windowHeight / 2 - popupHeight / 2,
+    "left": windowWidth / 2 - popupWidth / 2,
+  });
+}
+
+
 function cbRememberPass(pairs) {
   var a = pairs["user"];
   var b = pairs["password"];
@@ -177,3 +206,10 @@ function onLoginClick() {
   chrome.storage.local.set(pairs);
   disablePopups();
 }
+
+function onPrsCloseBtnClick() {
+  if (popupStatus > 0) {            // Спрячем (закроем) popup RunScripts
+    $("#popupRunScripts").fadeOut("fast");
+    popupStatus--;
+  }
+ }

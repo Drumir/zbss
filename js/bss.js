@@ -43,6 +43,7 @@ var zoptions = {};         // Для запросов в заббикс
 zoptions.url = 'https://zabbix.msk.unitline.ru/zabbix/api_jsonrpc.php';
 var zApiVersion = "";
 var zEnabled = false;     // false если заббикс недоступен или запрещен.
+var zSessionId;
 
 window.onload = function() {          //
 
@@ -101,7 +102,9 @@ window.onload = function() {          //
 //  document.getElementById('pnFindHostId').onclick = onPnFindHostIdClick;
   document.getElementById('pzBtnCancel').onclick = onPzBtnCancelClick;
   document.getElementById('pzBtnOk').onclick = onPzBtnOkClick;
+  document.getElementById('pzRunScripts').onclick = onPzRunScriptsClick;
   document.getElementById('about').onclick = onAboutClick;
+  document.getElementById('prsCloseBtn').onclick = onPrsCloseBtnClick;
 
   mtb = document.getElementById('mainTBody');
 
@@ -158,10 +161,10 @@ window.onload = function() {          //
   }, cbZgetApiErr, null);
 
     // Авторизация в Zabbiz      Не все данные доступны в JSON формате через API. Приходится дополнительно авторизовываться чтобы иметь доступ к html страницам
-  $.ajax({url: "https://zabbix.msk.unitline.ru/zabbix/index.php", data:"request=&name=monitoring&password=monitoring&autologin=1&enter=Sign+in", dataType:"html", error: cbZgetApiErr, success: null});
+  $.ajax({url: "https://zabbix.msk.unitline.ru/zabbix/index.php", type: "POST", data:"request=&name=monitoring&password=monitoring&autologin=1&enter=Sign+in", dataType:"html", error: cbZAuthErr, success: cbZAuthOk});
 
     // Авторизация в BSS
-  $.ajax({url: "https://oss.unitline.ru:995/adm/", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
+  $.ajax({url: "https://oss.unitline.ru:995/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
@@ -181,6 +184,16 @@ function cbZAuthErr(data, status) {
   zEnabled = false;
   setStatus("Ошибка авторизации в Zabbix");
 }
+
+function cbZAuthOk(data, status) {
+  zEnabled = true;
+  var adr = data.indexOf('id="sid" name="sid" value="');
+  data = data.substring(adr + 27);
+  adr = data.indexOf('" />');
+  zSessionId = data.substring(0, adr);
+  setStatus("Успешная авторизация в Zabbix");
+}
+
 /******************************************************************************/
 function oneMoreSecond(){
   if(refreshTime > 0 && filter.status != "Closed / Закрыта")  // Если работаем в "закрытом" режиме, ничего обновлять не надо
@@ -543,7 +556,15 @@ function onBtnRenewClick(e) {
 }
 
 function onBodyResize() {
-   document.body.style.maxHeight = (window.innerHeight - 31) + "px";
+  document.body.style.maxHeight = (window.innerHeight - 31) + "px";
+  centerPopupTransfer();
+  centerPopupStatus();
+  centerPopupTicket();
+  centerPopupNewTT();
+  centerPopupZabix();
+  centerPopupEditTT();
+  centerPopupLogin();
+//  centerPopupRunScripts();
 }
 
 function setStatus(status) {
