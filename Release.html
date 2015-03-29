@@ -32,7 +32,7 @@
       <button id="buttonNew" >Новый ТТ</button>
     </td>
     <td valign = "baseline"><input type="text" id="searchTT" size="7" placeholder="№ ТТ"></td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
     <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
 
@@ -101,6 +101,7 @@
         <option value="100184">Технический департамент (МегаМакс) (13)</option>
       </select>
       <a id="branchNN" style="color:#1133AA">НН</a>&nbsp;
+      <a id="branchNN2" style="color:#1133AA">НН2</a>&nbsp;
       <a id="branchMSK" style="color:#1133AA">Мск</a>&nbsp;
       <a id="branchSPB" style="color:#1133AA">СПб</a>&nbsp;
       <a id="branchRnD" style="color:#1133AA">РнД</a>&nbsp;
@@ -314,6 +315,8 @@
           <option value="2">Решено с выездом</option>
         </select></td></tr>
       <tr><td>Комментарий</td><td><input type="text" id="psComment" size="50" placeholder="."></td></tr>
+      <tr id="psCopyTr" hidden="true" border=1><td colspan=2><img id="psCopyImg" src=".\images\copy.png" width="15" height="15">&nbsp;<span id="psCopyText"></span></td></tr>
+
     </table>
     <hr>
     <button id="ps2Confirm" style="width:105px">Подтвердить</button>

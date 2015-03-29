@@ -19,6 +19,7 @@ function loadPopupZabix() {
     ShowHostStat();   // Очистим таблицу с описанием "найденного" хоста
 
     zClient = bssClient2zGroup(Tickets[tid].client);  // Попытаемся определить zabbix groupid по BSS Client Name
+    document.getElementById('popupZabix').zClient = zClient;
 
     var gids = [];          // Массив для хранения ids подходящих zгрупп
     for(var i = 0; i < zGroups.length; i ++) {
@@ -126,6 +127,10 @@ function ShowZList() {
     }
     document.getElementById('pzFound').insertBefore(ttr, document.getElementById('pzFound').children[0]);
   }
+  var a = document.getElementById('pzClient');
+  if(str.length == 0 && document.getElementById('popupZabix').zClient != "GA"){  // Если ничего не найдено, и искали не в GA
+    document.getElementById('pzFound').innerHTML = "<tr width=100% align='center'><td></td><td></td><td></td><td>Ничего не найдено. Нажмите Enter чтобы искать в группе GA</td></tr>";
+  }
   centerPopupZabix();
           // Если щелкнули не по "найти", а по "изменить", то нужно сразу отобразить инфу об известном хосте
   var tid = document.getElementById('popupTicket').iidd;
@@ -139,6 +144,20 @@ function ShowZList() {
 
 function onzLocationEdit() {
   ShowZList();
+}
+
+function onzLocationKey(e){
+  if(e.keyIdentifier == "Enter"){     // Если в строке поиска хоста нажали Ентер
+    var select = document.getElementById('pzClient');
+    for(var key in select){
+      if(select[key].text == "GA"){
+        select.selectedIndex = select[key].index; // Выберем группу GA
+        onPzClientChange();
+        return;
+      }
+    }
+
+  }
 }
 
 function onPzFoundTBodyClick(e) {
@@ -185,7 +204,8 @@ function cbzResearch1(response, status){
 
 //  hostToResearch = response.result[0];
   hostToResearch.name = response.result[0].name;
-  hostToResearch.available = response.result[0].snmp_available;
+  if(response.result[0].snmp_disable_until == 0)
+    hostToResearch.available = response.result[0].snmp_available;
   hostToResearch.ip = response.result[0].host;
   var method = "application.get";
   // parameter
@@ -319,8 +339,10 @@ function cbRunScripts(data, status){
 }
 
 function onPzClientChange() {         // Вызывается при выборе группы в <select>
+  document.getElementById('pzLocation').focus(); // Вернем фокус строке ввода
   var select = document.getElementById('pzClient');
   if(select.selectedIndex == 0) return;
+  document.getElementById('popupZabix').zClient = select[select.selectedIndex].text; // Запомним кто сейчас выбран
   var method = "host.get";
   var params = {};
   params.output = "extend";

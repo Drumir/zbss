@@ -79,10 +79,12 @@ window.onload = function() {          //
   document.getElementById('searchStr').oninput = onSearchInput;
   document.getElementById('searchClient').oninput = onSearchClientInput;
   document.getElementById('pzLocation').oninput = onzLocationEdit;
+  document.getElementById('pzLocation').onkeypress = onzLocationKey;
   document.getElementById('searchTT').onkeydown = onTTKeyPress;
   document.getElementById('LsSearchTT').onkeydown = onLsTTKeyPress;
   document.getElementById('ptHostId').onkeydown = onHostidEnter;
   document.getElementById('psClass').onchange = getSubClass;
+  document.getElementById('psSubClass').onchange = onPsSubClassChange;
   document.getElementById('branchLiist').onchange = GetCPList;
   document.getElementById('ps2Confirm').onclick = onPs2Confirm;
   document.getElementById('ps2Servis').onclick        = onPsActionClick;
@@ -107,6 +109,7 @@ window.onload = function() {          //
   document.getElementById('pzRunScripts').onclick = onPzRunScriptsClick;
   document.getElementById('about').onclick = onAboutClick;
   document.getElementById('prsCloseBtn').onclick = onPrsCloseBtnClick;
+  document.getElementById('psCopyImg').onclick = onPsCopyImgClick;
 
   mtb = document.getElementById('mainTBody');
 

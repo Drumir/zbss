@@ -172,9 +172,16 @@ function onBtnAlertClick (e) {
   if(adr4 != -1) {str = str.substring(0, adr4-1);}
   $("#TTDescr")[0].value = str;
   var city = str.substring(adr1 + 7, adr2-1);
-  if(city === "Москва" || city === "Санкт-Петербург"){
+  var region = "";
+  switch(city){
+    case "Москва": {region = "Москва"; break;}
+    case "Санкт-Петербург": {region = "Санкт-Петербург"; break;}
+    case "Киров": {region = "Кировская область"; break;}
+    case "Владимир": {region = "Владимирская область"; break;}
+    }
+  if(region != ""){
     for(var i = 1; i < tt_region.length; i ++){
-      if(tt_region[i].text === city){
+      if(tt_region[i].text === region){
         document.getElementById('ppRegion').selectedIndex = i;
       }
     }
@@ -201,6 +208,7 @@ function cbWiki(data, textStatus) {
   start = data.indexOf('">');
   if(start === -1 || start > 100){return;}
   var region = data.substring(7, start);
+  if(region == "Ханты-Мансийский автономный округ — Югра") region = "Ханты-Мансийский автономный округ";
   for(var i = 1; i < tt_region.length; i ++){
     if(tt_region[i].text == region || ((tt_region[i].text.indexOf(region) != -1) && (tt_region[i].text.indexOf("Республика") != -1))){
       document.getElementById('ppRegion').selectedIndex = i;

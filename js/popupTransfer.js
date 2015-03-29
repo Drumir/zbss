@@ -137,6 +137,7 @@ function onPopupTransferClick(e){
   branchSelect = 0;
   switch(e.target.id){
     case "branchNN": {branchSelect = 100184; break;}
+    case "branchNN2": {branchSelect = 100219; break;}
     case "branchMSK": {branchSelect = 119; break;}
     case "branchSPB": {branchSelect = 79; break;}
     case "branchRnD": {branchSelect = 99; break;}

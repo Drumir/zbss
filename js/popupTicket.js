@@ -54,7 +54,8 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('popupTicket').iidd = tid
 
     ltb.children[0].children[1].innerText = tid;
-    ltb.children[1].children[1].innerText = tb.children[1].children[1].innerText;   // Создан
+//    ltb.children[1].children[1].innerText = tb.children[1].children[1].innerText;   // Создан
+    ltb.children[1].children[1].innerText = Tickets[tid].data_open;   // Создан
     ltb.children[2].children[1].innerText = tb.children[2].children[1].innerText;   // Заголовок
     ltb.children[3].children[1].innerText = tb.children[4].children[1].innerText;   // Автор
     ltb.children[4].children[1].innerText = tb.children[5].children[1].innerText;   // Отв. лицо

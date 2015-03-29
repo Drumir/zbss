@@ -41,6 +41,7 @@ function loadPopupStatus() {
     //GetCPList();                  // Загрузим между делом список ответственных лиц
     var tid = document.getElementById('popupStatus').iidd;
     var actionCount = 0;
+    document.getElementById('psCopyTr').hidden = true;
     document.getElementById('ps2Confirm').hidden = true;
     if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
       document.getElementById('ps2Confirm').hidden = false;
@@ -213,3 +214,27 @@ function onPrsCloseBtnClick() {
     popupStatus--;
   }
  }
+
+function onPsSubClassChange(){
+  document.getElementById('psCopyTr').hidden = true;
+  var clas = document.getElementById('psClass').value;
+  var sClas = document.getElementById('psSubClass').value;
+  var type = document.getElementById('psType');
+  if(this.value == "80" && clas == "30"){
+    type.value = "1";
+    document.getElementById('psCopyTr').hidden = false;
+    document.getElementById('psCopyText').innerText = "TT " + document.getElementById('popupStatus').iidd + ". Проблема в сети взаимодействующего оператора связи. ТТ закрыт.";
+    document.getElementById('psComment').placeholder = "Укажите название ВОС";
+  }
+}
+
+function onPsCopyImgClick(){
+  var ht = document.getElementById('hiddenText');
+  ht.textContent = document.getElementById('psCopyText').innerText;
+  ht.hidden = false;
+  ht.selectionStart = 0;                                              // Копируем список в буфер обмена
+  ht.selectionEnd = ht.textLength;
+  document.execCommand('copy');
+  ht.hidden = true;
+
+}
