@@ -340,6 +340,7 @@ function renewTickets(data) {
       Tickets[tt.id].branch = tt.branch;
       Tickets[tt.id].name = tt.name;
       Tickets[tt.id].renewed = true;
+      Tickets[tt.id].client = tt.client;
     }
   }
 
