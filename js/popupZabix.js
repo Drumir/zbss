@@ -378,7 +378,7 @@ function onPzBtnOkClick(){
 
       params = {action:"write", ttid:iidd, hostid:Tickets[iidd].zhostid};   // Запишем свежую привязку в базу
       $.ajax({
-        url: "http://drumir.zz.vc/ajax.php",
+        url: "http://drumir.16mb.com/ajax.php",
         type: 'post',
         dataType: 'json',
         data: params,

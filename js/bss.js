@@ -348,7 +348,7 @@ function renewTickets(data) {
   if(mySqlLastRenew == "")   // ≈сли прив€зки TT->hostId еще не загружались
     params = {action:"readFrom", ttid:tt.id};   // «апросим прив€зки на все тикеты начина€ с самого старого незакрытого
   $.ajax({
-    url: "http://drumir.zz.vc/ajax.php",
+    url: "http://drumir.16mb.com/ajax.php",
     type: 'post',
     dataType: 'json',
     data: params,
