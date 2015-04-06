@@ -4,11 +4,9 @@
 |  All rights reserved.
 +-----------------------------------------------------------------------------*/
 
-var popupStatus = 0;
-
 function WinManager(){
   this.winStack = [];
-                                            // z-index первого попапа = 3. Под ним будет  backgroundPopup с z-index = 2
+                                                 // z-index первого попапа = 3. Под ним будет  backgroundPopup с z-index = 2
   this.showMe = function(popupId) {
     this.winStack.push("backgroundPopup");
     $("#backgroundPopup").css({"opacity": "0.7", "z-index": this.winStack.length+1});
@@ -30,22 +28,6 @@ function WinManager(){
         $("#backgroundPopup").css({"opacity": "0.7", "z-index": this.winStack.length});
     }
   };
-}
-
-function disablePopups() {
-  winManager.hideUper(); /*
-  if (popupStatus > 0) {
-    $("#backgroundPopup").fadeOut("fast");
-    $("#popupTransfer").fadeOut("fast");
-    $("#popupStatus").fadeOut("fast");
-    $("#popupTicket").fadeOut("fast");
-    $("#popupNewTT").fadeOut("fast");
-    $("#popupZabix").fadeOut("fast");
-    $("#popupEditTT").fadeOut("fast");
-    $("#popupLogin").fadeOut("fast");
-    $("#popupRunScripts").fadeOut("fast");
-    popupStatus = 0;
-  }  */
 }
 
 function filialToRegionId(filial){
@@ -130,7 +112,7 @@ function centerPopupStatus() {
 
 function loadPopupRunScripts() {
   winManager.showMe("popupRunScripts");
-  document.getElementById('popupInRunScripts').innerHTML = "";
+  document.getElementById('popupInRunScripts').innerHTML = "Ожидание ответа сервера <IMG SRC='/images/wait.gif' alignment='vertical' alt='Renew'>";
   document.getElementById('prsCaption').innerText = "";
 }
 

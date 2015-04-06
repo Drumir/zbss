@@ -115,8 +115,6 @@ window.onload = function() {          //
   document.getElementById('prsCloseBtn').onclick = onPrsCloseBtnClick;
   document.getElementById('psCopyImg').onclick = onPsCopyImgClick;
   document.getElementById('backgroundPopup').onclick = function(){winManager.hideUper();};
-  document.getElementById('popupPictCloseTransfer').onclick = function(){winManager.hideUper();};
-  document.getElementById('popupPictCloseStatus').onclick = function(){winManager.hideUper();};
   mtb = document.getElementById('mainTBody');
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
@@ -145,6 +143,7 @@ window.onload = function() {          //
 
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
+  $("#char1").css({"color":"red"});
   if(jqXHR.status == 404 && textStatus == "error") {
     setStatus("Не могу открыть страницу BSS. Возможно она еще не открыта в Хроме, или нет связи.");
   }

@@ -369,9 +369,14 @@ function cbSuccessZ2(response, status) {
         document.getElementById('ptZping').style.color = "#226622";     // пинг есть
         document.getElementById('ptPingCBox').disabled = true;          // «апретим следить за хостом (он и так пингуетс€)
       }
-      else
+      else{
         document.getElementById('ptZping').style.color = "#FF2222";     // пинг кончилс€
         document.getElementById('ptPingCBox').disabled = false;         // –азрешим ставить галку следить за хостом
+      }
+      var delay = new Date();
+      delay = delay.getTime()/1000 - response.result[i].lastclock;     // ¬ычислим как давно было последнее обновление пинга
+      if(delay > 60) document.getElementById('ptZping').style.color = "#565600";     // пинг подзалежалс€
+      if(delay > 300) document.getElementById('ptZping').style.color = "#FFA000";     // пинг протух
     }
   }
 }

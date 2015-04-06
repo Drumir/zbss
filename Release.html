@@ -32,7 +32,7 @@
       <button id="buttonNew" >Новый ТТ</button>
     </td>
     <td valign = "baseline"><input type="text" id="searchTT" size="7" placeholder="№ ТТ"></td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ZBSS v0.6.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><span id="char0">Z</span><span id="char1">B</span><span id="char2">S</span><span id="char3">S</span> v0.6.7</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
     <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
 
@@ -93,7 +93,6 @@
 	<!-- popup Transfer -->	
 
   <div id="popupTransfer">
-    <a id="popupPictCloseTransfer"><img src=".\images\quit.png" width="8" height="7"></a>
     <h4>Перевести отмеченые ТТ:</h4>
     <hr>
     <p>
@@ -209,7 +208,7 @@
       <tr align="center">
         <td id="pzHostId" style="width:37px"></td>
         <td id="pzIp" style="width:80px"></td>
-        <td id="pzPing" style="width:40px">ping</td>
+        <td id="pzPing" style="width:40px">-----</td>
         <td id="pzHostName" colspan="2" align="left"></td>
       </tr>
       <tr>
@@ -290,7 +289,6 @@
 	<!-- popup Status -->	
 
   <div id="popupStatus">
-    <a id="popupPictCloseStatus"><img src=".\images\quit.png" width="8" height="7"></a>
     <table border ="0" >
       <tr><td>Класс</td><td>
         <select id="psClass" style="width:240px">

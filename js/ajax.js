@@ -9,13 +9,16 @@ function callbackAuthorization(data, textStatus){
     if(document.getElementById('divUserName') != undefined){  // Авторизация уже свершилась
       userName = document.getElementById('divUserName').innerText;
       document.getElementById('statusName').innerText = userName;
+      $("#char1").css({"color":"green"});
       loadEnvironment();
     }
     if(document.getElementById('divLoginVirgin') != undefined){  // Получили запрос авторизации
+      $("#char1").css({"color":"orange"});
       loadPopupLogin();
       centerPopupLogin();
     }
     if(document.getElementById('divLogin') != undefined){  // Авторизация отклонена
+      $("#char1").css({"color":"red"});
       setStatus("Авторизация  отклонена");
     }
     document.body.removeChild(div1)

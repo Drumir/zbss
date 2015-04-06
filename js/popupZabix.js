@@ -195,10 +195,9 @@ function cbzResearch0(response, status){
 function cbzResearch1(response, status){
   if(typeof(response.result) != 'object'){ShowHostStat(); return;}    // Исследование закончено неудачей
 
-//  hostToResearch = response.result[0];
   hostToResearch.name = response.result[0].name;
-  if(response.result[0].snmp_disable_until == 0)
-    hostToResearch.available = response.result[0].snmp_available;
+  /*if(response.result[0].snmp_disable_until == 0)
+    hostToResearch.available = response.result[0].snmp_available; */ // Закоментим потому что врет
   hostToResearch.ip = response.result[0].host;
   var method = "application.get";
   // parameter
@@ -314,8 +313,7 @@ function onPzRunScriptsClick(e){
     }
   $.get("https://zabbix.msk.unitline.ru/zabbix/scripts_exec.php?execute=1&hostid=" + document.getElementById('pzHostId').innerText + "&scriptid=" + scriptId + "&sid=" + zSessionId, null, cbRunScripts, "html");
   loadPopupRunScripts();
-//  centerPopupRunScripts();
-
+  centerPopupRunScripts();
   }
 }
 
