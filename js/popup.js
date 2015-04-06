@@ -6,6 +6,47 @@
 
 var popupStatus = 0;
 
+function WinManager(){
+  this.winStack = [];
+                                            // z-index первого попапа = 3. Под ним будет  backgroundPopup с z-index = 2
+  this.showMe = function(popupId) {
+    this.winStack.push("backgroundPopup");
+    $("#backgroundPopup").css({"opacity": "0.7", "z-index": this.winStack.length+1});
+    $("#backgroundPopup").fadeIn("fast");
+
+    this.winStack.push(popupId);
+    $("#" + popupId).css({"z-index": this.winStack.length+1});
+    $("#" + popupId).fadeIn("fast");
+  };
+
+  this.hideUper = function() {
+    if(this.winStack.length > 1) {
+      $("#"+this.winStack.pop()).fadeOut("fast");     // Закроем верхний попап
+      this.winStack.pop();                            // Удалим из стека backgroundPopup - подложку закрытого попапа
+      //$("#backgroundPopup").css({"opacity": "0.7", "z-index": this.winStack.length});
+      if(this.winStack.length == 0)                   // Если больше открытых попапов нет,
+        $("#backgroundPopup").fadeOut("fast");        // Спрячем backgroundPopup
+      else                                            // Если закрыли еще не все попапы, передвинем backgroundPopup под верхний popup
+        $("#backgroundPopup").css({"opacity": "0.7", "z-index": this.winStack.length});
+    }
+  };
+}
+
+function disablePopups() {
+  winManager.hideUper(); /*
+  if (popupStatus > 0) {
+    $("#backgroundPopup").fadeOut("fast");
+    $("#popupTransfer").fadeOut("fast");
+    $("#popupStatus").fadeOut("fast");
+    $("#popupTicket").fadeOut("fast");
+    $("#popupNewTT").fadeOut("fast");
+    $("#popupZabix").fadeOut("fast");
+    $("#popupEditTT").fadeOut("fast");
+    $("#popupLogin").fadeOut("fast");
+    $("#popupRunScripts").fadeOut("fast");
+    popupStatus = 0;
+  }  */
+}
 
 function filialToRegionId(filial){
   var region = -1;
@@ -18,84 +59,58 @@ function filialToRegionId(filial){
   return region;
 }
 
-
-
-function disablePopups() {
-  if (popupStatus > 0) {
-    $("#backgroundPopup").fadeOut("fast");
-    $("#popupTransfer").fadeOut("fast");
-    $("#popupStatus").fadeOut("fast");
-    $("#popupTicket").fadeOut("fast");
-    $("#popupNewTT").fadeOut("fast");
-    $("#popupZabix").fadeOut("fast");
-    $("#popupEditTT").fadeOut("fast");
-    $("#popupLogin").fadeOut("fast");
-    $("#popupRunScripts").fadeOut("fast");
-    popupStatus = 0;
-  }
-}
-
-
 function loadPopupStatus() {
-  if (popupStatus < 2) {   // Этот попап может быть показан поверх другого попапа! Вторым, но не третьим "этажом"
-    //GetCPList();                  // Загрузим между делом список ответственных лиц
-    var tid = document.getElementById('popupStatus').iidd;
-    var actionCount = 0;
-    document.getElementById('psCopyTr').hidden = true;
-    document.getElementById('ps2Confirm').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
-      document.getElementById('ps2Confirm').hidden = false;
-      actionCount++;
-      }
-    document.getElementById('ps2Servis').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Service / Обслуживание") != -1){
-      document.getElementById('ps2Servis').hidden = false;
-      actionCount++;
+  var tid = document.getElementById('popupStatus').iidd;
+  var actionCount = 0;
+  document.getElementById('psCopyTr').hidden = true;
+  document.getElementById('ps2Confirm').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+    document.getElementById('ps2Confirm').hidden = false;
+    actionCount++;
     }
-    document.getElementById('ps2Resolved').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Resolved / Решена") != -1){
-      document.getElementById('ps2Resolved').hidden = false;
-      actionCount++;
-    }
-    document.getElementById('ps2Hold').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Hold / Отложена") != -1){
-      document.getElementById('ps2Hold').hidden = false;
-      actionCount++;
-    }
-    document.getElementById('ps2Investigating').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Investigating / Расследование") != -1){
-      document.getElementById('ps2Investigating').hidden = false;
-      actionCount++;
-    }
-    document.getElementById('ps2Close').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Closed / Закрыта") != -1){
-      document.getElementById('ps2Close').hidden = false;
-      actionCount++;
-    }
-    document.getElementById('ps2Edit').hidden = true;
-    if(Tickets[tid].permissions.indexOf("Редактировать") != -1){
-      document.getElementById('ps2Edit').hidden = false;
-      actionCount++;
-    }
-
-    document.getElementById('psLabel').hidden = true;
-    if(actionCount == 0){                                   // Если нет ни одной доступной операции
-      document.getElementById('psLabel').hidden = false;    // Отобразим соответствующую надпись
-    }
-
-    document.getElementById('psClass').selectedIndex = 0;
-//    document.getElementById('psSubClass').selectedIndex = 0;
-    document.getElementById('psType').selectedIndex = 0;
-    document.getElementById('psResolve').selectedIndex = 0;
-    document.getElementById('psComment').value = "";
-
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupStatus").fadeIn("fast");
-    popupStatus++;
+  document.getElementById('ps2Servis').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Service / Обслуживание") != -1){
+    document.getElementById('ps2Servis').hidden = false;
+    actionCount++;
   }
+  document.getElementById('ps2Resolved').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Resolved / Решена") != -1){
+    document.getElementById('ps2Resolved').hidden = false;
+    actionCount++;
+  }
+  document.getElementById('ps2Hold').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Hold / Отложена") != -1){
+    document.getElementById('ps2Hold').hidden = false;
+    actionCount++;
+  }
+  document.getElementById('ps2Investigating').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Investigating / Расследование") != -1){
+    document.getElementById('ps2Investigating').hidden = false;
+    actionCount++;
+  }
+  document.getElementById('ps2Close').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Closed / Закрыта") != -1){
+    document.getElementById('ps2Close').hidden = false;
+    actionCount++;
+  }
+  document.getElementById('ps2Edit').hidden = true;
+  if(Tickets[tid].permissions.indexOf("Редактировать") != -1){
+    document.getElementById('ps2Edit').hidden = false;
+    actionCount++;
+  }
+
+  document.getElementById('psLabel').hidden = true;
+  if(actionCount == 0){                                   // Если нет ни одной доступной операции
+    document.getElementById('psLabel').hidden = false;    // Отобразим соответствующую надпись
+  }
+
+  document.getElementById('psClass').selectedIndex = 0;
+//    document.getElementById('psSubClass').selectedIndex = 0;
+  document.getElementById('psType').selectedIndex = 0;
+  document.getElementById('psResolve').selectedIndex = 0;
+  document.getElementById('psComment').value = "";
+
+  winManager.showMe("popupStatus");
 }
 
 function centerPopupStatus() {
@@ -113,29 +128,10 @@ function centerPopupStatus() {
 
 
 
-function loadPopupLogin() {
-  if (popupStatus == 0) {
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupLogin").fadeIn("fast");
-    popupStatus++;
-  }
-  chrome.storage.local.get(null, cbRememberPass);
-}
-
 function loadPopupRunScripts() {
-  if (popupStatus < 3) {
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupRunScripts").fadeIn("fast");
-    popupStatus++;
-    document.getElementById('popupInRunScripts').innerHTML = "";
-    document.getElementById('prsCaption').innerText = "";
-  }
+  winManager.showMe("popupRunScripts");
+  document.getElementById('popupInRunScripts').innerHTML = "";
+  document.getElementById('prsCaption').innerText = "";
 }
 
 function centerPopupRunScripts() {
@@ -152,6 +148,11 @@ function centerPopupRunScripts() {
   });
 }
 
+
+function loadPopupLogin() {
+  winManager.showMe("popupLogin");
+  chrome.storage.local.get(null, cbRememberPass);
+}
 
 function cbRememberPass(pairs) {
   var a = pairs["user"];
@@ -205,14 +206,11 @@ function onLoginClick() {
     pairs["password"] = "";
   }
   chrome.storage.local.set(pairs);
-  disablePopups();
+  winManager.hideUper();
 }
 
 function onPrsCloseBtnClick() {
-  if (popupStatus > 0) {            // Спрячем (закроем) popup RunScripts
-    $("#popupRunScripts").fadeOut("fast");
-    popupStatus--;
-  }
+  winManager.hideUper();
  }
 
 function onPsSubClassChange(){

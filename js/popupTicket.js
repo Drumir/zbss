@@ -3,14 +3,7 @@
 //
 
 function loadPopupTicket() {
-  if (popupStatus == 0) {
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupTicket").fadeIn("fast");
-    popupStatus++;
-  }
+  winManager.showMe("popupTicket");
 }
 
 function centerPopupTicket() {
@@ -238,7 +231,7 @@ function onTPopupClick(e) {
       }else{
         delete Tabs[tid];
       }
-      disablePopups();
+      winManager.hideUper();
       showIt();
       break;
     }

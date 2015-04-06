@@ -47,7 +47,11 @@ var zSessionId;
 
 var mySqlLastRenew = "";  // timestamp последнего обновления привязок TT -> hostId
 
+var winManager = {};
+
 window.onload = function() {          //
+
+  winManager = new WinManager();
 
   document.getElementById('buttonNew').onclick = onBtnNewTTClick;
   document.getElementById('ppBtnCreate').onclick = onBtnSaveTTClick;
@@ -110,40 +114,12 @@ window.onload = function() {          //
   document.getElementById('about').onclick = onAboutClick;
   document.getElementById('prsCloseBtn').onclick = onPrsCloseBtnClick;
   document.getElementById('psCopyImg').onclick = onPsCopyImgClick;
-
+  document.getElementById('backgroundPopup').onclick = function(){winManager.hideUper();};
+  document.getElementById('popupPictCloseTransfer').onclick = function(){winManager.hideUper();};
+  document.getElementById('popupPictCloseStatus').onclick = function(){winManager.hideUper();};
   mtb = document.getElementById('mainTBody');
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
-
-  $("#backgroundPopup").click(function() { disablePopups(); });
-  /*
-  $(document).keydown(function(e) {
-    if (e.keyCode == 27 && popupStatus > 0) {
-      disablePopups();
-    }
-  });
-  */
-  $("#popupPictCloseTransfer").click(function() {
-    if (popupStatus > 0) {            // Сразу закроем popup Transfer
-      $("#popupTransfer").fadeOut("fast");
-      popupStatus--;
-    }
-    if (popupStatus === 0) {          // Если Transfer был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
-      $("#backgroundPopup").fadeOut("fast");
-    }
-  });
-
-  $("#popupPictCloseStatus").click(function() {
-    if (popupStatus > 0) {            // Сразу закроем popup Status
-      $("#popupStatus").fadeOut("fast");
-      popupStatus--;
-    }
-    if (popupStatus === 0) {          // Если Status был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
-      $("#backgroundPopup").fadeOut("fast");
-    }
-  });
-
-  $("#popupPictCloseTicket").click(function() { disablePopups(); });
 
   hiddenText = document.getElementById('hiddenText');
   hiddenText.hidden = true;

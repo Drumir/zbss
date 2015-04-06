@@ -6,42 +6,35 @@ var resolvedHostIds = {};   // {hostid:{hostid, name, available, groups[], inven
 var hostToResearch = {};    // {hostid, name, available, groups[{groupid,hosts[],internal,name},..], invent, uptime}  // Исследуемый в данный момент хост. Если undefined, значит ничего не исслкдуется
 
 function loadPopupZabix() {
-  if (popupStatus < 2) {
-    var zClient = "";
-    var select = document.getElementById('pzClient');
-    var tid = document.getElementById('popupTicket').iidd;
-    select.selectedIndex = 0;
-    $("#pzFound").empty();
-    document.getElementById('pzHostId').innerText = "";
-    document.getElementById('pzLocation').value = "";
+  var zClient = "";
+  var select = document.getElementById('pzClient');
+  var tid = document.getElementById('popupTicket').iidd;
+  select.selectedIndex = 0;
+  $("#pzFound").empty();
+  document.getElementById('pzHostId').innerText = "";
+  document.getElementById('pzLocation').value = "";
 //    var expr = new RegExp('&quot;', 'gm');
-    document.getElementById('pzCaption').innerText = "Поиск узла для: " + Tickets[tid].name.replace(new RegExp('&quot;', 'gm'), '"') + ".  Клиент: " + Tickets[tid].client;
-    ShowHostStat();   // Очистим таблицу с описанием "найденного" хоста
+  document.getElementById('pzCaption').innerText = "Поиск узла для: " + Tickets[tid].name.replace(new RegExp('&quot;', 'gm'), '"') + ".  Клиент: " + Tickets[tid].client;
+  ShowHostStat();   // Очистим таблицу с описанием "найденного" хоста
 
-    zClient = bssClient2zGroup(Tickets[tid].client);  // Попытаемся определить zabbix groupid по BSS Client Name
-    document.getElementById('popupZabix').zClient = zClient;
+  zClient = bssClient2zGroup(Tickets[tid].client);  // Попытаемся определить zabbix groupid по BSS Client Name
+  document.getElementById('popupZabix').zClient = zClient;
 
-    var gids = [];          // Массив для хранения ids подходящих zгрупп
-    for(var i = 0; i < zGroups.length; i ++) {
-      if(zGroups[i].name.indexOf(zClient) == 0){
-        gids.push(zGroups[i].groupid);   // Добавим в массив id подходящей группы
-      }
+  var gids = [];          // Массив для хранения ids подходящих zгрупп
+  for(var i = 0; i < zGroups.length; i ++) {
+    if(zGroups[i].name.indexOf(zClient) == 0){
+      gids.push(zGroups[i].groupid);   // Добавим в массив id подходящей группы
     }
-    if(gids.length > 0) {  // Если найдена хоть одна подходящая группа
-      var method = "host.get";
-      var params = {};
-      params.output = "extend";
-      params.groupids = gids;
-      zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
-    }
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupZabix").fadeIn("fast");
-    popupStatus++;
-    document.getElementById('pzLocation').focus();
   }
+  if(gids.length > 0) {  // Если найдена хоть одна подходящая группа
+    var method = "host.get";
+    var params = {};
+    params.output = "extend";
+    params.groupids = gids;
+    zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
+  }
+  winManager.showMe("popupZabix");
+  document.getElementById('pzLocation').focus();
 }
 
 function centerPopupZabix() {
@@ -351,29 +344,16 @@ function onPzClientChange() {         // Вызывается при выборе группы в <select>
 }
 
 function onPzBtnCancelClick(){
-  if (popupStatus > 0) {            // Сразу закроем popup Zabix
-    $("#popupZabix").fadeOut("fast");
-    popupStatus--;
-  }
-  if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
-    $("#backgroundPopup").fadeOut("fast");
-  }
+  winManager.hideUper();
 }
 
 function onPzBtnOkClick(){
   if(!isNaN(parseInt(document.getElementById('pzHostId').innerText, 10))){
-
-    if(popupStatus > 0) {            // Сразу закроем popup Zabix
-      $("#popupZabix").fadeOut("fast");
-      popupStatus--;
-    }
-    if (popupStatus === 0) {          // Если popup Zabix был открыт не поверх другого попапа, а сам по себе, то спрячем и background popup
-      $("#backgroundPopup").fadeOut("fast");
-    }
+    winManager.hideUper();       // Сразу закроем окно забикса
     var iidd = document.getElementById('popupTicket').iidd;               // Получим id открытого тикета
     if(Tickets[iidd] != undefined){
       Tickets[iidd].zhostid = document.getElementById('pzHostId').innerText;  // Запомним zhostid тикета
-      disablePopups();                                                        // Переоткроем попап с тикетом
+      winManager.hideUper();  // Закроем так же и окно тикета, чтобы оно переоткрылось с новыми данными
       $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
 
       params = {action:"write", ttid:iidd, hostid:Tickets[iidd].zhostid};   // Запишем свежую привязку в базу

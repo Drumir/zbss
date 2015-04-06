@@ -3,30 +3,20 @@
 //
 
 function loadPopupTransfer() {
-  if (popupStatus < 2) {   // Ётот попап может располагатьс€ над уже открытым
-      // ≈сли вдруг список подразделений еще не заполнен, нужно открыть первый тикет из очереди с тем, чтобы спереть оттуда этот список
-    if(branch_id.length == 0){
-      for (var key in Tickets) {
-        if(Tickets[key].checked === true){   // Ќайдем первый отмеченный тикет
-          break;
-        }
+    // ≈сли вдруг список подразделений еще не заполнен, нужно открыть первый тикет из очереди с тем, чтобы спереть оттуда этот список
+  if(branch_id.length == 0){
+    for (var key in Tickets) {
+      if(Tickets[key].checked === true){   // Ќайдем первый отмеченный тикет
+        break;
       }
-      mySetTimeout(12, "ќшибка загрузки списка подразделений");
-      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: key}, callbackLoadEnvironment2, "html");
     }
-    GetCPList();                  // «агрузим между делом список ответственных лиц
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupTransfer").fadeIn("fast");
-    document.getElementById('buttonTransfer').hidden = false;
-    document.getElementById('btTransfNote').innerText = "";
-//    document.getElementById('popupTransfer').TTCount = 0;     //  оличество переводимых тикетов
-//    document.getElementById('popupTransfer').TTOk = 0;        //  оличество успешно переведенных тикетов
-//    document.getElementById('popupTransfer').TTError = 0;     //  оличество ошибок
-    popupStatus++;
+    mySetTimeout(12, "ќшибка загрузки списка подразделений");
+    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: key}, callbackLoadEnvironment2, "html");
   }
+  GetCPList();                  // «агрузим между делом список ответственных лиц
+  winManager.showMe("popupTransfer");
+  document.getElementById('buttonTransfer').hidden = false;
+  document.getElementById('btTransfNote').innerText = "";
 }
 
 function centerPopupTransfer() {

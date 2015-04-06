@@ -3,32 +3,25 @@
 //
 
 function loadPopupNewTT() {
-  if (popupStatus == 0) {
-    $("#shortTTDescr")[0].value = "";
-    $("#TTDescr")[0].value = "";
-    $("#ppClient")[0].selectedIndex = 0;
-    $("#ppRegion")[0].selectedIndex = 0;
-    $("#wikiLink")[0].text = "";
+  $("#shortTTDescr")[0].value = "";
+  $("#TTDescr")[0].value = "";
+  $("#ppClient")[0].selectedIndex = 0;
+  $("#ppRegion")[0].selectedIndex = 0;
+  $("#wikiLink")[0].text = "";
 
-    var reg =  $("#ppRegion");
-    if(reg != undefined && reg[0].length === 0) {
-      for(var i = 0; i < tt_region.length; i ++){
-        reg.append("<option value='" + tt_region[i].value + "'>" + tt_region[i].text + "</option>");
-      }
+  var reg =  $("#ppRegion");
+  if(reg != undefined && reg[0].length === 0) {
+    for(var i = 0; i < tt_region.length; i ++){
+      reg.append("<option value='" + tt_region[i].value + "'>" + tt_region[i].text + "</option>");
     }
-    reg =  $("#ppClient");
-    if(reg != undefined && reg[0].length === 0) {
-      for(i = 0; i < organization_id.length; i ++){
-        reg.append("<option value='" + organization_id[i].value + "'>" + organization_id[i].text + "</option>");
-      }
-    }
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupNewTT").fadeIn("fast");
-    popupStatus++;
   }
+  reg =  $("#ppClient");
+  if(reg != undefined && reg[0].length === 0) {
+    for(i = 0; i < organization_id.length; i ++){
+      reg.append("<option value='" + organization_id[i].value + "'>" + organization_id[i].text + "</option>");
+    }
+  }
+  winManager.showMe("popupNewTT");
 }
 
 function centerPopupNewTT() {
@@ -45,31 +38,24 @@ function centerPopupNewTT() {
 }
 
 function loadPopupEditTT() {
-  if (popupStatus == 0) {
-    $("#peShortTTDescr")[0].value = "";
-    $("#peTTDescr")[0].value = "";
-    $("#peClient")[0].selectedIndex = 0;
-    $("#peRegion")[0].selectedIndex = 0;
+  $("#peShortTTDescr")[0].value = "";
+  $("#peTTDescr")[0].value = "";
+  $("#peClient")[0].selectedIndex = 0;
+  $("#peRegion")[0].selectedIndex = 0;
 
-    var reg =  $("#peRegion");
-    if(reg != undefined && reg[0].length === 0) {
-      for(var i = 0; i < tt_region.length; i ++){
-        reg.append("<option value='" + tt_region[i].value + "'>" + tt_region[i].text + "</option>");
-      }
+  var reg =  $("#peRegion");
+  if(reg != undefined && reg[0].length === 0) {
+    for(var i = 0; i < tt_region.length; i ++){
+      reg.append("<option value='" + tt_region[i].value + "'>" + tt_region[i].text + "</option>");
     }
-    reg =  $("#peClient");
-    if(reg != undefined && reg[0].length === 0) {
-      for(i = 0; i < organization_id.length; i ++){
-        reg.append("<option value='" + organization_id[i].value + "'>" + organization_id[i].text + "</option>");
-      }
-    }
-    $("#backgroundPopup").css({
-      "opacity": "0.7"
-    });
-    $("#backgroundPopup").fadeIn("fast");
-    $("#popupEditTT").fadeIn("fast");
-    popupStatus++;
   }
+  reg =  $("#peClient");
+  if(reg != undefined && reg[0].length === 0) {
+    for(i = 0; i < organization_id.length; i ++){
+      reg.append("<option value='" + organization_id[i].value + "'>" + organization_id[i].text + "</option>");
+    }
+  }
+  winManager.showMe("popupEditTT");
 }
 
 function centerPopupEditTT() {
@@ -115,7 +101,7 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
     newbornTT.zhostid = $("#ppHostId")[0].value;
   }
 */
-  disablePopups();
+  winManager.hideUper();
 }
 
 function onBtnSaveEditTTClick (e) {      // $.ajax версия       //Попап Редактировать тикет -> Сохранить
@@ -140,7 +126,7 @@ function onBtnSaveEditTTClick (e) {      // $.ajax версия       //Попап Редактир
     success : onTtEditProcessSuccess
   });
   document.getElementById('popupEditTT').iidd = 0;  // На всякий случай сотрем id отредактированного TT
-  disablePopups();
+  winManager.hideUper();
 }
 
 function onTtEditProcessSuccess(data, textStatus) {  // Callback для соседней функции onBtnSaveTTClick(e)
@@ -238,6 +224,6 @@ function onBtnNewToTabsClick(e){
   tab.region = document.getElementById('ppRegion').selectedIndex;
   tab.client = document.getElementById('ppClient').selectedIndex;
   Tabs["new "+i] = tab;
-  disablePopups();
+  winManager.hideUper();
   showIt();
 }
