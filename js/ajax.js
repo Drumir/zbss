@@ -19,7 +19,9 @@ function callbackAuthorization(data, textStatus){
     }
     if(document.getElementById('divLogin') != undefined){  // Авторизация отклонена
       $("#char1").css({"color":"red"});
+      document.getElementById('statusName').innerText = "Вход";
       setStatus("Авторизация  отклонена");
+
     }
     document.body.removeChild(div1)
     div1.innerHTML = "";
@@ -109,6 +111,7 @@ function callbackLoadTickets(data, textStatus) {
 
 function cbSqlMultiSuccess(data, textStatus) {      // Обновим привязки TT -> hostid в Tickets{}
   if(data.status == "success"){
+    $("#char2").css({"color":"green"});
     mySqlLastRenew = data.timestamp;
     for(var i = 0; i < data.result.length; i ++){
       if(Tickets[data.result[i].ttid] != undefined)

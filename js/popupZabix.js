@@ -57,6 +57,7 @@ function onPtFindHostIdClick() {      // Вызов из popupTicket (данные берем из T
 
 function zGetGroups() {   // Вызывается однократно после авторизации для получения списка групп в zabbix
     // method
+  $("#char0").css({"color":"green"});
   var method = "hostgroup.get";
   // parameter
   var params = {};

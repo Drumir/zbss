@@ -126,6 +126,7 @@ window.onload = function() {          //
   onBodyResize();
 
      // Авторизация в Zabbix API
+  $("#char0").css({"color":"orange"});
   zserver = new $.jqzabbix(zoptions);
   zserver.getApiVersion(null, function(response){
       zApiVersion = response.result;
@@ -136,9 +137,11 @@ window.onload = function() {          //
   }, cbZgetApiErr, null);
 
     // Авторизация в Zabbiz      Не все данные доступны в JSON формате через API. Приходится дополнительно авторизовываться чтобы иметь доступ к html страницам
+  $("#char3").css({"color":"orange"});
   $.ajax({url: "https://zabbix.msk.unitline.ru/zabbix/index.php", type: "POST", data:"request=&name=monitoring&password=monitoring&autologin=1&enter=Sign+in", dataType:"html", error: cbZAuthErr, success: cbZAuthOk});
 
     // Авторизация в BSS
+  $("#char1").css({"color":"orange"});
   $.ajax({url: "https://oss.unitline.ru:995/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
@@ -152,16 +155,19 @@ function onAboutClick(){
 }
 
 function cbZgetApiErr() {
+  $("#char0").css({"color":"red"});
   zEnabled = false;
   setStatus("Не могу открыть Zabbix. Возможно страница еще не открыта в Хроме, или нет связи.");
 }
 
 function cbZAuthErr(data, status) {
+  $("#char3").css({"color":"red"});
   zEnabled = false;
   setStatus("Ошибка авторизации в Zabbix");
 }
 
 function cbZAuthOk(data, status) {
+  $("#char3").css({"color":"green"});
   zEnabled = true;
   var adr = data.indexOf('id="sid" name="sid" value="');
   data = data.substring(adr + 27);
@@ -320,14 +326,17 @@ function renewTickets(data) {
   }
 
   var params = {action:"readLater", timestamp:mySqlLastRenew };     // Готовимся обновить привязки
-  if(mySqlLastRenew == "")   // Если привязки TT->hostId еще не загружались
+  if(mySqlLastRenew == ""){   // Если привязки TT->hostId еще не загружались
     params = {action:"readFrom", ttid:tt.id};   // Запросим привязки на все тикеты начиная с самого старого незакрытого
+    $("#char2").css({"color":"orange"});
+  }
   $.ajax({
     url: "http://drumir.16mb.com/ajax.php",
     type: 'post',
     dataType: 'json',
     data: params,
-    success: cbSqlMultiSuccess
+    success: cbSqlMultiSuccess,
+    error: cb16mbError
   });
 
   showIt();
@@ -338,6 +347,9 @@ function renewTickets(data) {
 }
 
 /******************************************************************************/
+function cb16mbError(){
+  $("#char2").css({"color":"red"});
+}
 /******************************************************************************/
 
 function onRespIdChange(){
@@ -520,16 +532,22 @@ function onPs2Confirm() {        // Кнопка "подтвердить"
 function onStatusNameClick(e) {   // По клику на имени залогиненого пользователя
   if(e.ctrlKey == true){       // Если кликнули с Ctrl - разлогинимся.
     $.get("https://oss.unitline.ru:995/app/ruser/logoff.asp?refer=/", null, callbackAuthorization, "html");
+    userId = -1;
     return;
+  }
+  if(document.getElementById('statusName').innerText == "Вход"){
+    $("#char1").css({"color":"orange"});
+    loadPopupLogin();
+    centerPopupLogin();
   }
   if(userId != -1){
     filter.user = userName;
     showIt();
-  }
-  for(i = 0; i < resp_id.length; i ++) {     // И выберем его в выпадающем списке
-    if(resp_id[i].value === userId) {
-      $("#resp_id_s")[0].selectedIndex = i;
-      break;
+    for(i = 0; i < resp_id.length; i ++) {     // И выберем его в выпадающем списке
+      if(resp_id[i].value === userId) {
+        $("#resp_id_s")[0].selectedIndex = i;
+        break;
+      }
     }
   }
 }

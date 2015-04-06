@@ -366,17 +366,33 @@ function cbSuccessZ2(response, status) {
         document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
       }
       if(response.result[i].lastvalue == 1){
-        document.getElementById('ptZping').style.color = "#226622";     // пинг есть
+        document.getElementById('ptZping').style.color = "#116611";     // пинг есть
+        document.getElementById('ptZping').title = "”зел доступен";
         document.getElementById('ptPingCBox').disabled = true;          // «апретим следить за хостом (он и так пингуетс€)
+        var delay = new Date();
+        delay = delay.getTime()/1000 - response.result[i].lastclock;     // ¬ычислим как давно было последнее обновление пинга
+        if(delay > 60){                                                  // пинг подзалежалс€
+          document.getElementById('ptZping').style.color = "#485600";
+          document.getElementById('ptZping').title = "ѕоследнее обновление было больше минуты назад";
+        }
+        if(delay > 300){                                                 // пинг протух
+          document.getElementById('ptZping').style.color = "#605600";
+          document.getElementById('ptZping').title = "ѕоследнее обновление было больше 5 минут назад";
+        }
+        if(delay > 3600){                                                 // пинг протух
+          document.getElementById('ptZping').style.color = "#C0AA00";
+          document.getElementById('ptZping').title = "ѕоследнее обновление было больше часа назад";
+        }
+        if(delay > 3600*24){                                                 // пинг протух
+          document.getElementById('ptZping').style.color = "#FFA000";
+          document.getElementById('ptZping').title = "ѕоследнее обновление было больше суток назад";
+        }
       }
       else{
         document.getElementById('ptZping').style.color = "#FF2222";     // пинг кончилс€
+        document.getElementById('ptZping').title = "”зел недоступен";
         document.getElementById('ptPingCBox').disabled = false;         // –азрешим ставить галку следить за хостом
       }
-      var delay = new Date();
-      delay = delay.getTime()/1000 - response.result[i].lastclock;     // ¬ычислим как давно было последнее обновление пинга
-      if(delay > 60) document.getElementById('ptZping').style.color = "#565600";     // пинг подзалежалс€
-      if(delay > 300) document.getElementById('ptZping').style.color = "#FFA000";     // пинг протух
     }
   }
 }

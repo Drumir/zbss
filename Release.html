@@ -25,14 +25,19 @@
 
 <body>
   <table id="menuTable" align="left">
-    <td id="statusName" style='background-color:#90C08C'></td>
+    <td id="statusName" style='background-color:#90C08C'>Войти</td>
     <td>
       <button id="buttonMove"   disabled="true">Перевести</button>
       <button id="buttonRenew" disabled="true" style="width:120px">Обновить</button>
       <button id="buttonNew" >Новый ТТ</button>
     </td>
     <td valign = "baseline"><input type="text" id="searchTT" size="7" placeholder="№ ТТ"></td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><span id="char0">Z</span><span id="char1">B</span><span id="char2">S</span><span id="char3">S</span> v0.6.7</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>
+      <span id="char0" title="Авторизация в API Zabbix">Z</span>
+      <span id="char1" title="Авторизация в BSS">B</span>
+      <span id="char2" title="Авторизация в SQL">S</span>
+      <span id="char3" title="Авторизация в Zabbix">S</span>
+      &nbsp;v0.6.9</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
     <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
 
@@ -139,7 +144,7 @@
                 <td>Zabbix</td>
                 <td>
                   <a id="ptZping" style="color:#666666; font-weight:bold" href="https://zabbix.msk.unitline.ru/zabbix/dashboard.php" target="_blank">ping</a>
-                  <input id="ptPingCBox" type="checkbox" title="следить" hidden="true">&nbsp;&nbsp;
+                  <input id="ptPingCBox" type="checkbox" title="Оповестить когда станет доступен" hidden="true">&nbsp;&nbsp;
                   <span id="ptHostidText">hostid:</span>
                   <input type="text" id="ptHostId" size="3" placeholder="ввести">&nbsp;&nbsp;или&nbsp;
                   <a id="ptFindHostId" style="color:#0000AA">найти</a>
