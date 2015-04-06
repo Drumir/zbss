@@ -77,7 +77,7 @@ function checkAndTransfer() {
   }
   else {
     loadTickets();
-    setTimeout(disablePopups, 1000);
+    setTimeout(function(){winManager.hideUper()}, 1500);
     setStatus("ТТ переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount);
   }
 }
@@ -119,7 +119,7 @@ function transferTickets() {
   }
   else {
     loadTickets();
-    disablePopups();
+    winManager.hideUper();
   }
 }
 

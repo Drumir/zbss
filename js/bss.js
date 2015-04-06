@@ -114,7 +114,7 @@ window.onload = function() {          //
   document.getElementById('about').onclick = onAboutClick;
   document.getElementById('prsCloseBtn').onclick = onPrsCloseBtnClick;
   document.getElementById('psCopyImg').onclick = onPsCopyImgClick;
-  document.getElementById('backgroundPopup').onclick = function(){winManager.hideUper();};
+  document.getElementById('backgroundPopup').onclick = function(){winManager.hideUper()};
   mtb = document.getElementById('mainTBody');
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
@@ -489,7 +489,8 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
       break;
     }
     case "ps2Edit": {         // Редактировать ТТ
-      disablePopups();        // Закроем все попапы
+      winManager.hideUper();        // Закроем попап статус
+      winManager.hideUper();        // Закроем попат тикет
       loadPopupEditTT();
       centerPopupEditTT();    // Откроем попап EditTT
       document.getElementById('popupEditTT').iidd = tid;  // Передадим в попап Edit номер тикета
@@ -509,8 +510,7 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
 
   $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
   loadTickets();
-  $("#popupStatus").fadeOut("fast");
-  popupStatus--;
+  winManager.hideUper();        // Закроем попап статус
   return;
 
 }
@@ -522,8 +522,7 @@ function onPs2Confirm() {        // Кнопка "подтвердить"
   if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
     loadTickets();
-    $("#popupStatus").fadeOut("fast");
-    popupStatus--;
+    winManager.hideUper();        // Закроем попап статус
     return;
   }
 
