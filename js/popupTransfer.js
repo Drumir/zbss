@@ -45,8 +45,8 @@ function onHeadChBoxClick(){
   showIt();
 }
 
-function onButtonTransferClick(e) {        // Функция только формирует очередь transQueue из выбраных тикетов
-  transQueue.length = 0;
+function onButtonTransferClick(e) {        // Вызов из попапТрансфер
+  transQueue.length = 0;                   // Функция только формирует очередь transQueue из выбраных тикетов
   for (var key in Tickets) {
     if(Tickets[key].checked === true){
       var par = {};
@@ -71,13 +71,14 @@ function onButtonTransferClick(e) {        // Функция только формирует очередь t
   checkAndTransfer();
 }
 
-function checkAndTransfer() {
-  if(transQueue.length != 0){   // Если очередь не пустая, открыть первый тикет из очереди.
+function checkAndTransfer() {   //
+  if(transQueue.length != 0){   // Если очередь не пустая, открыть (для проверки правомочности) первый тикет из очереди.
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: transQueue[0].id}, cbCheckAndTransfer, "html");
   }
   else {
     loadTickets();
-    setTimeout(function(){winManager.hideUper()}, 1500);
+    winManager.hideUper();
+    winManager.hideUper();  // На случай если переводили из попапТикет, закроем верхний попап еще раз
     setStatus("ТТ переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount);
   }
 }
@@ -109,7 +110,7 @@ function cbCheckAndTransfer(data, textStatus){
     }
   }
 }
-
+/*
 function transferTickets() {
   if(transQueue.length != 0){   // Если очередь не пустая, перевести первый тикет из очереди.
     // Нужно сначала открывать этот тикет, смотреть еслть ли там кнопка "ответственное лицо" и только потом переводить.
@@ -122,7 +123,7 @@ function transferTickets() {
     winManager.hideUper();
   }
 }
-
+*/
 function onPopupTransferClick(e){
   branchSelect = 0;
   switch(e.target.id){

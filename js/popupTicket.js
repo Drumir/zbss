@@ -118,6 +118,7 @@ function callbackGetTicket(data, textStatus) {
     }
 
     if(Tickets[tid].redAttention === true) Tickets[tid].redAttention = false; //При открытии требующего внимания тикета, отметка сбрасывается
+    if(Tickets[tid].orangeAttention === true) Tickets[tid].orangeAttention = false; //При открытии требующего внимания тикета, отметка сбрасывается
     if(Tickets[tid].greenAttention === true) {
       Tickets[tid].greenAttention = false; // При открытии зеленого тикета, отметка сбрасывается
       Tickets[tid].watchPing = false;      // Слежение прекращается.
@@ -202,6 +203,7 @@ function onTPopupClick(e) {
   switch(e.target.id){
     case "otv":{     // Клик был по ответственному лицу.
       if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+        winManager.hideUper();    // Закроем попап Тикет
         $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
         loadTickets();
         return;

@@ -39,6 +39,8 @@ var TTErTransferCount = 0; // Хранит количество ошибок при переводе тикетов
 var dontCheckTransferPermissions = false;  // Не выполняет проверку правомочности перевода тикета
 var closedTTduration =  7; // Хранит длительность периода выборки закрытых заявок в днях
 
+var checkResolved = false; // Нужно ли следить за тикетами, переведенными в решено
+
 var zoptions = {};         // Для запросов в заббикс
 zoptions.url = 'https://zabbix.msk.unitline.ru/zabbix/api_jsonrpc.php';
 var zApiVersion = "";
@@ -115,6 +117,8 @@ window.onload = function() {          //
   document.getElementById('prsCloseBtn').onclick = onPrsCloseBtnClick;
   document.getElementById('psCopyImg').onclick = onPsCopyImgClick;
   document.getElementById('backgroundPopup').onclick = function(){winManager.hideUper()};
+  document.getElementById('options').onclick = onVersionClick;
+  document.getElementById('poSave').onclick = onPoSaveClick;
   mtb = document.getElementById('mainTBody');
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
@@ -124,6 +128,7 @@ window.onload = function() {          //
 
   setInterval(oneMoreSecond, 1000);
   onBodyResize();
+  chrome.storage.local.get(null, cbRememberPass);  // Прочитаем из хранилища настройки и имя/пароль (имя/пароль может и не понадобятся)
 
      // Авторизация в Zabbix API
   $("#char0").css({"color":"orange"});
@@ -216,6 +221,7 @@ function showIt() {         // Отображает таблицу тикетов
   var stat = {begin:0, service:0, resolved:0, investigating:0, hold:0, closed:0};
   var fNeedRedAttention = false;    // Флаг, что у какого-то тикета вышел таймер и он требует внимания
   var fNeedGreenAttention = false;    // Флаг, что у какого-то тикета радость и он хочет ей поделиться.
+  var fNeedOrangeAttention = false;    // Флаг, что какой-то тикет перевели в решеные.
 
   document.getElementById('tabsTable').hidden = true;      // Спрячем панель закладок
   if(Object.keys(Tabs).length > 0){                          // Если есть закладки - отобразим их
@@ -266,6 +272,10 @@ function showIt() {         // Отображает таблицу тикетов
       ttr.style.backgroundColor = "#F87777"; // Тикет требующий внимания
       fNeedRedAttention = true;
     }
+    if(Tickets[key].orangeAttention === true){
+      ttr.style.backgroundColor = "#F87700"; // Тикет требующий внимания
+      fNeedOrangeAttention = true;
+    }
     if(Tickets[key].greenAttention === true){
       ttr.style.backgroundColor = "#77F877"; // Тикет требующий внимания
       fNeedGreenAttention = true;
@@ -275,6 +285,7 @@ function showIt() {         // Отображает таблицу тикетов
   document.getElementById('statusFieldRight').innerHTML = "";
   if(fNeedRedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
   if(fNeedGreenAttention) document.getElementById('statusFieldRight').innerHTML += '<span style="color:#008800; font-weight:bold">Внимание&nbsp;&nbsp;&nbsp;</span>';
+  if(fNeedOrangeAttention) document.getElementById('statusFieldRight').innerHTML += '<span style="color:#F87700; font-weight:bold">Внимание&nbsp;&nbsp;&nbsp;</span>';
   document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
@@ -314,6 +325,9 @@ function renewTickets(data) {
       if(tt.otv === userName && Tickets[tt.id].otv !== userName) {  // Если отв. лицо изменилось на нас
         Tickets[tt.id].redAttention = true;
         // тут должна быть проверка подтверждения пользователем смен отв. лица
+      }
+      if(checkResolved == true && tt.status === "Resolved / Решена" && Tickets[tt.id].status !== "Resolved / Решена") {  // Если заявку перевели в решенные
+        Tickets[tt.id].orangeAttention = true;          // (Если заявку создали и перевели в решеннные раньше, чем ее увидел парсер, условие не сработает)
       }
       Tickets[tt.id].status = tt.status;        // Скопируем параметры, которые могли измениться
       Tickets[tt.id].otv = tt.otv;
@@ -508,9 +522,10 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
     }
   }
 
+  winManager.hideUper();        // Закроем попап статус
+  winManager.hideUper();        // И попап Тикет. Он переоткроется by callbackGetTicket
   $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
   loadTickets();
-  winManager.hideUper();        // Закроем попап статус
   return;
 
 }
@@ -520,9 +535,9 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
 function onPs2Confirm() {        // Кнопка "подтвердить"
   var tid = document.getElementById('popupTicket').iidd;
   if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
+    winManager.hideUper();        // Закроем попап статус
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
     loadTickets();
-    winManager.hideUper();        // Закроем попап статус
     return;
   }
 

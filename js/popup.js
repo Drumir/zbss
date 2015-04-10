@@ -131,6 +131,26 @@ function centerPopupRunScripts() {
 }
 
 
+function loadPopupOptions() {
+  document.getElementById('poCheckResolved').checked = checkResolved;
+  winManager.showMe("popupOptions");
+}
+
+function centerPopupOptions() {
+  var windowWidth = document.documentElement.clientWidth;
+  var windowHeight = document.documentElement.clientHeight;
+  var popupHeight = $("#popupOptions").height();
+  var popupWidth = $("#popupOptions").width();
+
+  $("#popupOptions").css({
+    "position": "absolute",
+//    "height": popupHeight,
+    "top": windowHeight / 2 - popupHeight / 2,
+    "left": windowWidth / 2 - popupWidth / 2,
+  });
+}
+
+
 function loadPopupLogin() {
   winManager.showMe("popupLogin");
   chrome.storage.local.get(null, cbRememberPass);
@@ -143,6 +163,11 @@ function cbRememberPass(pairs) {
   if(b != undefined) document.getElementById('sPass').value = b;
   if (b === undefined || b === "")  document.getElementById('savePass').checked = false;
   else document.getElementById('savePass').checked = true;
+
+                // Заодно прочитаем и настройки
+  checkResolved = false;  // Настройка "слежение за решенными"
+  if(pairs["checkResolved"] != undefined && pairs["checkResolved"] == "yes")
+    checkResolved = true;
 }
 
 function centerPopupLogin() {
@@ -216,5 +241,19 @@ function onPsCopyImgClick(){
   ht.selectionEnd = ht.textLength;
   document.execCommand('copy');
   ht.hidden = true;
+}
 
+function onVersionClick(){
+  loadPopupOptions();
+  centerPopupOptions();
+}
+
+function onPoSaveClick(){
+  var pairs = {};
+  pairs["checkResolved"] = "no";
+  checkResolved = document.getElementById('poCheckResolved').checked;
+  if(checkResolved)
+    pairs["checkResolved"] = "yes";
+  chrome.storage.local.set(pairs);
+  winManager.hideUper();
 }

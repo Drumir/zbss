@@ -37,7 +37,10 @@
       <span id="char1" title="Авторизация в BSS">B</span>
       <span id="char2" title="Авторизация в SQL">S</span>
       <span id="char3" title="Авторизация в Zabbix">S</span>
-      &nbsp;v0.6.10</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+      &nbsp;v0.6.11&nbsp;&nbsp;&nbsp;
+      <input type="image" id="options" title="Настройки" align="absmiddle" src=".\images\icon-options.png" height=25 widgh=25>
+      &nbsp;&nbsp;&nbsp;</b>
+      </td>
     <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
     <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
 
@@ -104,15 +107,15 @@
       <select id="branchLiist" style="width:300px">
         <option value="100184">Технический департамент (МегаМакс) (13)</option>
       </select>
-      <a id="branchNN" style="color:#1133AA">НН</a>&nbsp;
-      <a id="branchNN2" style="color:#1133AA">НН2</a>&nbsp;
-      <a id="branchMSK" style="color:#1133AA">Мск</a>&nbsp;
-      <a id="branchSPB" style="color:#1133AA">СПб</a>&nbsp;
-      <a id="branchRnD" style="color:#1133AA">РнД</a>&nbsp;
-      <a id="branchSMR" style="color:#1133AA">Смр</a>&nbsp;
-      <a id="branchEKB" style="color:#1133AA">Екб</a>&nbsp;
-      <a id="branchYAR" style="color:#1133AA">Ярс</a>&nbsp;
-      <a id="branchVLG" style="color:#1133AA">Влг</a>&nbsp;
+      <u><a id="branchNN" style="color:#1133AA">НН</a></u>&nbsp;
+      <u><a id="branchNN2" style="color:#1133AA">НН2</a></u>&nbsp;
+      <u><a id="branchMSK" style="color:#1133AA">Мск</a></u>&nbsp;
+      <u><a id="branchSPB" style="color:#1133AA">СПб</a></u>&nbsp;
+      <u><a id="branchRnD" style="color:#1133AA">РнД</a></u>&nbsp;
+      <u><a id="branchSMR" style="color:#1133AA">Смр</a></u>&nbsp;
+      <u><a id="branchEKB" style="color:#1133AA">Екб</a></u>&nbsp;
+      <u><a id="branchYAR" style="color:#1133AA">Ярс</a></u>&nbsp;
+      <u><a id="branchVLG" style="color:#1133AA">Влг</a></u>&nbsp;
       <p></p>
       <select id="resp_person_id" style="width:300px">
         <option value="0">- Все отв.лица -</option>
@@ -135,9 +138,9 @@
               <tr><td>Создан</td><td></td></tr>
               <tr><td>Заголовок</td><td></td></tr>
               <tr><td>Автор</td><td></td></tr>
-              <tr><td id="otv">Отв.лицо</td><td id="otv"></td></tr>
+              <tr><td id="otv">Отв.лицо</td><td id="otv"><u></u></td></tr>
               <tr><td>Приоритет</td><td></td></tr>
-              <tr><td id="stat">Статус</td><td id="stat"></td></tr>
+              <tr><td id="stat">Статус</td><td id="stat"><u></u></td></tr>
               <tr><td>Регион</td><td></td></tr>
               <tr><td>Клиент</td><td></td></tr>
               <tr>
@@ -163,7 +166,7 @@
       </tr>
       <tr>
         <td>
-          <a id="toTabs" style="color:#6666FF">В закладки</a>
+          <u><a id="toTabs" style="color:#6666FF">В закладки</a></u>
         </td>
         <td>
           <table width=100%>
@@ -171,12 +174,12 @@
               <td  id="PTtimer" style="color:#1133AA" align="left">
                 <img src=".\images\timer.png" width="12" height="13">
                 <span id="timeLeft" style="color:#666666; font-weight:normal">&nbsp;отключен&nbsp;</span>(
-                <a id="plus5m">+5м</a>&nbsp;
-                <a id="plus15m">+15м</a>&nbsp;
-                <a id="plus1h">+1ч</a>&nbsp;
-                <a id="plus3h">+3ч</a>&nbsp;
-                <a id="plus6h">+6ч</a>&nbsp;&nbsp;
-                <a id="plus0">0</a>)
+                <a id="plus5m"><u>+5м</u></a>&nbsp;
+                <a id="plus15m"><u>+15м</u></a>&nbsp;
+                <a id="plus1h"><u>+1ч</u></a>&nbsp;
+                <a id="plus3h"><u>+3ч</u></a>&nbsp;
+                <a id="plus6h"><u>+6ч</u></a>&nbsp;&nbsp;
+                <a id="plus0"><u>0</u></a>)
               </td>
               <td align="right">
                 <button id="ptPost" style="width:165px">Отправить (Ctrl+Enter)</button>
@@ -344,6 +347,16 @@
       <button id="plLogin" style="width:110px">Войти</button>
       <br>&nbsp;
     </div>
+  </div>
+
+	<!-- popup Options -->	
+
+  <div id="popupOptions" align="center">
+    <table><tbody id='poTbody'>
+      <tr><td>Следить за переводом в решенные</td><td><input id="poCheckResolved" type="checkbox"></td>
+    </tbody></table>
+    <br>
+    <button id="poSave" style="width:140px">Сохранить</button>
   </div>
 
 	<!-- popup RunScripts -->	
