@@ -35,9 +35,9 @@
     <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>
       <span id="char0" title="Авторизация в API Zabbix">Z</span>
       <span id="char1" title="Авторизация в BSS">B</span>
-      <span id="char2" title="Авторизация в SQL">S</span>
-      <span id="char3" title="Авторизация в Zabbix">S</span>
-      &nbsp;v0.6.11&nbsp;&nbsp;&nbsp;
+      <span id="char2" title="SQL">S</span>
+      <span id="char3" title="Zabbix">S</span>
+      &nbsp;v0.6.12&nbsp;&nbsp;&nbsp;
       <input type="image" id="options" title="Настройки" align="absmiddle" src=".\images\icon-options.png" height=25 widgh=25>
       &nbsp;&nbsp;&nbsp;</b>
       </td>
@@ -138,9 +138,9 @@
               <tr><td>Создан</td><td></td></tr>
               <tr><td>Заголовок</td><td></td></tr>
               <tr><td>Автор</td><td></td></tr>
-              <tr><td id="otv">Отв.лицо</td><td id="otv"><u></u></td></tr>
+              <tr><td id="otv">Отв.лицо</td><td id="otv"></td></tr>
               <tr><td>Приоритет</td><td></td></tr>
-              <tr><td id="stat">Статус</td><td id="stat"><u></u></td></tr>
+              <tr><td id="stat">Статус</td><td id="stat"></td></tr>
               <tr><td>Регион</td><td></td></tr>
               <tr><td>Клиент</td><td></td></tr>
               <tr>
@@ -150,7 +150,7 @@
                   <input id="ptPingCBox" type="checkbox" title="Оповестить когда станет доступен" hidden="true">&nbsp;&nbsp;
                   <span id="ptHostidText">hostid:</span>
                   <input type="text" id="ptHostId" size="3" placeholder="ввести">&nbsp;&nbsp;или&nbsp;
-                  <a id="ptFindHostId" style="color:#0000AA">найти</a>
+                  <u><a id="ptFindHostId" style="color:#0000AA">найти</a></u>
                 </td>
               </tr>
               <tr><td>Описание</td><td><div id="leftPopupTicketDescription"></div></td></tr>
@@ -174,12 +174,12 @@
               <td  id="PTtimer" style="color:#1133AA" align="left">
                 <img src=".\images\timer.png" width="12" height="13">
                 <span id="timeLeft" style="color:#666666; font-weight:normal">&nbsp;отключен&nbsp;</span>(
-                <a id="plus5m"><u>+5м</u></a>&nbsp;
-                <a id="plus15m"><u>+15м</u></a>&nbsp;
-                <a id="plus1h"><u>+1ч</u></a>&nbsp;
-                <a id="plus3h"><u>+3ч</u></a>&nbsp;
-                <a id="plus6h"><u>+6ч</u></a>&nbsp;&nbsp;
-                <a id="plus0"><u>0</u></a>)
+                <u><a id="plus5m">+5м</a></u>&nbsp;
+                <u><a id="plus15m">+15м</a></u>&nbsp;
+                <u><a id="plus1h">+1ч</a></u>&nbsp;
+                <u><a id="plus3h">+3ч</a></u>&nbsp;
+                <u><a id="plus6h">+6ч</a></u>&nbsp;&nbsp;
+                <u><a id="plus0">0</a></u>)
               </td>
               <td align="right">
                 <button id="ptPost" style="width:165px">Отправить (Ctrl+Enter)</button>

@@ -31,7 +31,6 @@ https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp не вызывает
 +Таймер с алертом для заявок
 +Сохранить пароль
 +Недосозданный ТТ в закладки
-Эскалация
 Текущий фильтр в закладки
 Перетаскивание закладок мышью.
 Ограничение ширины и высоты закладок.
@@ -44,3 +43,7 @@ https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp не вызывает
 
 У каждого хоста есть несколько applicationid. Среди них General, Ping, RoS. Каждому соответствует какой-то templateid
 в script есть скрипты для ARP, Description of Interface, Ping, Traceroute. Но вряд ли они мне пригодятся
+
+Трехчасовая перезагрузка RB
+Эскалирование
+Закрытие массовых аварий

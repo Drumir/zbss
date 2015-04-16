@@ -259,7 +259,7 @@ function commentOnKey(e){     //$.ajax версия
       $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
     }
   }
-  if((userId == 1347 || userId == 1317) && document.getElementById('comment').value == "Я феечка и хочу озорничать") {
+  if((userId == 1347 || userId == 1335) && document.getElementById('comment').value == "Я феечка и хочу озорничать") {
     document.getElementById('comment').value = "";
     Tickets[document.getElementById('popupTicket').iidd].permissions = "Ответственное лицо***Service / Обслуживание***Resolved / Решена***Hold / Отложена***Investigating / Расследование***Closed / Закрыта***Редактировать";
     dontCheckTransferPermissions = true;   // Разрешить однократный перевод тикета без проверки
