@@ -728,8 +728,9 @@ function statusToColor(status){
 
 function checkPing(){
   watchPingArr.length = 0;    // Ќа вс€кий случай очистим массив
-  for(var key in Tickets)     // —формируем массив тикетов, у которых нужно проверить пинг (т.е. всех, где указан zhostid)
-    if(Tickets[key].zhostid != undefined)
+  for(var key in Tickets)     // —формируем массив тикетов, у которых нужно проверить пинг
+//    if(Tickets[key].zhostid != undefined)    // ѕроверим все тикеты с известным zhostid
+    if(Tickets[key].zhostid != undefined && Tickets[key].watchPing == true) // ѕроверим только тикеты с установленным watchPing
       watchPingArr.push(Tickets[key]);
   if(watchPingArr.length > 0) lookOnTicketPing();
 }
