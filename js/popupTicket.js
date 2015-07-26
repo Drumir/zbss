@@ -137,15 +137,19 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('ptFindHostId').innerText = "найти";
 
     if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){   // Если этому тикету сопоставлен hostid
-      document.getElementById('ptZping').hidden = false;              // покажем строку пинг
-      document.getElementById('ptPingCBox').hidden = false;              // покажем  чекбокс пинг
-      document.getElementById('ptPingCBox').disabled = true;              // покажем элементы строку пинг
       document.getElementById('ptZping').style.color = "#666666";     // пока пинг не известен, покрасим его серым
       document.getElementById('ptZping').href = "";                  // пока itemid графика не известен, заглушим ссылку
       document.getElementById('ptHostidText').innerText = "hostid:";  // Отобразим hostid
-      document.getElementById('ptHostId').value = Tickets[tid].zhostid;
       document.getElementById('ptFindHostId').innerText = "изм";
-      askZabbix(Tickets[tid].zhostid);
+      if(Tickets[tid].zhostid === "0")
+        document.getElementById('ptHostId').value = "нет в zbx";
+      else {
+        document.getElementById('ptZping').hidden = false;              // покажем строку пинг
+        document.getElementById('ptPingCBox').hidden = false;              // покажем  чекбокс пинг
+        document.getElementById('ptPingCBox').disabled = true;              // покажем элементы строку пинг
+        document.getElementById('ptHostId').value = Tickets[tid].zhostid;
+        askZabbix(Tickets[tid].zhostid);
+      }
     }
 
     loadPopupTicket();
@@ -406,8 +410,18 @@ function onHostidEnter(e) {       // Ввод hostid
       var iidd = document.getElementById('popupTicket').iidd;       // Получим id открытого тикета
       if(Tickets[iidd] != undefined){
         Tickets[iidd].zhostid = this.value;                         // Запомним zhostid тикета
-        disablePopups();                                            // Переоткроем попап с тикетом
+        winManager.hideUper();                                      // Переоткроем попап с тикетом
         $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+
+        params = {action:"write", ttid:iidd, hostid:this.value};    // Запишем свежую привязку в базу
+        $.ajax({
+          url: "http://drumir.16mb.com/ajax.php",
+          type: 'post',
+          dataType: 'json',
+          data: params,
+          success: cbSqlWriteSuccess
+        });
+
       }
     }
     else this.value = "";

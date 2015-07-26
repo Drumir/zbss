@@ -158,7 +158,6 @@ function onPzFoundTBodyClick(e) {
   document.getElementById('pzLocation').focus(); // Вернем фокус строке ввода
   if(e.target.nodeName == "A") return;            // Кликнули по ссылке, обрабатывать не нужно
   document.getElementById('pzHostId').innerText = e.target.parentNode.hostid;
-  document.getElementById('pzPing').style.fontWeight = "bold";
   highlightedZH = e.target.parentNode.hostid;
   if(hostToResearch.hostid == undefined){                // Если в данный момент никакой хост не исследуется,
     ShowHostStat();                                     // Сотрем инфу о предудцщем найденном хосте
@@ -237,6 +236,15 @@ function cbzResearch3(response, status){
 }
 
 function cbzResearch4(data, textStatus){
+  hostToResearch.mac = "-:-:-:-:-:-";
+  var adr0 = data.indexOf('MAC&nbsp;адрес&nbsp;A');
+  if(adr0 != -1){
+    data = data.substring(adr0);
+    adr0 = data.indexOf('<span class="pre">');
+    var adr1 = data.indexOf('</span>');
+    if(adr0 != -1 && adr1 != -1) hostToResearch.mac = data.substring(adr0+18, adr1);
+  }
+
   hostToResearch.invent = "Данные не найдены";
   var adr0 = data.indexOf('>Примечания</td>');
   if(adr0 != -1){
@@ -245,15 +253,16 @@ function cbzResearch4(data, textStatus){
     var adr1 = data.indexOf('</span>');
     if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(adr0+18, adr1);
   }
+
   ShowHostStat();
 }
 
 function ShowHostStat() {
-  var str = "";
+  var str = ""; /*
   if(hostToResearch.available == undefined)document.getElementById('pzPing').style.color = "#000000";
   if(hostToResearch.available == 1) document.getElementById('pzPing').style.color = "#226622";
   if(hostToResearch.available == 2) document.getElementById('pzPing').style.color = "#FF2222";
-
+  */
   str = "Группы: ";
   if(hostToResearch.groups != undefined)
     for(var key in hostToResearch.groups) str += hostToResearch.groups[key].name + "; ";
@@ -281,6 +290,10 @@ function ShowHostStat() {
   document.getElementById('pzIp').innerText = "";
   if(hostToResearch.ip != undefined)
     document.getElementById('pzIp').innerText = hostToResearch.ip;
+
+  document.getElementById('pzMAC').innerText = "";
+  if(hostToResearch.mac != undefined)
+    document.getElementById('pzMAC').innerText = hostToResearch.mac;
 
   var expr = new RegExp('&quot;', 'gm');
   document.getElementById('pzHostName').innerText = "";
@@ -365,6 +378,25 @@ function onPzBtnOkClick(){
       });
     }
   }
+}
+
+function onPzNotInZbxClick(){                  // Клик по строчке "Считать, что для этого ТТ нет узла в Zabbix"
+  var iidd = document.getElementById('popupTicket').iidd;               // Получим id открытого тикета
+  if(Tickets[iidd] != undefined){
+    Tickets[iidd].zhostid = "0";  // Запомним zhostid тикета
+    winManager.hideUper();  // Закроем так же и окно тикета, чтобы оно переоткрылось с новыми данными
+    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+
+    params = {action:"write", ttid:iidd, hostid:Tickets[iidd].zhostid};   // Запишем свежую привязку в базу
+    $.ajax({
+      url: "http://drumir.16mb.com/ajax.php",
+      type: 'post',
+      dataType: 'json',
+      data: params,
+      success: cbSqlWriteSuccess
+    });
+    }
+
 }
 
 function bssClient2zGroup(client) {

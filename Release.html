@@ -149,7 +149,7 @@
                   <a id="ptZping" style="color:#666666; font-weight:bold" href="https://zabbix.msk.unitline.ru/zabbix/dashboard.php" target="_blank">ping</a>
                   <input id="ptPingCBox" type="checkbox" title="Оповестить когда станет доступен" hidden="true">&nbsp;&nbsp;
                   <span id="ptHostidText">hostid:</span>
-                  <input type="text" id="ptHostId" size="3" placeholder="ввести">&nbsp;&nbsp;или&nbsp;
+                  <input type="text" id="ptHostId" size="4" placeholder="ввести">&nbsp;&nbsp;или&nbsp;
                   <u><a id="ptFindHostId" style="color:#0000AA">найти</a></u>
                 </td>
               </tr>
@@ -216,7 +216,7 @@
       <tr align="center">
         <td id="pzHostId" style="width:37px"></td>
         <td id="pzIp" style="width:80px"></td>
-        <td id="pzPing" style="width:40px">-----</td>
+        <td id="pzMAC" style="width:50px">-:-:-:-:-:-</td>
         <td id="pzHostName" colspan="2" align="left"></td>
       </tr>
       <tr>
@@ -236,7 +236,9 @@
       </tr>
     </table>
     <hr>
-    <button id="pzBtnOk">OK</button>&nbsp;&nbsp;<button id="pzBtnCancel">Отмена</button>
+    <button id="pzBtnOk">OK</button>&nbsp;&nbsp;<button id="pzBtnCancel">Отмена</button>&nbsp;&nbsp;
+    <u><a id="pzNotInZbx" style="color:#6666FF">Считать, что для этого ТТ нет узла в Zabbix</a></u>
+
   </div>
 
 	<!-- popup NewTT -->	

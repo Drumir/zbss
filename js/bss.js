@@ -119,6 +119,7 @@ window.onload = function() {          //
   document.getElementById('backgroundPopup').onclick = function(){winManager.hideUper()};
   document.getElementById('options').onclick = onVersionClick;
   document.getElementById('poSave').onclick = onPoSaveClick;
+  document.getElementById('pzNotInZbx').onclick = onPzNotInZbxClick;
   mtb = document.getElementById('mainTBody');
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
@@ -743,8 +744,10 @@ function lookOnTicketPing(response, status) {
     for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
     if(i != response.result.length){  // Если строка с пингом найдена
       Tickets[watchPingArr[0].id].ping = response.result[i].lastvalue;
-      if(Tickets[watchPingArr[0].id].watchPing == true && Tickets[watchPingArr[0].id].ping == 1)    // Если пользователь поставил галку следить за пингом для этого тикета, и пинг есть
+      if(Tickets[watchPingArr[0].id].watchPing == true && Tickets[watchPingArr[0].id].ping == 1){    // Если пользователь поставил галку следить за пингом для этого тикета, и пинг есть
         Tickets[watchPingArr[0].id].greenAttention = true; //  активируем флаг greenAttention
+        showIt();                                          // Сразу же отобразим радостную новость
+      }
     }
     watchPingArr.shift();  // Удалим начальный элемент массива
   }
