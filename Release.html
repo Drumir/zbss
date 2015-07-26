@@ -37,7 +37,7 @@
       <span id="char1" title="Авторизация в BSS">B</span>
       <span id="char2" title="SQL">S</span>
       <span id="char3" title="Zabbix">S</span>
-      &nbsp;v0.6.13&nbsp;&nbsp;&nbsp;
+      &nbsp;v0.6.14&nbsp;&nbsp;&nbsp;
       <input type="image" id="options" title="Настройки" align="absmiddle" src=".\images\icon-options.png" height=25 widgh=25>
       &nbsp;&nbsp;&nbsp;</b>
       </td>
@@ -217,22 +217,23 @@
         <td id="pzHostId" style="width:37px"></td>
         <td id="pzIp" style="width:80px"></td>
         <td id="pzMAC" style="width:50px">-:-:-:-:-:-</td>
-        <td id="pzHostName" colspan="2" align="left"></td>
+        <td id="pzHostName" colspan="3" align="left"></td>
       </tr>
       <tr>
-        <td id="pzGroups"  colspan="5"></td>
+        <td id="pzGroups"  colspan="6"></td>
       </tr>
-      <tr id="pzRunScripts">
+      <tr>
         <td id="pzUpTime" colspan="4"></td>
-        <td align="center" width="350">
+        <td id="pzRunScripts" align="center" width="350">
           <u id="pzARP">&nbsp;ARP&nbsp;</u>&nbsp;&nbsp;
           <u id="pzTracert">&nbsp;Traceroute&nbsp;</u>&nbsp;&nbsp;
           <u id="pzDesOfInt">&nbsp;Description of interface&nbsp;</u>&nbsp;&nbsp;
-          <u id="pzRunPing">&nbsp;Ping&nbsp;</u>
+          <u id="pzRunPing">&nbsp;Ping&nbsp;</u>&nbsp;
         </td>
+        <td style="width:80px" contenteditable="false"><a id="pzPingGrath" href="https://zabbix.msk.unitline.ru/zabbix/dashboard.php" target="_blank">&nbsp;ping(График)&nbsp;</a></td>
       </tr>
       <tr>
-        <td colspan="5"><div id="pzHostInfo"></div></td>
+        <td colspan="6"><div id="pzHostInfo"></div></td>
       </tr>
     </table>
     <hr>

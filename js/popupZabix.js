@@ -253,16 +253,57 @@ function cbzResearch4(data, textStatus){
     var adr1 = data.indexOf('</span>');
     if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(adr0+18, adr1);
   }
+  var params = {};
+
+  var method = "item.get";
+  params.hostids = hostToResearch.hostid;
+  params.output = "extend";
+  zserver.sendAjaxRequest(method, params, cbzResearch5, null); // Запросим доступность, имя, IP узла
+
+}
+
+function cbzResearch5(response, status){
+  if (typeof(response.result) === 'object') {
+    var i;
+    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
+    if(i != response.result.length){  // Если строка с пингом найдена
+      if(response.result[i].name.indexOf("Ping {HOST.NAME") == 0){
+        document.getElementById('pzPingGrath').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
+      }
+      if(response.result[i].lastvalue == 1){
+        document.getElementById('pzPingGrath').style.color = "#116611";     // пинг есть
+        document.getElementById('pzPingGrath').title = "Узел доступен";
+        var delay = new Date();
+        delay = delay.getTime()/1000 - response.result[i].lastclock;     // Вычислим как давно было последнее обновление пинга
+        if(delay > 60){                                                  // пинг подзалежался
+          document.getElementById('pzPingGrath').style.color = "#485600";
+          document.getElementById('pzPingGrath').title = "Последнее обновление было больше минуты назад";
+        }
+        if(delay > 300){                                                 // пинг протух
+          document.getElementById('pzPingGrath').style.color = "#605600";
+          document.getElementById('pzPingGrath').title = "Последнее обновление было больше 5 минут назад";
+        }
+        if(delay > 3600){                                                 // пинг протух
+          document.getElementById('pzPingGrath').style.color = "#C0AA00";
+          document.getElementById('pzPingGrath').title = "Последнее обновление было больше часа назад";
+        }
+        if(delay > 3600*24){                                                 // пинг протух
+          document.getElementById('pzPingGrath').style.color = "#FFA000";
+          document.getElementById('pzPingGrath').title = "Последнее обновление было больше суток назад";
+        }
+      }
+      else{
+        document.getElementById('pzPingGrath').style.color = "#FF2222";     // пинг кончился
+        document.getElementById('pzPingGrath').title = "Узел недоступен";
+      }
+    }
+  }
 
   ShowHostStat();
 }
 
 function ShowHostStat() {
-  var str = ""; /*
-  if(hostToResearch.available == undefined)document.getElementById('pzPing').style.color = "#000000";
-  if(hostToResearch.available == 1) document.getElementById('pzPing').style.color = "#226622";
-  if(hostToResearch.available == 2) document.getElementById('pzPing').style.color = "#FF2222";
-  */
+  var str = "";
   str = "Группы: ";
   if(hostToResearch.groups != undefined)
     for(var key in hostToResearch.groups) str += hostToResearch.groups[key].name + "; ";
