@@ -368,7 +368,7 @@ function cbSuccessZ2(response, status) {
     var i;
     for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
     if(i != response.result.length){  // Если строка с пингом найдена
-      if(response.result[i].name.indexOf("Ping {HOST.NAME") == 0){
+      if(response.result[i].name.indexOf("Доступность") == 0){
         document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
       }
       if(response.result[i].lastvalue == 1){
