@@ -15,7 +15,10 @@ function loadPopupZabix() {
   document.getElementById('pzLocation').value = "";
 //    var expr = new RegExp('&quot;', 'gm');
   document.getElementById('pzCaption').innerText = "Поиск узла для: " + Tickets[tid].name.replace(new RegExp('&quot;', 'gm'), '"') + ".  Клиент: " + Tickets[tid].client;
-  ShowHostStat();   // Очистим таблицу с описанием "найденного" хоста
+  ShowHostStat();   // Очистим таблицу с описанием "найденного" хоста   
+  document.getElementById('pzPingGrath').style.color = "#000000";     // Почерним график потерь и пинга
+  document.getElementById('pzLostGrath').style.color = "#000000";     // Почерним график потерь и пинга
+
 
   zClient = bssClient2zGroup(Tickets[tid].client);  // Попытаемся определить zabbix groupid по BSS Client Name
   document.getElementById('popupZabix').zClient = zClient;
@@ -265,7 +268,7 @@ function cbzResearch4(data, textStatus){
 function cbzResearch5(response, status){
   if (typeof(response.result) === 'object') {
     var i;
-    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
+    for(i = 0; i < response.result.length && response.result[i].name != "Доступность"; i ++); // Найдем в массиве нужный объект c именем "Доступность"
     if(i != response.result.length){  // Если строка с пингом найдена
       if(response.result[i].name.indexOf("Доступность") == 0){
         document.getElementById('pzPingGrath').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
@@ -275,10 +278,6 @@ function cbzResearch5(response, status){
         document.getElementById('pzPingGrath').title = "Узел доступен";
         var delay = new Date();
         delay = delay.getTime()/1000 - response.result[i].lastclock;     // Вычислим как давно было последнее обновление пинга
-        if(delay > 60){                                                  // пинг подзалежался
-          document.getElementById('pzPingGrath').style.color = "#485600";
-          document.getElementById('pzPingGrath').title = "Последнее обновление было больше минуты назад";
-        }
         if(delay > 300){                                                 // пинг протух
           document.getElementById('pzPingGrath').style.color = "#605600";
           document.getElementById('pzPingGrath').title = "Последнее обновление было больше 5 минут назад";
@@ -296,6 +295,17 @@ function cbzResearch5(response, status){
         document.getElementById('pzPingGrath').style.color = "#FF2222";     // пинг кончился
         document.getElementById('pzPingGrath').title = "Узел недоступен";
       }
+    }
+    for(i = 0; i < response.result.length && response.result[i].name != "Потери %"; i ++); // Найдем в массиве нужный объект c именем "Потери %"
+    if(i != response.result.length){  // Если строка с потерями найдена
+      if(response.result[i].name.indexOf("Потери %") == 0){
+        document.getElementById('pzLostGrath').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
+      }
+      if(response.result[i].lastvalue == 0)
+        document.getElementById('pzLostGrath').style.color = "#116611";     // потерь нет
+      else
+        document.getElementById('pzLostGrath').style.color = "#FF2222";     // есть потери
+      document.getElementById('pzLostGrath').title = "Потери " + response.result[i].lastvalue + "%";
     }
   }
 
