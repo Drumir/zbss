@@ -21,7 +21,7 @@ function centerPopupTicket() {
   });
 
   $("#historyDiv").css({
-    "max-height": popupHeight-92,
+    "max-height": popupHeight-117,
   });
 
   document.getElementById('comment').focus();
@@ -166,6 +166,7 @@ function callbackGetHistory(data, textStatus) {
     ht.hidden = true;
     ht.innerHTML = "";
     if(Tickets[tid].unpostedComm != undefined) document.getElementById('comment').value = Tickets[tid].unpostedComm; // Восстановим текст в поле воода.
+    commentOnInput(); // Обновим счетчик набранных символов
 
     for(var i = 0; i < data.rows.length;  i ++) {
       var ttr = document.createElement('tr');
@@ -267,11 +268,21 @@ function commentOnKey(e){     //$.ajax версия
     document.getElementById('comment').value = "";
     Tickets[document.getElementById('popupTicket').iidd].permissions = "Ответственное лицо***Service / Обслуживание***Resolved / Решена***Hold / Отложена***Investigating / Расследование***Closed / Закрыта***Редактировать";
     dontCheckTransferPermissions = true;   // Разрешить однократный перевод тикета без проверки
-  }
+  }  
 }
+
 function commentOnBlur(e){     // При потере окном воода коментария фокуса ввода, запомним набраный текст
   var iidd = document.getElementById('popupTicket').iidd;
   Tickets[iidd].unpostedComm = document.getElementById('comment').value;
+}
+
+function commentOnInput(e){     // При изменении набраного текста, посчитаем символы
+  var textLength = document.getElementById('comment').textLength;
+  document.getElementById('ptPostTextCounter').style.color = "#000000";  // Сначала очерним, а потом расскрасим счетчик введенных символов в зависимости от длинны текста
+  if(textLength > 500) {
+    document.getElementById('ptPostTextCounter').style.color = "#FF0000";
+  }  
+  document.getElementById('ptPostTextCounter').innerHTML = textLength + "&nbsp;&nbsp;"
 }
 
 function setTimer(e){
@@ -415,7 +426,7 @@ function onHostidEnter(e) {       // Ввод hostid
 
         params = {action:"write", ttid:iidd, hostid:this.value};    // Запишем свежую привязку в базу
         $.ajax({
-          url: "http://drumir.16mb.com/ajax.php",
+          url: sqlServerAdress,
           type: 'post',
           dataType: 'json',
           data: params,

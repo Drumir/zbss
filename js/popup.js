@@ -133,6 +133,7 @@ function centerPopupRunScripts() {
 
 function loadPopupOptions() {
   document.getElementById('poCheckResolved').checked = checkResolved;
+  document.getElementById('poSqlServerAdress').value = sqlServerAdress;
   winManager.showMe("popupOptions");
 }
 
@@ -168,6 +169,10 @@ function cbRememberPass(pairs) {
   checkResolved = false;  // Настройка "слежение за решенными"
   if(pairs["checkResolved"] != undefined && pairs["checkResolved"] == "yes")
     checkResolved = true;
+  
+  sqlServerAdress = "http://drumir.16mb.com/ajax.php"; // Прочитаем адрес сервера привязок TT-HostId
+  if(pairs["sqlServerAdress"] != undefined && pairs["sqlServerAdress"].length > 10)
+    sqlServerAdress = pairs["sqlServerAdress"];
 }
 
 function centerPopupLogin() {
@@ -254,6 +259,9 @@ function onPoSaveClick(){
   checkResolved = document.getElementById('poCheckResolved').checked;
   if(checkResolved)
     pairs["checkResolved"] = "yes";
+
+  sqlServerAdress = document.getElementById('poSqlServerAdress').value;
+  pairs["sqlServerAdress"] = sqlServerAdress;
   chrome.storage.local.set(pairs);
   winManager.hideUper();
 }

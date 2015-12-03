@@ -177,7 +177,7 @@ hr {
   color: #0A0A0A;
   display: none;
   _position: absolute;
-  width: 400px;
+  width: 500px;
   background: #FFFFFF;
   border: 2px solid #cecece;
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -201,7 +201,7 @@ hr {
 }
 
 #historyDiv {
-  max-height: 490px;
+  max-height: 465px;
   max-width: 712px;
   overflow-y: auto;
 /*  border:solid 1px black;*/

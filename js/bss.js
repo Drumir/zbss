@@ -47,6 +47,7 @@ var zApiVersion = "";
 var zEnabled = false;     // false если заббикс недоступен или запрещен.
 var zSessionId;
 
+var sqlServerAdress = ""; // Адрес сервера привязок в формате http://drumir.16mb.com/ajax.php
 var mySqlLastRenew = "";  // timestamp последнего обновления привязок TT -> hostId
 
 var winManager = {};
@@ -80,6 +81,7 @@ window.onload = function() {          //
   document.getElementById('statusName').onclick = onStatusNameClick;
   document.getElementById('comment').onkeypress = commentOnKey;
   document.getElementById('comment').onblur = commentOnBlur;
+  document.getElementById('comment').oninput = commentOnInput;
   document.getElementById('sPass').onkeypress = sPassKeyPress;
   document.getElementById('popupTicket').onclick = onTPopupClick;
   document.getElementById('searchStr').oninput = onSearchInput;
@@ -346,7 +348,7 @@ function renewTickets(data) {
     $("#char2").css({"color":"orange"});
   }
   $.ajax({
-    url: "http://drumir.16mb.com/ajax.php",
+    url: sqlServerAdress,
     type: 'post',
     dataType: 'json',
     data: params,

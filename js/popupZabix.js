@@ -411,7 +411,7 @@ function onPzBtnOkClick(){
 
       params = {action:"write", ttid:iidd, hostid:Tickets[iidd].zhostid};   // Запишем свежую привязку в базу
       $.ajax({
-        url: "http://drumir.16mb.com/ajax.php",
+        url: sqlServerAdress,
         type: 'post',
         dataType: 'json',
         data: params,
@@ -430,7 +430,7 @@ function onPzNotInZbxClick(){                  // Клик по строчке "Считать, что 
 
     params = {action:"write", ttid:iidd, hostid:Tickets[iidd].zhostid};   // Запишем свежую привязку в базу
     $.ajax({
-      url: "http://drumir.16mb.com/ajax.php",
+      url: sqlServerAdress,
       type: 'post',
       dataType: 'json',
       data: params,
