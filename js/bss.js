@@ -128,6 +128,7 @@ window.onload = function() {          //
   hiddenText.hidden = true;
 
   setInterval(oneMoreSecond, 1000);
+  setInterval(timeToCheckPing, 360000);     // Раз в 6 минут проверяем доступность узлов
   onBodyResize();
   chrome.storage.local.get(null, cbRememberPass);  // Прочитаем из хранилища настройки и имя/пароль (имя/пароль может и не понадобятся)
 
@@ -193,9 +194,6 @@ function oneMoreSecond(){
     loadTickets();
     refreshTime = 60;
   }
-  if(refreshTime == 30 && netTimeout <= 0 && watchPingArr.length == 0){ // Раз в 30 секунд, если нет никакого таймаута и предыдущий опрос завершен, запускаем пинг хостов
-    checkPing();
-  }
   if(netTimeout > 0){        // Если netTimeout > 0, значит идет какая-то сетевая операция
     netTimeout --;
   }
@@ -216,6 +214,14 @@ function oneMoreSecond(){
   }
   if(fNeedRepaint) {showIt();}
 }
+
+function timeToCheckPing(){
+//  if(netTimeout <= 0 && watchPingArr.length == 0){ // Раз в 6 минут, если нет никакого таймаута и предыдущий опрос завершен, проверяем доступность хостов
+  if(watchPingArr.length == 0){ // Раз в 6 минут, если нет никакого таймаута и предыдущий опрос завершен, проверяем доступность хостов
+    checkPing();
+  }
+}
+
 
 function showIt() {         // Отображает таблицу тикетов
   var str = "";
@@ -729,16 +735,14 @@ function checkPing(){
 
 function lookOnTicketPing(response, status) {
   if (response != undefined && typeof(response.result) === 'object') {
-    Tickets[watchPingArr[0].id].ping = -1;      // Пинг не определен
-    Tickets[watchPingArr[0].id].greenAttention = false;
     var i;
-    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
-    if(i != response.result.length){  // Если строка с пингом найдена
-      Tickets[watchPingArr[0].id].ping = response.result[i].lastvalue;
-      if(Tickets[watchPingArr[0].id].watchPing == true && Tickets[watchPingArr[0].id].ping == 1){    // Если пользователь поставил галку следить за пингом для этого тикета, и пинг есть
+    for(i = 0; i < response.result.length && response.result[i].name != "Потери %"; i ++); // Найдем в массиве нужный объект 
+    if(i != response.result.length){  // Если строка с потерями найдена
+      if(Tickets[watchPingArr[0].id].ping != undefined && Tickets[watchPingArr[0].id].ping < 5 && response.result[i].lastvalue < 5){       // Если при предыдущей проверке потерь было меньше 5% и теперь меньше 5
         Tickets[watchPingArr[0].id].greenAttention = true; //  активируем флаг greenAttention
         showIt();                                          // Сразу же отобразим радостную новость
-      }
+      } 
+      Tickets[watchPingArr[0].id].ping = response.result[i].lastvalue; // Сохраним результты этой проверки 
     }
     watchPingArr.shift();  // Удалим начальный элемент массива
   }
