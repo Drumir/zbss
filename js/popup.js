@@ -170,7 +170,7 @@ function cbRememberPass(pairs) {
   if(pairs["checkResolved"] != undefined && pairs["checkResolved"] == "yes")
     checkResolved = true;
   
-  sqlServerAdress = "http://drumir.16mb.com/ajax.php"; // Прочитаем адрес сервера привязок TT-HostId
+  sqlServerAdress = "http://drumir.zz.vc/ajax.php"; // Прочитаем адрес сервера привязок TT-HostId
   if(pairs["sqlServerAdress"] != undefined && pairs["sqlServerAdress"].length > 10)
     sqlServerAdress = pairs["sqlServerAdress"];
 }

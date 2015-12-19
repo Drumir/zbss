@@ -137,7 +137,8 @@ function callbackGetTicket(data, textStatus) {
     document.getElementById('ptFindHostId').innerText = "найти";
 
     if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){   // ≈сли этому тикету сопоставлен hostid
-      document.getElementById('ptZping').style.color = "#666666";     // пока пинг не известен, покрасим его серым
+      document.getElementById('ptZping').style.color = "#666666";     // пока потери не известны, покрасим серым
+      document.getElementById('ptZping').style.backgroundColor = "#FFFFFF";
       document.getElementById('ptZping').href = "";                  // пока itemid графика не известен, заглушим ссылку
       document.getElementById('ptHostidText').innerText = "hostid:";  // ќтобразим hostid
       document.getElementById('ptFindHostId').innerText = "изм";
@@ -377,38 +378,40 @@ function askZabbix(zhostid) {
 function cbSuccessZ2(response, status) {
   if (typeof(response.result) === 'object') {
     var i;
-    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Ќайдем в массиве нужный объект (type которого = 3)
-    if(i != response.result.length){  // ≈сли строка с пингом найдена
-      if(response.result[i].name.indexOf("ƒоступность") == 0){
-        document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
+//    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Ќайдем в массиве нужный объект (type которого = 3)
+    for(i = 0; i < response.result.length && response.result[i].name != "ѕотери %"; i ++); // Ќайдем в массиве нужный объект (type которого = 3)
+    if(i != response.result.length){  // ≈сли строка с потер€ми найдена
+      document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
+      document.getElementById('ptZping').text = "ѕотери " + response.result[i].lastvalue + "%";
+      
+      document.getElementById('ptZping').style.color = "#FF2222";     // потери
+      document.getElementById('ptPingCBox').disabled = false;         // –азрешим ставить галку следить за хостом
+      if(response.result[i].lastvalue < 5 || response.result[i].prevvalue < 5){
+        document.getElementById('ptZping').style.color = "#86AC00";    // потери только начались или только закончились
+        document.getElementById('ptPingCBox').disabled = true;         // «апретим следить за хостом (он непон€тный)
       }
-      if(response.result[i].lastvalue == 1){
-        document.getElementById('ptZping').style.color = "#116611";     // пинг есть
-        document.getElementById('ptZping').title = "”зел доступен";
-        document.getElementById('ptPingCBox').disabled = true;          // «апретим следить за хостом (он и так пингуетс€)
-        var delay = new Date();
-        delay = delay.getTime()/1000 - response.result[i].lastclock;     // ¬ычислим как давно было последнее обновление пинга
-        if(delay > 60){                                                  // пинг подзалежалс€
-          document.getElementById('ptZping').style.color = "#485600";
-          document.getElementById('ptZping').title = "ѕоследнее обновление было больше минуты назад";
-        }
-        if(delay > 300){                                                 // пинг протух
-          document.getElementById('ptZping').style.color = "#605600";
-          document.getElementById('ptZping').title = "ѕоследнее обновление было больше 5 минут назад";
-        }
-        if(delay > 3600){                                                 // пинг протух
-          document.getElementById('ptZping').style.color = "#C0AA00";
-          document.getElementById('ptZping').title = "ѕоследнее обновление было больше часа назад";
-        }
-        if(delay > 3600*24){                                                 // пинг протух
-          document.getElementById('ptZping').style.color = "#FFA000";
-          document.getElementById('ptZping').title = "ѕоследнее обновление было больше суток назад";
-        }
+      if(response.result[i].lastvalue < 5 && response.result[i].prevvalue < 5){
+        document.getElementById('ptZping').style.color = "#116611";    // потерь нет
+        document.getElementById('ptPingCBox').disabled = true;         // «апретим следить за хостом (он и так в пор€дке)
       }
-      else{
-        document.getElementById('ptZping').style.color = "#FF2222";     // пинг кончилс€
-        document.getElementById('ptZping').title = "”зел недоступен";
-        document.getElementById('ptPingCBox').disabled = false;         // –азрешим ставить галку следить за хостом
+      var delay = new Date();
+      delay = delay.getTime()/1000 - response.result[i].lastclock;     // ¬ычислим как давно было последнее обновление пинга
+      document.getElementById('ptZping').title = "ѕоследнее обновление было " + Math.floor(delay) + " секунд назад";
+      if(delay > 60){                                                  // пинг подзалежалс€
+        document.getElementById('ptZping').style.backgroundColor = "#FFEEEE";
+        document.getElementById('ptZping').title = "ѕоследнее обновление было " + Math.floor(delay/6)/10 + " минут назад";
+      }
+      if(delay > 300){                                                 // пинг протух
+        document.getElementById('ptZping').style.backgroundColor = "#FFCCCC";
+        document.getElementById('ptZping').title = "ѕоследнее обновление было " + Math.floor(delay/6)/10 + " минут назад";
+      }
+      if(delay > 3600){                                                 // пинг протух
+        document.getElementById('ptZping').style.backgroundColor = "#FFAAAA";
+        document.getElementById('ptZping').title = "ѕоследнее обновление было " + Math.floor(delay/360)/10 + " часов назад";
+      }
+      if(delay > 3600*24){                                                 // пинг протух
+        document.getElementById('ptZping').style.backgroundColor = "#FF7777";
+        document.getElementById('ptZping').title = "ѕоследнее обновление было " + Math.floor(delay/8640)/10 + " суток назад";
       }
     }
   }
