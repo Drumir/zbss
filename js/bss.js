@@ -29,7 +29,6 @@ var filter = {user:"", name:"", status:"", client:"", region:"", regionFull:""};
 
 
 var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
-var newSelectedIndex = 0;  // Переменная для onchange и onmouseup выпадающего списка фильтра по статусу
 var newbornTT = {};        // Здесь хранится введенный пользовтелем zhostid и name еще несозданного тикета с тем чтобы renewTickets могла подставить hostid в один из вновь полученных тикетов
 
 var forceShow = true;     // Указывает, что список нужно как можно быстрее обновить
@@ -103,7 +102,6 @@ window.onload = function() {          //
   document.getElementById('ps2Edit').onclick          = onPsActionClick;
   document.getElementById('thsStatus').onchange = onThsStatusChange;
   document.getElementById('pzClient').onchange = onPzClientChange;
-  document.getElementById('thsStatus').onmouseup = onThsStatusMouseUp;
   document.getElementById('wikiLink').onclick = openWikiLink;
   document.getElementById('plLogin').onclick = onLoginClick;
   document.getElementById('selectClient').onclick = qSelectClientClick;
@@ -376,24 +374,15 @@ function onRespIdChange(){
   showIt();
 }
 
-function onThsStatusChange(){   // Т.к. в событии onchange нельзя узнать нажат ли шифт, просто сохраним новый статус в newSelectedIndex
-  newSelectedIndex = document.getElementById('thsStatus').selectedIndex;
-  if(newSelectedIndex == 0)
-    filter.status = "";
-  showIt();
-}
-
-function onThsStatusMouseUp(e){  // После onchange будет onmouseup из которого мы узнает статус шифта и создадим соответствующий фильтр
-  if(newSelectedIndex > 0){
-    if(e.shiftKey == true){
-      filter.status += $("#thsStatus")[0][newSelectedIndex].innerText;
-    }else {
-      filter.status = $("#thsStatus")[0][newSelectedIndex].innerText;
-    }
-    newSelectedIndex = 0;
+function onThsStatusChange(){   // 
+  if(document.getElementById('thsStatus').selectedIndex > 0){
+    filter.status = $("#thsStatus")[0][document.getElementById('thsStatus').selectedIndex].innerText;
     if(filter.status != "Closed / Закрыта") showIt();
     else loadTickets();
-  }
+  } 
+  else {
+    filter.status = ""; showIt();
+  } 
 }
 
 function onMainTBodyClick(e) {
