@@ -401,13 +401,13 @@ function onMainTBodyClick(e) {
     showIt();
     $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
   }
-  if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && (e.ctrlKey == true || e.shiftKey == true) ){    // Если щелкнули по статусу c ctrl или shift
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && e.ctrlKey == true){    // Если щелкнули по статусу c ctrl
     var select = document.getElementById('thsStatus');
     for( var i = 1; i < select.length; i ++){
       if(select[i].innerText === e.target.innerText){
         select.selectedIndex = i;
         newSelectedIndex = i;
-        onThsStatusMouseUp(e);
+        onThsStatusChange();
         break;
       }
     }
