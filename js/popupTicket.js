@@ -156,6 +156,11 @@ function callbackGetTicket(data, textStatus) {
     loadPopupTicket();
     centerPopupTicket();
     $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+    
+    if(addTicketToHistory && TicketsViewHistory[TicketsViewHistory.length-1] != tid){  // Если разрешено добавление тикетов в историю, и этот тикет не равен последнему добавленому
+      TicketsViewHistory.push(tid);
+      if(TicketsViewHistory.length > 500)TicketsViewHistory.shift(); // Если длинна истории больше 500, выкинем первый (самый старый) элемент                                                  
+    }
   }
 }
 

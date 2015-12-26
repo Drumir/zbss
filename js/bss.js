@@ -4,6 +4,7 @@
 //
 var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете", timer:"Сколько минут осталось до звонка", unpostedComm: "Набраный, но незапощеный комментарий"}}. Актуализируется раз в n секунд
 var transQueue = [];        // Очередь запросов на перевод тикета.
+var TicketsViewHistory = [];// Массив для хранения истории просмотра тикетов.
 var hiddenText;             // Переменная - TEXTAREA
 var a, b;
 var transAnsiAjaxSys = [];
@@ -25,8 +26,8 @@ var mtb;                   // Main Table Body
 var refreshTime = -1;      // Сколько секунд осталось до обновления.
 var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - идет отсчёт. ==0 - операция провалилась. <0 - отключено
 var strTimeout = "";
-var filter = {user:"", name:"", status:"", client:"", region:"", regionFull:""};
-
+var filter = {user:"", name:"", status:"", client:"", region:"", regionFull:"", history:false};
+var addTicketToHistory = true; // Указывает нужно ли добавлять открываемый тикет в историю просмотров
 
 var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
 var newbornTT = {};        // Здесь хранится введенный пользовтелем zhostid и name еще несозданного тикета с тем чтобы renewTickets могла подставить hostid в один из вновь полученных тикетов
@@ -120,6 +121,7 @@ window.onload = function() {          //
   document.getElementById('options').onclick = onVersionClick;
   document.getElementById('poSave').onclick = onPoSaveClick;
   document.getElementById('pzNotInZbx').onclick = onPzNotInZbxClick;
+  document.getElementById('historyLink').onclick = onHistoryLinkClick;
   mtb = document.getElementById('mainTBody');
 
   prepareToAnsi();                            // Подготавливает таблицу для перекодирования
@@ -244,26 +246,34 @@ function showIt() {         // Отображает таблицу тикетов
 
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
-  if(filter.user + filter.name + filter.client + filter.status + filter.region != "") {
+  if(filter.user + filter.name + filter.client + filter.status + filter.region != "" || filter.history) {
     document.getElementById('btResetFilter').hidden = false;
+  }  
+  var List = [];
+  if(filter.history){       // Если просматриваем историю
+    for(var key in TicketsViewHistory)
+      List.push(Tickets[TicketsViewHistory[key]]); // Соберем List из элементов Ticket в порядке TicketsViewHistory
   }
-  for(var key in Tickets) {
-    if(filter.user != "" && Tickets[key].otv != filter.user) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
-    if(filter.name != "" && Tickets[key].name.toUpperCase().indexOf(filter.name.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filter.client != "" && Tickets[key].client.toUpperCase().indexOf(filter.client.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filter.region != "" && Tickets[key].region != filter.region) continue;  // Если filterRegion не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filter.status != "" && filter.status.indexOf(Tickets[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
-    if(Tickets[key].renewed === false ) continue;  // Необновленные тикеты отображать не нужно
+  else {
+    List = Tickets; 
+  }  
+  for(var key in List) {
+    if(filter.user != "" && List[key].otv != filter.user) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
+    if(filter.name != "" && List[key].name.toUpperCase().indexOf(filter.name.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.client != "" && List[key].client.toUpperCase().indexOf(filter.client.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.region != "" && List[key].region != filter.region) continue;  // Если filterRegion не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.status != "" && filter.status.indexOf(List[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.history === false && List[key].renewed === false ) continue;  // Необновленные тикеты отображать не нужно
     var ttr = document.createElement('tr');
-    ttr.filial = Tickets[key].filial;
-    ttr.iidd = Tickets[key].id;
+    ttr.filial = List[key].filial;
+    ttr.iidd = List[key].id;
 
-    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + Tickets[key].id + '" target="_blank">' + Tickets[key].id + '</a>' + '</td><td style="color:'+ statusToColor(Tickets[key].status) + '; font-weight:600">' + Tickets[key].status;
-    str += '</td><td>' + Tickets[key].data_open + '</td><td>' + Tickets[key].region + '</td><td>' + Tickets[key].author + '</td><td>' + Tickets[key].otv + '</td><td>' + Tickets[key].client + '</td><td>' + Tickets[key].name + '</td><td width = "100px">' + Tickets[key].clas + '</td></tr>';
+    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + List[key].id + '" target="_blank">' + List[key].id + '</a>' + '</td><td style="color:'+ statusToColor(List[key].status) + '; font-weight:600">' + List[key].status;
+    str += '</td><td>' + List[key].data_open + '</td><td>' + List[key].region + '</td><td>' + List[key].author + '</td><td>' + List[key].otv + '</td><td>' + List[key].client + '</td><td>' + List[key].name + '</td><td width = "100px">' + List[key].clas + '</td></tr>';
     ttr.innerHTML = str;
-    ttr.children[0].children[0].checked = Tickets[key].checked;
+    ttr.children[0].children[0].checked = List[key].checked;
 
-    switch(Tickets[key].status) {
+    switch(List[key].status) {
       case "Оформление": {stat.begin ++; break;}
       case "Service / Обслуживание": {stat.service ++; break;}
       case "Resolved / Решена": {stat.resolved ++; break;}
@@ -275,15 +285,15 @@ function showIt() {         // Отображает таблицу тикетов
     if(key == highlightedTT){
       ttr.style.backgroundColor = "#FFFFCC"; // Выделеный тикет
     }
-    if(Tickets[key].redAttention === true){
+    if(List[key].redAttention === true){
       ttr.style.backgroundColor = "#F87777"; // Тикет требующий внимания
       fNeedRedAttention = true;
     }
-    if(Tickets[key].orangeAttention === true){
+    if(List[key].orangeAttention === true){
       ttr.style.backgroundColor = "#F87700"; // Тикет требующий внимания
       fNeedOrangeAttention = true;
     }
-    if(Tickets[key].greenAttention === true){
+    if(List[key].greenAttention === true){
       ttr.style.backgroundColor = "#77F877"; // Тикет требующий внимания
       fNeedGreenAttention = true;
     }
@@ -293,6 +303,8 @@ function showIt() {         // Отображает таблицу тикетов
   if(fNeedRedAttention) document.getElementById('statusFieldRight').innerHTML = '<span style="color:#FF0000; font-weight:bold">Внимание!&nbsp;&nbsp;&nbsp;</span>';
   if(fNeedGreenAttention) document.getElementById('statusFieldRight').innerHTML += '<span style="color:#008800; font-weight:bold">Внимание&nbsp;&nbsp;&nbsp;</span>';
   if(fNeedOrangeAttention) document.getElementById('statusFieldRight').innerHTML += '<span style="color:#F87700; font-weight:bold">Внимание&nbsp;&nbsp;&nbsp;</span>';
+  if(filter.history) mainTBody.style.backgroundColor = "#E9CC8B";
+  else mainTBody.style.backgroundColor = "#F8F8F8";
   document.getElementById('statusFieldRight').innerHTML += "Оформление:" + stat.begin + " Обслуживание:" + stat.service + " Решено:" + stat.resolved + " Расследование:" + stat.investigating + " Отложено:" + stat.hold + " Закрыто:" + stat.closed + "   Всего:" + (stat.begin + stat.service + stat.resolved + stat.investigating + stat.hold + stat.closed);
 }
 
@@ -639,6 +651,8 @@ function onResetFilterClick() {   // Сброс всех фильтров
   document.getElementById('resp_id_s').value = "0";
   filter.user = "";
   filter.region = "";
+  filter.history = false;      // Отключим режим просмотра истории
+  addTicketToHistory = true;
 
   document.getElementById('thsStatus').value = "0";
   if(filter.status == "Closed / Закрыта"){
@@ -754,6 +768,12 @@ function lookOnTicketPing(response, status) {
     params.output = "extend";
     zserver.sendAjaxRequest(method, params, lookOnTicketPing, null); // Запросим доступность, имя, IP узла
   }
+}
+
+function onHistoryLinkClick(e){
+  filter.history = !filter.history;           // Переключение режима нормальный.история
+  addTicketToHistory = !filter.history;
+  showIt();
 }
 
 /*

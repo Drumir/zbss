@@ -24,26 +24,28 @@
 </head>
 
 <body>
-  <table id="menuTable" align="left">
-    <td id="statusName" style='background-color:#90C08C'>Войти</td>
-    <td>
-      <button id="buttonMove"   disabled="true">Перевести</button>
-      <button id="buttonRenew" disabled="true" style="width:120px">Обновить</button>
-      <button id="buttonNew" >Новый ТТ</button>
-    </td>
-    <td valign = "baseline"><input type="text" id="searchTT" size="7" placeholder="№ ТТ"></td>
-    <td id="about">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>
-      <span id="char0" title="Авторизация в API Zabbix">Z</span>
-      <span id="char1" title="Авторизация в BSS">B</span>
-      <span id="char2" title="SQL">S</span>
-      <span id="char3" title="Zabbix">S</span>
-      <span title="(c)2014-2015 Евгений Сорокин drumir@mail.ru">&nbsp;v0.6.21&nbsp;&nbsp;&nbsp;</span>
-      <input type="image" id="options" title="Настройки" align="absmiddle" src=".\images\icon-options.png" height=25 widgh=25>
-      &nbsp;&nbsp;&nbsp;</b>
+  <table id="menuTable" align="left" width=100%>   
+    <tbody><tr>
+      <td id="statusName" style='background-color:#90C08C'>Войти</td>
+      <td>
+        <button id="buttonMove"   disabled="true">Перевести</button>
+        <button id="buttonRenew" disabled="true" style="width:120px">Обновить</button>
+        <button id="buttonNew" >Новый ТТ</button>
+        <input type="text" id="searchTT" size="7" placeholder="№ ТТ">
       </td>
-    <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
-    <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
-
+      <td id="about">&nbsp;<b>
+        <span id="char0" title="Авторизация в API Zabbix">Z</span>
+        <span id="char1" title="Авторизация в BSS">B</span>
+        <span id="char2" title="SQL">S</span>
+        <span id="char3" title="Zabbix">S</span>
+        <span title="(c)2014-2015 Евгений Сорокин drumir@mail.ru">&nbsp;v0.6.22&nbsp;</span>
+        <input type="image" id="options" title="Настройки" align="absmiddle" src=".\images\icon-options.png" height=25 widgh=25>
+        &nbsp;</b>
+        </td>
+      <td><button id="btResetFilter" style="width:140px;color:#007700" hidden="true">Показать все ТТ</button></td>
+      <td valign = "baseline" align="left">Линейные продажи:<input type="text" id="LsSearchTT" size="7" placeholder="№ ТТ"></td>
+      <td align="right"><u><a id="historyLink" style="color:#1133AA">История </a></u></td>
+    </tr></tbody>
   </table>
 
   <textarea id="hiddenText" hidden="true">This text invisible</textarea>
@@ -243,8 +245,8 @@
     <button id="pzBtnOk">OK</button>&nbsp;&nbsp;<button id="pzBtnCancel">Отмена</button>&nbsp;&nbsp;
     <u><a id="pzNotInZbx" style="color:#6666FF">Считать, что для этого ТТ нет узла в Zabbix</a></u>
 
-  </div>
-
+  </div> 
+  
 	<!-- popup NewTT -->	
 
   <div id="popupNewTT">
