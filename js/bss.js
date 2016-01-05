@@ -26,7 +26,7 @@ var mtb;                   // Main Table Body
 var refreshTime = -1;      // Сколько секунд осталось до обновления.
 var netTimeout = -1;       // Для определения зависания сетевых операций. >0 - идет отсчёт. ==0 - операция провалилась. <0 - отключено
 var strTimeout = "";
-var filter = {user:"", name:"", status:"", client:"", region:"", regionFull:"", history:false};
+var filter = {user:"", name:"", status:"", client:"", notClient:"", region:"", regionFull:"", history:false};
 var addTicketToHistory = true; // Указывает нужно ли добавлять открываемый тикет в историю просмотров
 
 var delayedData = "";      // Здесь хранится html код страницы свежесозданного тикета (В формате подходящем для callbackGetTicket) с тем, чтобы можно было сразу после актуализации Tickets{}, показать попап с ним пользователю
@@ -246,7 +246,7 @@ function showIt() {         // Отображает таблицу тикетов
 
   $("#mainTBody").empty();
   document.getElementById('btResetFilter').hidden = true;
-  if(filter.user + filter.name + filter.client + filter.status + filter.region != "" || filter.history) {
+  if(filter.user + filter.name + filter.client + filter.status + filter.region + filter.notClient != "" || filter.history) {
     document.getElementById('btResetFilter').hidden = false;
   }  
   var List = [];
@@ -261,6 +261,7 @@ function showIt() {         // Отображает таблицу тикетов
     if(filter.user != "" && List[key].otv != filter.user) continue;  // Если filterUser не пуст и этот тикет другого юзера, пропускаем тикет
     if(filter.name != "" && List[key].name.toUpperCase().indexOf(filter.name.toUpperCase()) === -1) continue;  // Если filterName не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.client != "" && List[key].client.toUpperCase().indexOf(filter.client.toUpperCase()) === -1) continue;  // Если filterClient не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.notClient != "" && List[key].client.toUpperCase().indexOf(filter.notClient.toUpperCase()) != -1) continue;  // Если filter.notClient не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.region != "" && List[key].region != filter.region) continue;  // Если filterRegion не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.status != "" && filter.status.indexOf(List[key].status) === -1) continue;  // Если filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.history === false && List[key].renewed === false ) continue;  // Необновленные тикеты отображать не нужно
@@ -444,6 +445,12 @@ function onMainTBodyClick(e) {
     document.getElementById('searchClient').oninput();
 
     filter.client = e.target.innerText;
+    filter.status === "Closed / Закрыта" ? loadTickets() : showIt();
+  }
+  if(e.target.nodeName === "TD" && e.target.cellIndex === 7 && e.shiftKey == true){    // Если щелкнули по клиенту
+    document.getElementById('searchClient').value = "-" + e.target.innerText;
+    filter.notClient = e.target.innerText;
+
     filter.status === "Closed / Закрыта" ? loadTickets() : showIt();
   }
 }
@@ -646,6 +653,7 @@ function onLsTTKeyPress(e) {       // Ввод номера тикета Линейных продаж
 function onResetFilterClick() {   // Сброс всех фильтров
   document.getElementById('searchClient').value = "";
   filter.client = "";
+  filter.notClient = "";
   document.getElementById('searchStr').value = "";
   filter.name = "";
   document.getElementById('resp_id_s').value = "0";

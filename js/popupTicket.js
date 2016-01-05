@@ -256,6 +256,9 @@ function commentOnKey(e){     //$.ajax версия
     if(document.getElementById('comment').value.length > 0 && document.getElementById('comment').value.length < 501){
       var iidd = document.getElementById('popupTicket').iidd;
       var str = document.getElementById('comment').value;
+      var a; 
+      while(a = str.indexOf('\n') != -1)      // Переделаем все \п в пробелы
+        str[a] = ' '; 
       document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
       if(Tickets[iidd].unpostedComm != undefined) Tickets[iidd].unpostedComm = ""; // Сотрем запомненный в тикете текст
       var converted_str = encodeURIComponent(str);
