@@ -257,8 +257,8 @@ function commentOnKey(e){     //$.ajax версия
       var iidd = document.getElementById('popupTicket').iidd;
       var str = document.getElementById('comment').value;
       var a; 
-      while(a = str.indexOf('\n') != -1)      // Переделаем все \п в пробелы
-        str[a] = ' '; 
+      while((a = str.indexOf('\n')) != -1)      // Переделаем все \п в пробелы
+        str = str.substring(0, a) + " " + str.substring(a+1); 
       document.getElementById('comment').value = "";       // Clear text field for not dublicate comments
       if(Tickets[iidd].unpostedComm != undefined) Tickets[iidd].unpostedComm = ""; // Сотрем запомненный в тикете текст
       var converted_str = encodeURIComponent(str);

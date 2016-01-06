@@ -77,8 +77,8 @@ function onBtnNewTTClick (e) {
 }
 
 function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет -> Сохранить
-  if($("#shortTTDescr")[0].value.length < 10) return;
-  if($("#TTDescr")[0].value.length < 10) return;
+  if($("#shortTTDescr")[0].value.length < 10 || $("#shortTTDescr")[0].value.length > 100 ) return;
+  if($("#TTDescr")[0].value.length < 10 || $("#TTDescr")[0].value.length > 500) return;
   if($("#ppClient")[0].selectedIndex === 0) return;
   if($("#ppRegion")[0].selectedIndex === 0) return;
   var id = document.getElementById('ppRegion');
