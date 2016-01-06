@@ -261,7 +261,8 @@ function showIt() {         // ќтображает таблицу тикетов
     if(filter.user != "" && List[key].otv != filter.user) continue;  // ≈сли filterUser не пуст и этот тикет другого юзера, пропускаем тикет
     if(filter.name != "" && List[key].name.toUpperCase().indexOf(filter.name.toUpperCase()) === -1) continue;  // ≈сли filterName не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.client != "" && List[key].client.toUpperCase().indexOf(filter.client.toUpperCase()) === -1) continue;  // ≈сли filterClient не пуст и этот тикет не соответствует, пропускаем тикет
-    if(filter.notClient != "" && List[key].client.toUpperCase().indexOf(filter.notClient.toUpperCase()) != -1) continue;  // ≈сли filter.notClient не пуст и этот тикет не соответствует, пропускаем тикет
+    if(filter.notClient != "" && filter.notClient.toUpperCase().indexOf(List[key].client.toUpperCase()) != -1) continue;  // ≈сли filter.notClient не пуст и этот тикет не соответствует, пропускаем тикет
+ //   if(filter.notClient != "" && List[key].client.toUpperCase().indexOf(filter.notClient.toUpperCase()) != -1) continue;  // ≈сли filter.notClient не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.region != "" && List[key].region != filter.region) continue;  // ≈сли filterRegion не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.status != "" && filter.status.indexOf(List[key].status) === -1) continue;  // ≈сли filterStatus не пуст и этот тикет не соответствует, пропускаем тикет
     if(filter.history === false && List[key].renewed === false ) continue;  // Ќеобновленные тикеты отображать не нужно
@@ -449,7 +450,7 @@ function onMainTBodyClick(e) {
   }
   if(e.target.nodeName === "TD" && e.target.cellIndex === 7 && e.shiftKey == true){    // ≈сли щелкнули по клиенту
     document.getElementById('searchClient').value = "-" + e.target.innerText;
-    filter.notClient = e.target.innerText;
+    filter.notClient += e.target.innerText;
 
     filter.status === "Closed / «акрыта" ? loadTickets() : showIt();
   }

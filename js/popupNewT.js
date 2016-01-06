@@ -148,35 +148,118 @@ function onBtnAlertClick (e) {
   var adr1 = str.indexOf("Город: ");
   var adr2 = str.indexOf("Адрес: ");
   var adr3 = str.indexOf("Канал: ");
-  if(adr1 === -1 || adr2 === -1 || adr2 === -1) return;
-  $("#shortTTDescr")[0].value = str.substring(adr1+7, adr2-1) + ", " + str.substring(adr2+7, adr3-1) + ', ' + str.substring(22, adr1-1);
-  for(var i = 0; i < organization_id.length && organization_id[i].text != "*M.VIDEO*"; i ++){}  // Найдем в списке организаций мвидео
-  if(i != organization_id.length) {
-    document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
-  }
-  var adr4 = str.indexOf("**************************");
-  if(adr4 != -1) {str = str.substring(0, adr4-1);}
-  $("#TTDescr")[0].value = str;
-  var city = str.substring(adr1 + 7, adr2-1);
-  var region = "";
-  switch(city){
-    case "Москва": {region = "Москва"; break;}
-    case "Санкт-Петербург": {region = "Санкт-Петербург"; break;}
-    case "Киров": {region = "Кировская область"; break;}
-    case "Владимир": {region = "Владимирская область"; break;}
+  if(adr1 != -1 && adr2 != -1 && adr2 != -1){   // Если это действительно аллерт
+    $("#shortTTDescr")[0].value = str.substring(adr1+7, adr2-1) + ", " + str.substring(adr2+7, adr3-1) + ', ' + str.substring(22, adr1-1);
+    for(var i = 0; i < organization_id.length && organization_id[i].text != "*M.VIDEO*"; i ++){}  // Найдем в списке организаций мвидео
+    if(i != organization_id.length) {
+      document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
     }
-  if(region != ""){
-    for(var i = 1; i < tt_region.length; i ++){
-      if(tt_region[i].text === region){
-        document.getElementById('ppRegion').selectedIndex = i;
+    var adr4 = str.indexOf("**************************");
+    if(adr4 != -1) {str = str.substring(0, adr4-1);}
+    $("#TTDescr")[0].value = str;
+    var city = str.substring(adr1 + 7, adr2-1);
+    var region = "";
+    switch(city){
+      case "Москва": {region = "Москва"; break;}
+      case "Санкт-Петербург": {region = "Санкт-Петербург"; break;}
+      case "Киров": {region = "Кировская область"; break;}
+      case "Владимир": {region = "Владимирская область"; break;}
+      }
+    if(region != ""){
+      for(var i = 1; i < tt_region.length; i ++){
+        if(tt_region[i].text === region){
+          document.getElementById('ppRegion').selectedIndex = i;
+        }
       }
     }
+    else {
+      document.getElementById('ppRegion')[0].text = "Определение региона";
+      document.getElementById('ppRegion').disabled = true;
+      document.getElementById('wikiLink').text = str.substring(adr1 + 7, adr2-1);
+      $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1)}, cbWiki, "html");
+    }
   }
-  else {
-    document.getElementById('ppRegion')[0].text = "Определение региона";
-    document.getElementById('ppRegion').disabled = true;
-    document.getElementById('wikiLink').text = str.substring(adr1 + 7, adr2-1);
-    $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1)}, cbWiki, "html");
+  if(str.indexOf("Пятерочка") != -1){  // Письмо от Х5 
+    for(var i = 0; i < organization_id.length && organization_id[i].text != "*X5*"; i ++){}  // Найдем в списке организаций мвидео
+    if(i != organization_id.length) {
+      document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
+    }
+    if(str.indexOf("Коллеги, добр") != -1 || str.indexOf("Добрый день") != -1)     // Выкинем строку с приветствием
+      str = str.substring(str.indexOf('\n') + 1);
+    adr0 = str.match(/\n\w\d{2,3}\t/);      // Найдем начало таблицы 
+    if(adr0.length === 0) return;
+    $("#TTDescr")[0].value = str.substring(0, adr0.index) + '\n';
+    str = str.substring(adr0.index); 
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    $("#TTDescr")[0].value += str.substring(0, adr1) + '\n'; 
+    $("#shortTTDescr")[0].value = str.substring(0, adr1);
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');    
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1); 
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    str = str.substring(adr1 + 1);
+    adr1 = str.indexOf('\t');
+    var city = str.substring(0, adr1);
+    var strnn = "";
+    strnn += '\n';
+    strnn += '\n';
+    adr1 = str.indexOf(strnn);
+    $("#TTDescr")[0].value += str.substring(adr1 + 2);
+    
+    var region = "";
+    switch(city){
+      case "Москва": {region = "Москва"; break;}
+      case "Санкт-Петербург": {region = "Санкт-Петербург"; break;}
+      case "Киров": {region = "Кировская область"; break;}
+      case "Владимир": {region = "Владимирская область"; break;}
+      }
+    if(region != ""){
+      for(var i = 1; i < tt_region.length; i ++){
+        if(tt_region[i].text === region){
+          document.getElementById('ppRegion').selectedIndex = i;
+        }
+      }
+    }
+    else {
+      document.getElementById('ppRegion')[0].text = "Определение региона";
+      document.getElementById('ppRegion').disabled = true;
+      document.getElementById('wikiLink').text = city;
+      $.get("https://ru.wikipedia.org/w/index.php", {search:city}, cbWiki, "html");
+    }
+    
+/*    var b = str.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/);
+    str = str.substring(b.index);
+    b = str.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d\d\t/);
+    str = str.substring(b.index);
+    */
   }
 }
 
