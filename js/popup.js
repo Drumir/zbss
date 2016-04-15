@@ -206,7 +206,7 @@ function onLoginClick() {
   par.user = document.getElementById('sLogin').value;
   par.password = document.getElementById('sPass').value;
   mySetTimeout(12, "Ошибка авторизации");
-  $.post("https://oss.unitline.ru:995/adm/login.asp", par, callbackAuthorization, "html");
+  $.post("https://bss.vconnect.ru/adm/login.asp", par, callbackAuthorization, "html");
   document.getElementById('sLogin').value = "";           // Сотрем имя пользователя
   document.getElementById('sPass').value = "";            // Сотрем пароль
   var pairs = {};

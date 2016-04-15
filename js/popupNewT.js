@@ -88,7 +88,7 @@ function onBtnSaveTTClick (e) {      // $.ajax версия       //Попап новый тикет 
   var param = "id=0&ip=&name=" + encodeURIComponent($("#shortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
   param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#TTDescr")[0].value);
   $.ajax({
-    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp",
+    url: "https://bss.vconnect.ru/adm/tt/trouble_ticket_edt_process.asp",
     type: "POST",
     data: param,
     dataType : "html",
@@ -118,7 +118,7 @@ function onBtnSaveEditTTClick (e) {      // $.ajax версия       //Попап Редактир
   var param = "id=" + id + "&ip=&name=" + encodeURIComponent($("#peShortTTDescr")[0].value) + "&trouble_ticket_type_id=33&priority=1";
   param += "&region_id=" + rid + "&organization_id=" + cid + "&descr=" + encodeURIComponent($("#peTTDescr")[0].value);
   $.ajax({
-    url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt_process.asp",
+    url: "https://bss.vconnect.ru/adm/tt/trouble_ticket_edt_process.asp",
     type: "POST",
     data: param,
     dataType : "html",

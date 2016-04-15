@@ -11,7 +11,7 @@ function loadPopupTransfer() {
       }
     }
     mySetTimeout(12, "Ошибка загрузки списка подразделений");
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: key}, callbackLoadEnvironment2, "html");
+    $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: key}, callbackLoadEnvironment2, "html");
   }
   GetCPList();                  // Загрузим между делом список ответственных лиц
   winManager.showMe("popupTransfer");
@@ -73,7 +73,7 @@ function onButtonTransferClick(e) {        // Вызов из попапТрансфер
 
 function checkAndTransfer() {   //
   if(transQueue.length != 0){   // Если очередь не пустая, открыть (для проверки правомочности) первый тикет из очереди.
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: transQueue[0].id}, cbCheckAndTransfer, "html");
+    $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: transQueue[0].id}, cbCheckAndTransfer, "html");
   }
   else {
     loadTickets();
@@ -97,7 +97,7 @@ function cbCheckAndTransfer(data, textStatus){
     if( dontCheckTransferPermissions === true) { permissions += "***Ответственное лицо***"; dontCheckTransferPermissions = false;}
 
     if(permissions.indexOf("Ответственное лицо") != -1){ // Если среди кнопок есть "Ответственное лицо", можно переводить
-      $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", transQueue[0], checkAndTransfer, "html"); //Перевод
+      $.post("https://bss.vconnect.ru/adm/tt/trouble_ticket_status_process.asp", transQueue[0], checkAndTransfer, "html"); //Перевод
       TTOkTransferCount ++;
       document.getElementById('btTransfNote').text = "ТТ осталось " + transQueue.length + "; Переведено " + TTOkTransferCount + "; Отказано " + TTErTransferCount;
       transQueue.splice(0, 1);    // Удалить из очереди первый тикет
@@ -114,8 +114,8 @@ function cbCheckAndTransfer(data, textStatus){
 function transferTickets() {
   if(transQueue.length != 0){   // Если очередь не пустая, перевести первый тикет из очереди.
     // Нужно сначала открывать этот тикет, смотреть еслть ли там кнопка "ответственное лицо" и только потом переводить.
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: transQueue[0].id}, cbCheckBeforeTransfer, "html");
-    $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", transQueue[0], transferTickets, "html");
+    $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: transQueue[0].id}, cbCheckBeforeTransfer, "html");
+    $.post("https://bss.vconnect.ru/adm/tt/trouble_ticket_status_process.asp", transQueue[0], transferTickets, "html");
     transQueue.splice(0, 1);    // Удалить из очереди первый тикет
   }
   else {
@@ -148,7 +148,7 @@ function onBtnTransOnSelfClick(e) {   // Функция только формирует очередь transQ
 
 function GetCPList() {
 	var branchID = $("#branchLiist").val();
-	$.post("https://oss.unitline.ru:995/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) {
+	$.post("https://bss.vconnect.ru/adm/tt/ajax.asp", { type: "2", id: branchID}, function(data, textStatus) {
 			$("#resp_person_id").empty();
 			if (data.list) {
 				for (var i in data.list) {

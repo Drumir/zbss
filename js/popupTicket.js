@@ -155,7 +155,7 @@ function callbackGetTicket(data, textStatus) {
 
     loadPopupTicket();
     centerPopupTicket();
-    $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+    $.post("https://bss.vconnect.ru/inc/jquery.asp", {type: "10", id: "1", tt_id: tid, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
     
     if(addTicketToHistory && TicketsViewHistory[TicketsViewHistory.length-1] != tid){  // Если разрешено добавление тикетов в историю, и этот тикет не равен последнему добавленому
       TicketsViewHistory.push(tid);
@@ -215,7 +215,7 @@ function onTPopupClick(e) {
     case "otv":{     // Клик был по ответственному лицу.
       if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
         winManager.hideUper();    // Закроем попап Тикет
-        $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
+        $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
         loadTickets();
         return;
       }
@@ -264,13 +264,13 @@ function commentOnKey(e){     //$.ajax версия
       var converted_str = encodeURIComponent(str);
       var param = "id=" + iidd + "&status_id=0&comment=" + converted_str;
       $.ajax({
-        url: "https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp",
+        url: "https://bss.vconnect.ru/adm/tt/trouble_ticket_status_process.asp",
         type: "POST",
         data: param,
         dataType : "html",
         contentType : "application/x-www-form-urlencoded; charset=windows-1251",
       })
-      $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
+      $.post("https://bss.vconnect.ru/inc/jquery.asp", {type: "10", id: "1", tt_id: iidd, page: "1", rows: "200", hide: "0"}, callbackGetHistory, "json");
     }
   }
   if((userId == 1347 || userId == 1335) && document.getElementById('comment').value == "Я феечка и хочу озорничать") {
@@ -353,7 +353,7 @@ function setTimer(e){
 function getSubClass() {
 	var sVal = $("#psClass").val();
 	$.ajax({
-		url: "https://oss.unitline.ru:995/adm/tt/ajax.asp",
+		url: "https://bss.vconnect.ru/adm/tt/ajax.asp",
 		type: "POST",
 		data: "type=3&id=" + sVal,
 		dataType : "json",
@@ -433,7 +433,7 @@ function onHostidEnter(e) {       // Ввод hostid
       if(Tickets[iidd] != undefined){
         Tickets[iidd].zhostid = this.value;                         // Запомним zhostid тикета
         winManager.hideUper();                                      // Переоткроем попап с тикетом
-        $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
+        $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: iidd}, callbackGetTicket, "html");
 
         params = {action:"write", ttid:iidd, hostid:this.value};    // Запишем свежую привязку в базу
         $.ajax({

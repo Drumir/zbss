@@ -30,7 +30,7 @@ function callbackAuthorization(data, textStatus){
 
 function loadEnvironment() {
   mySetTimeout(12, "Ошибка загрузки переменных окружения");
-  $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_list.asp", {type: "8", id: "1", tt_gate: "2", page: "1", rows: "10", hide: "0"}, callbackLoadEnvironment, "html");
+  $.post("https://bss.vconnect.ru/adm/tt/trouble_ticket_list.asp", {type: "8", id: "1", tt_gate: "2", page: "1", rows: "10", hide: "0"}, callbackLoadEnvironment, "html");
   setStatus("Загрузка переменных окружения  <IMG SRC='/images/wait.gif' alignment='vertical' ALT='Renew' TITLE='Renew'>");
 }
 
@@ -90,7 +90,7 @@ function loadTickets() {
   }
 
   mySetTimeout(12, "Ошибка загрузки списка тикетов");
-  $.post("https://oss.unitline.ru:995/inc/jquery.asp", {type: "8", id: "1", organization_id: client, resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: region, tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: status_id, DateFrom: dateFrom, DateTo: dateTo, page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
+  $.post("https://bss.vconnect.ru/inc/jquery.asp", {type: "8", id: "1", organization_id: client, resp_id: "0", tt_is_group: "2", tt_priority_id: "0", tt_gate: "2"  , tt_region: region, tt_closed_name: "128", tt_type_closed: "0", tt_subtype_closed: "0", tt_status_id: status_id, DateFrom: dateFrom, DateTo: dateTo, page: "1", rows: "500", hide: "0"}, callbackLoadTickets, "json");
                                                       //                     Организация        , Отв. Лицо   , Группов. авария ,  Приоритет         ,все кроме шлюза, Регион        , тип сети             , класс аварии       , подкласс аварии       , Все кроме закрытых  ,
   setStatus("Загрузка списка тикетов  <IMG SRC='/images/wait.gif' alignment='vertical' alt='Renew'>");
 }

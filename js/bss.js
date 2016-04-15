@@ -151,7 +151,7 @@ window.onload = function() {          //
 
     // Авторизация в BSS
   $("#char1").css({"color":"orange"});
-  $.ajax({url: "https://oss.unitline.ru:995/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
+  $.ajax({url: "https://bss.vconnect.ru/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
@@ -270,7 +270,7 @@ function showIt() {         // Отображает таблицу тикетов
     ttr.filial = List[key].filial;
     ttr.iidd = List[key].id;
 
-    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp?id=' + List[key].id + '" target="_blank">' + List[key].id + '</a>' + '</td><td style="color:'+ statusToColor(List[key].status) + '; font-weight:600">' + List[key].status;
+    str = '<tr><td><input type="checkbox"></td><td>' + '<a href="https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp?id=' + List[key].id + '" target="_blank">' + List[key].id + '</a>' + '</td><td style="color:'+ statusToColor(List[key].status) + '; font-weight:600">' + List[key].status;
     str += '</td><td>' + List[key].data_open + '</td><td>' + List[key].region + '</td><td>' + List[key].author + '</td><td>' + List[key].otv + '</td><td>' + List[key].client + '</td><td>' + List[key].name + '</td><td width = "100px">' + List[key].clas + '</td></tr>';
     ttr.innerHTML = str;
     ttr.children[0].children[0].checked = List[key].checked;
@@ -413,7 +413,7 @@ function onMainTBodyClick(e) {
     document.getElementById('popupTicket').iidd = e.target.parentNode.iidd; // Сразу передадим в popupTicket id отображаемого тикета
     highlightedTT = e.target.parentNode.iidd;  // Запомним номер тикета для его подсветки в showIt()
     showIt();
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
+    $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: e.target.parentNode.iidd}, callbackGetTicket, "html");
   }
   if(e.target.nodeName === "TD" && e.target.cellIndex === 2 && e.ctrlKey == true){    // Если щелкнули по статусу c ctrl
     var select = document.getElementById('thsStatus');
@@ -542,7 +542,7 @@ function onPsActionClick(e) {        // Нажата одна из кнопок смены статуса в по
 
   winManager.hideUper();        // Закроем попап статус
   winManager.hideUper();        // И попап Тикет. Он переоткроется by callbackGetTicket
-  $.post("https://oss.unitline.ru:995/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
+  $.post("https://bss.vconnect.ru/adm/tt/trouble_ticket_status_process.asp", par, callbackGetTicket, "html");
   loadTickets();
   return;
 
@@ -554,7 +554,7 @@ function onPs2Confirm() {        // Кнопка "подтвердить"
   var tid = document.getElementById('popupTicket').iidd;
   if(Tickets[tid].permissions.indexOf("Подтвердить") != -1){
     winManager.hideUper();        // Закроем попап статус
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
+    $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_confirm.asp", {id: tid}, callbackGetTicket, "html");
     loadTickets();
     return;
   }
@@ -563,7 +563,7 @@ function onPs2Confirm() {        // Кнопка "подтвердить"
 
 function onStatusNameClick(e) {   // По клику на имени залогиненого пользователя
   if(e.ctrlKey == true){       // Если кликнули с Ctrl - разлогинимся.
-    $.get("https://oss.unitline.ru:995/app/ruser/logoff.asp?refer=/", null, callbackAuthorization, "html");
+    $.get("https://bss.vconnect.ru/app/ruser/logoff.asp?refer=/", null, callbackAuthorization, "html");
     userId = -1;
     return;
   }
@@ -635,7 +635,7 @@ function onSearchClientInput() {
 function onTTKeyPress(e) {       // Ввод номера тикета
   if(e.keyIdentifier === "Enter"){
     if(!isNaN(parseInt(this.value, 10))){
-      $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: this.value}, callbackGetTicket, "html");
+      $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: this.value}, callbackGetTicket, "html");
       this.value = "";
     }
   }
@@ -644,8 +644,8 @@ function onTTKeyPress(e) {       // Ввод номера тикета
 function onLsTTKeyPress(e) {       // Ввод номера тикета Линейных продаж
   if(e.keyIdentifier === "Enter"){
     if(!isNaN(parseInt(this.value, 10))){
-//      $.get("https://oss.unitline.ru:995/adm/ttls/trouble_ticket_edt.asp", {id: this.value}, callbackGetLsTicket, "html");
-      window.open("https://oss.unitline.ru:995/adm/ttls/trouble_ticket_edt.asp?id=" + this.value, this.value, null);
+//      $.get("https://bss.vconnect.ru/adm/ttls/trouble_ticket_edt.asp", {id: this.value}, callbackGetLsTicket, "html");
+      window.open("https://bss.vconnect.ru/adm/ttls/trouble_ticket_edt.asp?id=" + this.value, this.value, null);
       this.value = "";
     }
   }
@@ -683,7 +683,7 @@ function onTabsClick(e){
   if(e.target.id.indexOf("new") == -1){     // клик закладке на существующтй тикет
     document.getElementById('popupTicket').iidd = e.target.id; // Сразу передадим в popupTicket id отображаемого тикета
     highlightedTT = e.target.id;  // Запомним номер тикета для его подсветки в showIt()
-    $.get("https://oss.unitline.ru:995/adm/tt/trouble_ticket_edt.asp", {id: e.target.id}, callbackGetTicket, "html");
+    $.get("https://bss.vconnect.ru/adm/tt/trouble_ticket_edt.asp", {id: e.target.id}, callbackGetTicket, "html");
   } else {                                  // клик по закладке на недосозданный тикет
     loadPopupNewTT();
     centerPopupNewTT();
