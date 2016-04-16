@@ -117,6 +117,10 @@ function cbSqlMultiSuccess(data, textStatus) {      // Обновим привязки TT -> ho
       if(Tickets[data.result[i].ttid] != undefined)
         Tickets[data.result[i].ttid].zhostid = data.result[i].hostid;
     }
+  }  
+  else {
+    showIt = function(){$("#mainTBody").empty();}; 
+    showIt();
   }
 }
 
