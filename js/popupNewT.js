@@ -164,7 +164,15 @@ function onBtnAlertClick (e) {
       case "Санкт-Петербург": {region = "Санкт-Петербург"; break;}
       case "Киров": {region = "Кировская область"; break;}
       case "Владимир": {region = "Владимирская область"; break;}
-      }
+      case "Губкин": {region = "Белгородская область"; break;}
+      /*case "": {region = ""; break;}
+      case "": {region = ""; break;}
+      case "": {region = ""; break;}
+      case "": {region = ""; break;}
+      case "": {region = ""; break;}
+      case "": {region = ""; break;}
+      case "": {region = ""; break;}*/
+    }
     if(region != ""){
       for(var i = 1; i < tt_region.length; i ++){
         if(tt_region[i].text === region){
@@ -179,15 +187,16 @@ function onBtnAlertClick (e) {
       $.get("https://ru.wikipedia.org/w/index.php", {search:str.substring(adr1 + 7, adr2-1)}, cbWiki, "html");
     }
   }
-  if(str.indexOf("Пятерочка") != -1){  // Письмо от Х5 
+  if(str.indexOf("Пятерочка") != -1 || str.indexOf("Пятёрочка") != -1){  // Письмо от Х5 
     for(var i = 0; i < organization_id.length && organization_id[i].text != "*X5*"; i ++){}  // Найдем в списке организаций мвидео
     if(i != organization_id.length) {
       document.getElementById('ppClient').selectedIndex = i;       // Веберем его в select
     }
     if(str.indexOf("Коллеги, добр") != -1 || str.indexOf("Добрый день") != -1)     // Выкинем строку с приветствием
       str = str.substring(str.indexOf('\n') + 1);
-    adr0 = str.match(/\n\w\d{2,3}\t/);      // Найдем начало таблицы 
-    if(adr0.length === 0) return;
+      adr0 = str.match(/\n\w\d{2,3}\t/);      // Найдем начало таблицы 
+//    adr0 = str.match(/.........\t/);      // Найдем начало таблицы  
+    if(adr0 == null || adr0.length === 0) return;
     $("#TTDescr")[0].value = str.substring(0, adr0.index) + '\n';
     str = str.substring(adr0.index); 
     adr1 = str.indexOf('\t');
@@ -200,33 +209,11 @@ function onBtnAlertClick (e) {
     str = str.substring(adr1 + 1);
     adr1 = str.indexOf('\t');
     $("#TTDescr")[0].value += str.substring(0, adr1) + '\n'; 
-    $("#shortTTDescr")[0].value = str.substring(0, adr1);
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');    
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1); 
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
-    str = str.substring(adr1 + 1);
-    adr1 = str.indexOf('\t');
+    $("#shortTTDescr")[0].value = str.substring(0, adr1); 
+    for(var i = 0; i < 13; i ++){
+      str = str.substring(adr1 + 1);
+      adr1 = str.indexOf('\t');
+    }  
     var city = str.substring(0, adr1);
     var strnn = "";
     strnn += '\n';
@@ -268,7 +255,7 @@ function cbWiki(data, textStatus) {
   document.getElementById('ppRegion').disabled = false;
   document.getElementById('ppRegion').selectedIndex = 0;
 //  document.getElementById('wikiLink').text += " - Искать в Wiki";
-  var start = data.indexOf("Субъект федерации");
+  var start = data.toLowerCase().indexOf("субъект федерации");
   if(start === -1){return;}
   data = data.substring(start, start + 1000);
   start = data.indexOf('title="');
