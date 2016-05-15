@@ -32,7 +32,8 @@ function callbackGetTicket(data, textStatus) {
   if(data != null) {  // null ли?!
     document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
     if(document.getElementById('PrintArea') == undefined) {    // Если загрузилось не то
-      setStatus("Сбой получения тикета");
+      setStatus("Сбой получения тикета"); // Возможно bss про нас забыл за давностью лет.Попробуем переавторизоваться
+      $.ajax({url: "https://bss.vconnect.ru/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
       return;
     }
     var tb = document.getElementById('PrintArea').children[1].children[0];    // исходная таблица

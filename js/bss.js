@@ -131,6 +131,10 @@ window.onload = function() {          //
 
   setInterval(oneMoreSecond, 1000);
   setInterval(timeToCheckPing, 360000);     // Раз в 6 минут проверяем доступность узлов
+  setInterval(function(){
+                        $.ajax({url: "https://bss.vconnect.ru/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
+                        }
+                        , 3600000);     // Раз в час переавторизовываемся на bss
   onBodyResize();
   chrome.storage.local.get(null, cbRememberPass);  // Прочитаем из хранилища настройки и имя/пароль (имя/пароль может и не понадобятся)
 
