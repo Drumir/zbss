@@ -184,7 +184,7 @@ function cbZAuthOk(data, status) {
   zEnabled = true;
   var adr = data.indexOf('id="sid" name="sid" value="');
   data = data.substring(adr + 27);
-  adr = data.indexOf('" />');
+  adr = data.indexOf('">');
   zSessionId = data.substring(0, adr);
   setStatus("Успешная авторизация в Zabbix");
 }

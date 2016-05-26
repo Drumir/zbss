@@ -390,7 +390,7 @@ function cbSuccessZ2(response, status) {
 //    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
     for(i = 0; i < response.result.length && response.result[i].name != "Потери %"; i ++); // Найдем в массиве нужный объект (type которого = 3)
     if(i != response.result.length){  // Если строка с потерями найдена
-      document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
+      document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemids[]=" + response.result[i].itemid;  // создадим ссылку
       document.getElementById('ptZping').text = "Потери " + response.result[i].lastvalue + "%";
       
       document.getElementById('ptZping').style.color = "#FF2222";     // потери

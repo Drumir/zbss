@@ -241,21 +241,19 @@ function cbzResearch3(response, status){
 
 function cbzResearch4(data, textStatus){
   hostToResearch.mac = "-:-:-:-:-:-";
-  var adr0 = data.indexOf('MAC&nbsp;адрес&nbsp;A');
+  var adr0 = data.indexOf('MAC адрес A');
   if(adr0 != -1){
-    data = data.substring(adr0);
-    adr0 = data.indexOf('<span class="pre">');
-    var adr1 = data.indexOf('</span>');
-    if(adr0 != -1 && adr1 != -1) hostToResearch.mac = data.substring(adr0+18, adr1);
+    data = data.substring(adr0 + 86);
+    var adr1 = data.indexOf('</div></div>');
+    if(adr0 != -1 && adr1 != -1) hostToResearch.mac = data.substring(0, adr1);
   }
 
   hostToResearch.invent = "Данные не найдены";
-  var adr0 = data.indexOf('>Примечания</td>');
+  var adr0 = data.indexOf('<label>Примечания</label></div>');
   if(adr0 != -1){
-    data = data.substring(adr0);
-    adr0 = data.indexOf('<span class=');
-    var adr1 = data.indexOf('</span>');
-    if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(adr0+18, adr1);
+    data = data.substring(adr0 + 92);
+    var adr1 = data.indexOf('</div></div>');
+    if(adr0 != -1 && adr1 != -1) hostToResearch.invent = data.substring(0, adr1);
   }
   var params = {};
 
@@ -271,7 +269,7 @@ function cbzResearch5(response, status){
     var i;
     for(i = 0; i < response.result.length && response.result[i].name != "Потери %"; i ++); // Найдем в массиве нужный объект c именем "Потери %"
     if(i != response.result.length && response.result[i].lastclock != 0){  // Если строка с потерями найдена
-      document.getElementById('pzLostGrath').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemid=" + response.result[i].itemid;  // создадим ссылку
+      document.getElementById('pzLostGrath').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemids[]=" + response.result[i].itemid;  // создадим ссылку
       document.getElementById('pzLostGrath').text = "Потери " + response.result[i].lastvalue + "%";
       
       document.getElementById('pzLostGrath').style.color = "#FF2222";     // потери
@@ -324,9 +322,9 @@ function ShowHostStat() {
   if(hostToResearch.name != undefined)
     document.getElementById('pzHostName').innerText = hostToResearch.name.replace(expr, '"');
 
-  document.getElementById('pzHostInfo').innerText = "";
+  document.getElementById('pzHostInfo').innerHTML = "";
   if(hostToResearch.invent != undefined)
-    document.getElementById('pzHostInfo').innerText = hostToResearch.invent.replace(expr, '"');
+    document.getElementById('pzHostInfo').innerHTML = hostToResearch.invent.replace(expr, '"');
 
   for(var key in hostToResearch) delete hostToResearch[key];  // Удалим собранные данные о хосте, чтобы они не подменили результат следующего исследования
 }
@@ -357,12 +355,12 @@ function onPzRunScriptsClick(e){
 
 function cbRunScripts(data, status){
   document.getElementById('tempDiv').insertAdjacentHTML( 'beforeend', data );
-  if(document.getElementsByClassName("pre fixedfont") == undefined) {    // Если загрузилось не то
+  if(document.getElementsByClassName("table-forms-container") == undefined) {    // Если загрузилось не то
     document.getElementById('popupInRunScripts').innerText = "Не удалось получить информацию";
     return;
   }
-  document.getElementById('prsCaption').innerText = document.getElementById("tab_scriptTab").innerText;
-  document.getElementById('popupInRunScripts').innerText = document.getElementsByClassName("pre fixedfont")[0].innerText;
+//  document.getElementById('prsCaption').innerText = document.getElementById("tab_scriptTab").innerText;
+  document.getElementById('popupInRunScripts').innerHTML = document.getElementsByClassName("table-forms-container")[0].innerHTML;
   document.getElementById('tempDiv').innerHTML = "";
   centerPopupRunScripts();
 }
