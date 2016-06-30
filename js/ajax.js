@@ -1,3 +1,8 @@
+/*-----------------------------------------------------------------------------+
+|  Project: ZBSS Chrome App
+|  Copyright (c) 2014-2016 drumir@mail.ru
+|  All rights reserved.
++-----------------------------------------------------------------------------*/
 
 function callbackAuthorization(data, textStatus){
   resetTimeout();      // Остановим отсчет
@@ -118,10 +123,6 @@ function cbSqlMultiSuccess(data, textStatus) {      // Обновим привязки TT -> ho
         Tickets[data.result[i].ttid].zhostid = data.result[i].hostid;
     }
   }  
-  else {
-    showIt = function(){$("#mainTBody").empty();}; 
-    showIt();
-  }
 }
 
 function cbSqlWriteSuccess(data, textStatus) {      // cb Операции записи в базу. Надо бы проверять успешна ли...

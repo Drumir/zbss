@@ -1,7 +1,8 @@
-//
-//    BSS Parser by drumir@mail.ru
-//
-//
+/*-----------------------------------------------------------------------------+
+|  Project: ZBSS Chrome App
+|  Copyright (c) 2014-2016 drumir@mail.ru
+|  All rights reserved.
++-----------------------------------------------------------------------------*/
 var Tickets = {};           // Список всех актуальных тикетов в формате {id: {id:"10547", status: "", open: "", ....., permissions:"Названия кнопок доступных в этом тикете", timer:"Сколько минут осталось до звонка", unpostedComm: "Набраный, но незапощеный комментарий"}}. Актуализируется раз в n секунд
 var transQueue = [];        // Очередь запросов на перевод тикета.
 var TicketsViewHistory = [];// Массив для хранения истории просмотра тикетов.
@@ -130,24 +131,22 @@ window.onload = function() {          //
   hiddenText.hidden = true;
 
   setInterval(oneMoreSecond, 1000);
-  setInterval(timeToCheckPing, 360000);     // Раз в 6 минут проверяем доступность узлов
+  setInterval(timeToCheckPing, 240000);     // Раз в 4 минут проверяем доступность узлов
   setInterval(function(){
                         $.ajax({url: "https://bss.vconnect.ru/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
                         }
-                        , 3600000);     // Раз в час переавторизовываемся на bss
+                        , 3600500);     // Раз в час переавторизовываемся на bss
+  setInterval(function(){
+                        $.ajax({url: "https://zabbix.msk.unitline.ru/zabbix/index.php", type: "POST", data:"request=&name=monitoring&password=monitoring&autologin=1&enter=Sign+in", dataType:"html", error: cbZAuthErr, success: cbZAuthOk});                        
+                        }
+                        , 3602500);     // Раз в час переавторизовываемся на zabbix GUI  
+                        
+  setInterval(zabbixApiAuth, 3601500);     // Раз в час переавторизовываемся в zabbix API
   onBodyResize();
   chrome.storage.local.get(null, cbRememberPass);  // Прочитаем из хранилища настройки и имя/пароль (имя/пароль может и не понадобятся)
 
      // Авторизация в Zabbix API
-  $("#char0").css({"color":"orange"});
-  zserver = new $.jqzabbix(zoptions);
-  zserver.getApiVersion(null, function(response){
-      zApiVersion = response.result;
-      zoptions.username = "monitoring";
-      zoptions.password = "monitoring";
-      zserver.setOptions(zoptions);
-      zserver.userLogin(null, null, cbZAuthErr, zGetGroups);
-  }, cbZgetApiErr, null);
+  zabbixApiAuth();
 
     // Авторизация в Zabbiz      Не все данные доступны в JSON формате через API. Приходится дополнительно авторизовываться чтобы иметь доступ к html страницам
   $("#char3").css({"color":"orange"});
@@ -158,6 +157,19 @@ window.onload = function() {          //
   $.ajax({url: "https://bss.vconnect.ru/adm/", type: "GET", data:null, dataType:"html", contentType:"application/x-www-form-urlencoded; charset=windows-1251", error: onLoadError, success: callbackAuthorization});
 
 }
+
+function zabbixApiAuth() {    // Авторизация в Zabbix API
+  $("#char0").css({"color":"orange"});
+  zserver = new $.jqzabbix(zoptions);
+  zserver.getApiVersion(null, function(response){
+      zApiVersion = response.result;
+      zoptions.username = "monitoring";
+      zoptions.password = "monitoring";
+      zserver.setOptions(zoptions);
+      zserver.userLogin(null, null, cbZAuthErr, zGetGroups);
+  }, cbZgetApiErr, null);   
+}
+
 function onLoadError(jqXHR, textStatus){      // callback для соседней авторизации
   $("#char1").css({"color":"red"});
   if(jqXHR.status == 404 && textStatus == "error") {
@@ -765,11 +777,11 @@ function lookOnTicketPing(response, status) {
     var i;
     for(i = 0; i < response.result.length && response.result[i].name != "Потери %"; i ++); // Найдем в массиве нужный объект 
     if(i != response.result.length){  // Если строка с потерями найдена
-      if(Tickets[watchPingArr[0].id].ping != undefined && Tickets[watchPingArr[0].id].ping < 5 && response.result[i].lastvalue < 5){       // Если при предыдущей проверке потерь было меньше 5% и теперь меньше 5
+      if(response.result[i].lastvalue != undefined && response.result[i].lastvalue == 0){       // Если потерь нет
         Tickets[watchPingArr[0].id].greenAttention = true; //  активируем флаг greenAttention
         showIt();                                          // Сразу же отобразим радостную новость
       } 
-      Tickets[watchPingArr[0].id].ping = response.result[i].lastvalue; // Сохраним результты этой проверки 
+      //Tickets[watchPingArr[0].id].ping = response.result[i].lastvalue; // Сохраним результты этой проверки 
     }
     watchPingArr.shift();  // Удалим начальный элемент массива
   }
@@ -779,7 +791,7 @@ function lookOnTicketPing(response, status) {
     var method = "item.get";
     params.hostids = watchPingArr[0].zhostid;
     params.output = "extend";
-    zserver.sendAjaxRequest(method, params, lookOnTicketPing, null); // Запросим доступность, имя, IP узла
+    zserver.sendAjaxRequest(method, params, lookOnTicketPing, cbZabbixApiError); // Запросим доступность, имя, IP узла
   }
 }
 

@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------+
+|  Project: ZBSS Chrome App
+|  Copyright (c) 2014-2016 drumir@mail.ru
+|  All rights reserved.
++-----------------------------------------------------------------------------*/
+
 //
 //       Файл хранит функции так или иначе связаные с popup Ticket
 //
@@ -140,7 +146,8 @@ function callbackGetTicket(data, textStatus) {
     if(Tickets[tid].zhostid != undefined && Tickets[tid].zhostid != ""){   // Если этому тикету сопоставлен hostid
       document.getElementById('ptZping').style.color = "#666666";     // пока потери не известны, покрасим серым
       document.getElementById('ptZping').style.backgroundColor = "#FFFFFF";
-      document.getElementById('ptZping').href = "";                  // пока itemid графика не известен, заглушим ссылку
+      document.getElementById('ptZping').href = ""; 
+      document.getElementById('ptZping').text = "запрос...";          // пока потери неизвестны
       document.getElementById('ptHostidText').innerText = "hostid:";  // Отобразим hostid
       document.getElementById('ptFindHostId').innerText = "изм";
       if(Tickets[tid].zhostid === "0")
@@ -381,13 +388,16 @@ function askZabbix(zhostid) {
   method = "item.get";
   params.hostids = zhostid;
   params.output = "extend";
-  zserver.sendAjaxRequest(method, params, cbSuccessZ2, null); // Запросим доступность, имя, IP узла
+  zserver.sendAjaxRequest(method, params, cbSuccessZ2, cbZabbixApiError); // Запросим доступность, имя, IP узла
+}
+
+function cbZabbixApiError(){
+zabbixApiAuth();                 // Если запрос доступности не удался, попробуем переавторизоваться в заббикс API
 }
 
 function cbSuccessZ2(response, status) {
   if (typeof(response.result) === 'object') {
     var i;
-//    for(i = 0; i < response.result.length && response.result[i].type != 3; i ++); // Найдем в массиве нужный объект (type которого = 3)
     for(i = 0; i < response.result.length && response.result[i].name != "Потери %"; i ++); // Найдем в массиве нужный объект (type которого = 3)
     if(i != response.result.length){  // Если строка с потерями найдена
       document.getElementById('ptZping').href = "https://zabbix.msk.unitline.ru/zabbix/history.php?action=showgraph&itemids[]=" + response.result[i].itemid;  // создадим ссылку
@@ -397,9 +407,9 @@ function cbSuccessZ2(response, status) {
       document.getElementById('ptPingCBox').disabled = false;         // Разрешим ставить галку следить за хостом
       if(response.result[i].lastvalue < 5 || response.result[i].prevvalue < 5){
         document.getElementById('ptZping').style.color = "#86AC00";    // потери только начались или только закончились
-        document.getElementById('ptPingCBox').disabled = true;         // Запретим следить за хостом (он непонятный)
+        //document.getElementById('ptPingCBox').disabled = true;         // Запретим следить за хостом (он непонятный)
       }
-      if(response.result[i].lastvalue < 5 && response.result[i].prevvalue < 5){
+      if(response.result[i].lastvalue == 0){
         document.getElementById('ptZping').style.color = "#116611";    // потерь нет
         document.getElementById('ptPingCBox').disabled = true;         // Запретим следить за хостом (он и так в порядке)
       }
