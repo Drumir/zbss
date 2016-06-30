@@ -1,3 +1,8 @@
+/*-----------------------------------------------------------------------------+
+|  Project: ZBSS Chrome App
+|  Copyright (c) 2014-2016 drumir@mail.ru
+|  All rights reserved.
++-----------------------------------------------------------------------------*/
 //
 //       Файл хранит функции так или иначе связаные с popupZabix
 //
@@ -35,7 +40,7 @@ function loadPopupZabix() {
     var params = {};
     params.output = "extend";
     params.groupids = gids;
-    zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
+    zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, zabbixApiAuth); // Запросим список узлов, входящих в найденные группы
   }
   winManager.showMe("popupZabix");
   document.getElementById('pzLocation').focus();
@@ -177,7 +182,7 @@ function zResearchHost(hostid) {
   var params = {};
   params.output = "extend";
   params.hostids = hostToResearch.hostid;
-  zserver.sendAjaxRequest(method, params, cbzResearch0, null); // Запросим список групп в которые входит щелкнутый hostid
+  zserver.sendAjaxRequest(method, params, cbzResearch0, zabbixApiAuth); // Запросим список групп в которые входит щелкнутый hostid
 }
 
 
@@ -193,7 +198,7 @@ function cbzResearch0(response, status){
   var params = {};
   params.output = "extend";
   params.hostids = hostToResearch.hostid;
-  zserver.sendAjaxRequest(method, params, cbzResearch1, null); // Запросим статус хоста
+  zserver.sendAjaxRequest(method, params, cbzResearch1, zabbixApiAuth); // Запросим статус хоста
 }
 
 function cbzResearch1(response, status){
@@ -208,7 +213,7 @@ function cbzResearch1(response, status){
   var params = {};
   params.output = "extend";
   params.hostids = hostToResearch.hostid;
-  zserver.sendAjaxRequest(method, params, cbzResearch2, null); // Запросим список application's для хоста
+  zserver.sendAjaxRequest(method, params, cbzResearch2, zabbixApiAuth); // Запросим список application's для хоста
 }
 
 function cbzResearch2(response, status){
@@ -220,7 +225,7 @@ function cbzResearch2(response, status){
       var params = {};
       params.output = "extend";
       params.applicationids = response.result[key].applicationid;  // Запросим items для applicationid строки с именем General
-      zserver.sendAjaxRequest(method, params, cbzResearch3, null); // Запросим items
+      zserver.sendAjaxRequest(method, params, cbzResearch3, zabbixApiAuth); // Запросим items
       break;
     }
   }
@@ -260,7 +265,7 @@ function cbzResearch4(data, textStatus){
   var method = "item.get";
   params.hostids = hostToResearch.hostid;
   params.output = "extend";
-  zserver.sendAjaxRequest(method, params, cbzResearch5, null); // Запросим доступность, имя, IP узла
+  zserver.sendAjaxRequest(method, params, cbzResearch5, zabbixApiAuth); // Запросим доступность, имя, IP узла
 
 }
 
@@ -374,7 +379,7 @@ function onPzClientChange() {         // Вызывается при выборе группы в <select>
   var params = {};
   params.output = "extend";
   params.groupids = select[select.selectedIndex].value;
-  zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, null); // Запросим список узлов, входящих в найденные группы
+  zserver.sendAjaxRequest(method, params, cbSuccessZgetHostsOfGroups, zabbixApiAuth); // Запросим список узлов, входящих в найденные группы
 }
 
 function onPzBtnCancelClick(){

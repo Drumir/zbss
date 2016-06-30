@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------+
-|  Project: BSS Chrome App
-|  Copyright (c) 2014 drumir@mail.ru
+|  Project: ZBSS Chrome App
+|  Copyright (c) 2014-2016 drumir@mail.ru
 |  All rights reserved.
 +-----------------------------------------------------------------------------*/
 
